@@ -1,5 +1,5 @@
 'use strict';
-// Generated on 2016-01-14 using generator-leaflet 0.0.17
+// Generated on 2016-01-22 using generator-leaflet 0.0.17
 
 var gulp = require('gulp');
 var open = require('open');
