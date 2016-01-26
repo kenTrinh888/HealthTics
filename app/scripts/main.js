@@ -75,15 +75,28 @@ function mouseoutfunction(e) {
     document.getElementById("properties").innerHTML = "";
 }
 
+// omnivore.kml('data/AQUATICSG.kml').addTo(map);
+// omnivore.geojson('geojson/buildings.json').addTo(map);
+
+// $.get("/geojson", function(data, status) {
+//     L.geoJson(data,{
+//         onEachFeature: handleFeature
+//     }).addTo(map);
+
+//     // omnivore.geojson(data, { onEachFeature: handleFeature}).addTo(map);
 
 
-$.get("/geojson", function(data, status) {
-    L.geoJson(data, {
-        onEachFeature: handleFeature
-    }).addTo(map);
+//     // console.log(data);
 
-    // console.log(data);
+// }).error(function(err) {
+//     console.log(err);
+// }); 
+var postcode = "123456";
 
-}).error(function(err) {
-    console.log(err)
-});
+var urlString = "http://www.onemap.sg/API/services.svc/basicSearch?token=qo/s2TnSUmfLz+32CvLC4RMVkzEFYjxqyti1KhByvEacEdMWBpCuSSQ+IFRT84QjGPBCuz/cBom8PfSm3GjEsGc8PkdEEOEr&searchVal="+ postcode + "&otptFlds=SEARCHVAL,CATEGORY&returnGeom=0&rset=1"
+
+var url= '/getPostalCode/' + postcode;
+
+ $.get(url, function(data, status){
+    console.log(data);
+    });
