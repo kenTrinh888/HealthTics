@@ -25,9 +25,7 @@ app.get('/geojson', function (req, res) {
    });
 })
 
-var postcode = "579827";
 
-var urlString = "http://www.onemap.sg/API/services.svc/basicSearch?token=qo/s2TnSUmfLz+32CvLC4RMVkzEFYjxqyti1KhByvEacEdMWBpCuSSQ+IFRT84QjGPBCuz/cBom8PfSm3GjEsGc8PkdEEOEr&searchVal="+ postcode + "&otptFlds=SEARCHVAL,CATEGORY&returnGeom=0&rset=1";
 
 var request = require('request');
 
@@ -35,7 +33,7 @@ var request = require('request');
 app.get('/getPostalCode/:id', function(req,res){
 	var postcode = req.params.id;
 	console.log("id " + postcode);
-	var urlString = "http://www.onemap.sg/API/services.svc/basicSearch?token=qo/s2TnSUmfLz+32CvLC4RMVkzEFYjxqyti1KhByvEacEdMWBpCuSSQ+IFRT84QjGPBCuz/cBom8PfSm3GjEsGc8PkdEEOEr&searchVal="+ postcode + "&otptFlds=SEARCHVAL,CATEGORY&returnGeom=0&rset=1";
+	var urlString = "http://www.onemap.sg/API/services.svc/basicSearch?token=qo/s2TnSUmfLz+32CvLC4RMVkzEFYjxqyti1KhByvEacEdMWBpCuSSQ+IFRT84QjGPBCuz/cBom8PfSm3GjEsGc8PkdEEOEr&searchVal="+ postcode + "&otptFlds=SEARCHVAL,CATEGORY&returnGeom=1&rset=1";
 	request(urlString, function (error, response, body) {
 	 if (!error && response.statusCode == 200) {
 	    // console.log(body) // Show the HTML for the Google homepage.

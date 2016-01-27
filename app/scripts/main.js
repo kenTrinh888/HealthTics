@@ -76,7 +76,7 @@ function mouseoutfunction(e) {
 }
 
 // omnivore.kml('data/AQUATICSG.kml').addTo(map);
-// omnivore.geojson('geojson/buildings.json').addTo(map);
+omnivore.geojson('geojson/buildings.json').addTo(map);
 
 // $.get("/geojson", function(data, status) {
 //     L.geoJson(data,{
@@ -91,9 +91,9 @@ function mouseoutfunction(e) {
 // }).error(function(err) {
 //     console.log(err);
 // }); 
-var postcode = "123456";
+var postcode = "560624";
 
-var urlString = "http://www.onemap.sg/API/services.svc/basicSearch?token=qo/s2TnSUmfLz+32CvLC4RMVkzEFYjxqyti1KhByvEacEdMWBpCuSSQ+IFRT84QjGPBCuz/cBom8PfSm3GjEsGc8PkdEEOEr&searchVal="+ postcode + "&otptFlds=SEARCHVAL,CATEGORY&returnGeom=0&rset=1"
+var urlString = "http://www.onemap.sg/API/services.svc/basicSearch?token=qo/s2TnSUmfLz+32CvLC4RMVkzEFYjxqyti1KhByvEacEdMWBpCuSSQ+IFRT84QjGPBCuz/cBom8PfSm3GjEsGc8PkdEEOEr&searchVal="+ postcode + "&otptFlds=SEARCHVAL,CATEGORY&returnGeom=1&rset=1"
 
 var url= '/getPostalCode/' + postcode;
 
