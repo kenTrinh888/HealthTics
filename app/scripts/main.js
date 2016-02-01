@@ -76,7 +76,7 @@ function mouseoutfunction(e) {
 }
 
 // omnivore.kml('data/AQUATICSG.kml').addTo(map);
-omnivore.geojson('geojson/buildings.json').addTo(map);
+// omnivore.geojson('geojson/buildings.json').addTo(map);
 
 // $.get("/geojson", function(data, status) {
 //     L.geoJson(data,{
@@ -90,13 +90,79 @@ omnivore.geojson('geojson/buildings.json').addTo(map);
 
 // }).error(function(err) {
 //     console.log(err);
-// }); 
-var postcode = "560624";
+// });
 
-var urlString = "http://www.onemap.sg/API/services.svc/basicSearch?token=qo/s2TnSUmfLz+32CvLC4RMVkzEFYjxqyti1KhByvEacEdMWBpCuSSQ+IFRT84QjGPBCuz/cBom8PfSm3GjEsGc8PkdEEOEr&searchVal="+ postcode + "&otptFlds=SEARCHVAL,CATEGORY&returnGeom=1&rset=1"
+$(document).ready(function() {
+    function onEachFeature(feature, layer) {
+        // does this feature have a property named popupContent?
+        if (feature.properties) {
+            var popupContent = "";
+            console.log("a");
+            for (var propertyname in feature.properties){
+                // console.log(feature.properties[propertyname]);
+                popupContent += "<b>" + propertyname + "</b>" + ": " + feature.properties[propertyname].toString() + "</br>";
+            }
+            layer.bindPopup(popupContent);
+        }
+    }
+    var layerFiles = [];
 
-var url= '/getPostalCode/' + postcode;
+    $('#files').change(function(evt) {
+        var files = evt.target.files;
 
- $.get(url, function(data, status){
-    console.log(data);
+        for (var i = 0; i < files.length; i++) {
+            file = files.item(i);
+            fileExtension = file["name"].substr(file["name"].lastIndexOf('.') + 1);
+    
+            if (fileExtension === "csv") {
+                
+                Papa.parse(file, {
+                    download: true,
+                    header: true,   
+                    dynamicTyping: true,
+                    skipEmptyLines: true,
+                    complete: function(results) {
+                        var leafletFeatures = []; //array of leaflet feature objects
+                        fields = results["data"];
+
+                        fields.forEach(function(field) {
+
+                            var leafletFeature = new Object(); //single leaflet object
+                            leafletFeature["type"] = "Feature";
+                            leafletFeature["properties"] = field;
+                            console.log(leafletFeature);
+                            var postcode = field["POSTCODE"].toString();
+                            var localApi = '/getPostalCode/' + postcode;
+
+                            $.get(localApi, function(geocodedData, status) {
+                                var geocodedDataJson = JSON.parse(geocodedData); //response from geocoding API
+                                searchResults = geocodedDataJson["SearchResults"]; //array containing response of geocoding API
+                                
+                                if (searchResults[0].hasOwnProperty("ErrorMessage") === false) {
+                                    if (searchResults.length > 1) {
+                                        var geoObj = {};
+                                        geoObj["type"] = "Point";
+                                        geoObj["coordinates"] = [];
+                                        geoObj["coordinates"].push(searchResults[1]["X"]); //long
+                                        geoObj["coordinates"].push(searchResults[1]["Y"]); //lat
+                                        leafletFeature["geometry"] = geoObj;
+                                        leafletFeatures.push(leafletFeature);
+
+                                        L.geoJson(leafletFeature,{
+                                            onEachFeature: onEachFeature
+                                        }).addTo(map);
+                                    }                                    
+                                }                                
+                            });
+                            console.log(leafletFeatures); 
+                        });                
+                    }
+                });
+                
+            }
+            
+        }
     });
+
+    
+})
