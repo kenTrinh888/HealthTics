@@ -1,7 +1,3 @@
-/*jslint browser: true*/
-/*global L */
-
-
 L.Icon.Default.imagePath = 'images/';
 L.AwesomeMarkers.Icon.prototype.options.prefix = 'ion';
 /* create leaflet map */
@@ -9,47 +5,12 @@ var map = L.map('map', {
     center: [1.35, 103.8],
     zoom: 11
 });
-// var boundsSW = L.latLng(1.201023, 103.597500),
-//     boundsNE = L.latLng(1.490837, 104.067218),
-//     bounds = L.latLngBounds(boundsSW, boundsNE);
-// map.setMaxBounds(bounds);
-// var redMarkerTest = L.AwesomeMarkers.icon({
-//  icon: 'cog',  prefix: 'fa', markerColor: 'purple', iconColor: '#6b1d5c'
-// });
 
-// L.marker([1.31, 103.8], {
-//     icon: redMarkerTest
-// }).addTo(map);
-
-
-
-// $.get("/geojson", function(data, status){
-//         district_boundary.addData(data);
-//     }).error(function(err) {console.log(err)});
-
-// $('#uploadFiles').click(function(evt,err) {
-//     if(err){
-//         console.log(err);
-//     }
-
-//         var files = evt.target.files;
-
-//         for (var i = 0, f; f = files[i]; i++) {
-//             console.log(f.name);ç
-//         }
-// });
-
-/* add default stamen tile layer */
 new L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     minZoom: 0,
     maxZoom: 18,
     attribution: 'Map data © <a href="http://www.openstreetmap.org">OpenStreetMap contributors</a>'
 }).addTo(map);
-
-
-
-
-
 
 function handleFeature(feature, layer) {
     layer.on({
@@ -79,13 +40,6 @@ var iconJc = L.AwesomeMarkers.icon({
     prefix: 'fa'
 });
 
-// Creates a red marker with the coffee icon
-// var redMarker = L.AwesomeMarkers.icon({
-//   icon: 'coffee',
-//   markerColor: 'red'
-// });
-
-// L.marker([51.941196,4.512291], {icon: redMarker}).addTo(map);
 var redMarker = L.AwesomeMarkers.icon({
     icon: 'sitemap',
     markerColor: 'blue',
@@ -104,25 +58,13 @@ $.get("/getAllLayer", function(data) {
                 pointToLayer: function(feature, latlng) {
                     var name = feature.properties.Name;
                     console.log(feature.properties.Name);
-                    return L.marker(latlng,{icon: redMarker}).bindPopup(name );
+                    return L.marker(latlng, {
+                        icon: redMarker
+                    }).bindPopup(name);
                 }
             }).addTo(map);
 
         });
-        // var customLayer = L.geoJson(null, {
-        //     // http://leafletjs.com/reference.html#geojson-style
-        //     onEachFeature: handleFeature
-
-        // });
-        // omnivore.geojson(url, null, customLayer).addTo(map);
-
-        // omnivore.geojson(url,{
-        //     onEachFeature: handleFeature
-
-        // }).addTo(map);
-
-
-
     }
 })
 
@@ -130,42 +72,77 @@ function getSecondPart(str) {
     return str.split('-')[1];
 }
 
-// L.geoJson(url).addTo(map);
+$(document).ready(function() {
+    function onEachFeature(feature, layer) {
+        // does this feature have a property named popupContent?
+        if (feature.properties) {
+            var popupContent = "";
+            console.log("a");
+            for (var propertyname in feature.properties) {
+                // console.log(feature.properties[propertyname]);
+                popupContent += "<b>" + propertyname + "</b>" + ": " + feature.properties[propertyname].toString() + "</br>";
+            }
+            layer.bindPopup(popupContent);
+        }
+    }
+    var layerFiles = [];
 
-// $.get(url, function(data, status) {
-//         // console.log(data);
-//             L.geoJson(data).addTo(map);
+    $('#files').change(function(evt) {
+        var files = evt.target.files;
 
-//         });
-// omnivore.kml('uploads/AQUATICSG.kml').addTo(map);
-// omnivore.kml('uploads/HEALTHIERCATERERS.kml').addTo(map);
+        for (var i = 0; i < files.length; i++) {
+            file = files.item(i);
+            fileExtension = file["name"].substr(file["name"].lastIndexOf('.') + 1);
 
-// omnivore.geojson('geojson/shapefile.json').addTo(map);
+            if (fileExtension === "csv") {
 
-// $.get("/geojson/", function(data, status) {
-//     L.geoJson(data,{
-//         onEachFeature: handleFeature
-//     }).addTo(map);
+                Papa.parse(file, {
+                    download: true,
+                    header: true,
+                    dynamicTyping: true,
+                    skipEmptyLines: true,
+                    complete: function(results) {
+                        var leafletFeatures = []; //array of leaflet feature objects
+                        fields = results["data"];
 
-//     // omnivore.geojson(data, { onEachFeature: handleFeature}).addTo(map);
+                        fields.forEach(function(field) {
+
+                            var leafletFeature = new Object(); //single leaflet object
+                            leafletFeature["type"] = "Feature";
+                            leafletFeature["properties"] = field;
+                            console.log(leafletFeature);
+                            var postcode = field["POSTCODE"].toString();
+                            var localApi = '/getPostalCode/' + postcode;
+
+                            $.get(localApi, function(geocodedData, status) {
+                                var geocodedDataJson = JSON.parse(geocodedData); //response from geocoding API
+                                searchResults = geocodedDataJson["SearchResults"]; //array containing response of geocoding API
+
+                                if (searchResults[0].hasOwnProperty("ErrorMessage") === false) {
+                                    if (searchResults.length > 1) {
+                                        var geoObj = {};
+                                        geoObj["type"] = "Point";
+                                        geoObj["coordinates"] = [];
+                                        geoObj["coordinates"].push(searchResults[1]["X"]); //long
+                                        geoObj["coordinates"].push(searchResults[1]["Y"]); //lat
+                                        leafletFeature["geometry"] = geoObj;
+                                        leafletFeatures.push(leafletFeature);
+
+                                        L.geoJson(leafletFeature, {
+                                            onEachFeature: onEachFeature
+                                        }).addTo(map);
+                                    }
+                                }
+                            });
+                            console.log(leafletFeatures);
+                        });
+                    }
+                });
+
+            }
+
+        }
+    });
 
 
-//     console.log(data);
-
-// }).error(function(err) {
-//     console.log(err);
-// }); 
-
-
-var postcode = "560624";
-
-var urlString = "http://www.onemap.sg/API/services.svc/basicSearch?token=qo/s2TnSUmfLz+32CvLC4RMVkzEFYjxqyti1KhByvEacEdMWBpCuSSQ+IFRT84QjGPBCuz/cBom8PfSm3GjEsGc8PkdEEOEr&searchVal=" + postcode + "&otptFlds=SEARCHVAL,CATEGORY&returnGeom=1&rset=1"
-
-var url = '/getPostalCode/' + postcode;
-
-$.get(url, function(data, status) {
-    // console.log(data);
-});
-
-
-
+})
