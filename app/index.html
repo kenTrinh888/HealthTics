@@ -2,50 +2,67 @@
 <!--[if lt IE 7]>      <html class="lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>         <html class="lt-ie9 lt-ie8"> <![endif]-->
 <!--[if IE 8]>         <html class="lt-ie9"> <![endif]-->
-<!--[if gt IE 8]><!--> <html> <!--<![endif]-->
-<head>
-	<meta charset="UTF-8">
-	<title>Map Application</title>
-	<meta name="description" content="">
-    <meta name="viewport" content="width=device-width">
-    
-    <!-- build:css styles/vendor.css -->
-    <link rel="stylesheet" href="lib/styles/leaflet.css">
-    <script src='//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-omnivore/v0.2.0/leaflet-omnivore.min.js'></script>
+<!--[if gt IE 8]><!-->
+<html>
+<!--<![endif]-->
 
+<head>
+    <meta charset="UTF-8">
+    <title>Map Application</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width">
+    <!-- build:css styles/vendor.css -->
+  <!--   <script src='https://api.mapbox.com/mapbox.js/v2.2.4/mapbox.js'></script>
+<link href='https://api.mapbox.com/mapbox.js/v2.2.4/mapbox.css' rel='stylesheet' /> -->
+    <link rel="stylesheet" href="lib/styles/leaflet.css">
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css">
+    <link rel="stylesheet" href="lib/Leaflet-awesome-markers/dist/leaflet.awesome-markers.css">
+    <script src='//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-omnivore/v0.2.0/leaflet-omnivore.min.js'></script>
+    <!-- upload file  -->
+    <!-- <end -->
     <!-- bower:css -->
     <!-- endbower -->
     <!-- endbuild -->
-   
-   	<!-- build:css styles/main.css -->
+    <!-- build:css styles/main.css -->
     <link rel="stylesheet" href="styles/main.css">
     <!-- endbuild -->
     <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="stylesheet" href="http://code.ionicframework.com/ionicons/1.5.2/css/ionicons.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+
 
 </head>
-<body>
-	
-		<header class="group">
-			<div class="appName">
-				Map Application
-			</div>
-		</header>
-	
-	<div class="map-application">
-		<div id="map" class="map"></div>
-		<table id="properties"></table>
 
-	</div>
-	<!-- build:js scripts/vendor.js -->
-	<script src="lib/scripts/leaflet.js"></script>
-  <!-- bower:js -->
-  <script src="bower_components/jquery/dist/jquery.js"></script>
-  <script src="bower_components/topojson/topojson.js"></script>
-  <!-- endbower -->
-  <!-- endbuild -->
-	
-	<!-- build:js scripts/main.js -->
-	<script src="scripts/main.js"></script>
-	<!-- endbuild -->
+<body>
+    <div class="row">
+    <div class="col-md-4">
+            <h3>File Upload:</h3> Select a file to upload:
+            <br />
+            <form action="/upload" method="post" enctype="multipart/form-data">
+                <input type="file" name="avatar">
+                <input  type="submit" id = "uploadFiles"  value="Upload">
+            </form>
+        </div>
+        <div class="col-md-8">
+            <div class="map-application">
+                <div id="map" class="map"></div>
+                <table id="properties"></table>
+            </div>
+        </div>
+        
+    </div>
+    <!-- build:js scripts/vendor.js -->
+    <script src="lib/scripts/leaflet.js"></script>
+    <!-- bower:js -->
+    <script src="bower_components/jquery/dist/jquery.js"></script>
+    <script src="bower_components/topojson/topojson.js"></script>
+        <script src="lib/Leaflet-awesome-markers/dist/leaflet.awesome-markers.js"></script>
+
+    <!-- endbower -->
+    <!-- endbuild -->
+    <!-- build:js scripts/main.js -->
+    <script src="scripts/main.js"></script>
+    <!-- endbuild -->
 </body>
+
 </html>
