@@ -17,9 +17,10 @@
     <link rel="stylesheet" href="lib/styles/bootstrap.min.css">
     <!-- build:css styles/vendor.css -->
     <link rel="stylesheet" href="lib/styles/leaflet.css">
-    <script src="/bower_components/jquery/dist/jquery.js"></script>
-    <script src="/bower_components/papaparse/papaparse.js"></script>
-    <script src='//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-omnivore/v0.2.0/leaflet-omnivore.min.js'></script>
+    <link rel="stylesheet" href="/lib/metro-ui/docs/css/metro.css">
+    <link rel="stylesheet" href="/lib/metro-ui/docs/css/metro-icons.css">
+    <link rel="stylesheet" href="/lib/metro-ui/docs/css/metro-responsive.css">
+    <link rel="stylesheet" href="/lib/metro-ui/docs/css/metro-schemes.css">
     <!-- bower:css -->
     <!-- endbower -->
     <!-- endbuild -->
@@ -60,24 +61,30 @@
     </nav>
     <!-- Page Content -->
     <div class="container">
-
         <!-- Projects Row -->
         <div class="row">
             <div class="col-md-4 portfolio-item">
                 <h3>
-	                <a href="#">Upload Layers</a>
-	            </h3>
+                    <a href="#">Upload Layers</a>
+                </h3>
                 <div class="slidebar">
-                    
                     <input type="file" id="files" name="files" multiple="multiple" />
                     <label>CSV header name: </label>
-                    <input type="text" id="csvHeader">
+                    <input type="text" id="csvHeader" checked>
+                </div>
+                <div class="treeview" data-role="treeview">
+                    <ul>
+                        <li class="node" data-mode="checkbox" data-name="c0">
+                            <span class="leaf">Indeterminate</span>
+                            <span class="node-toggle"></span>                           
+                        </li>
+                    </ul>
                 </div>
             </div>
             <div class="col-md-8 portfolio-item">
                 <h3>
-	                <a href="#">Filter Table</a>
-	            </h3>
+                    <a href="#">Filter Table</a>
+                </h3>
             </div>
         </div>
         <!-- /.row -->
@@ -85,13 +92,13 @@
         <div class="row">
             <div class="col-md-4 portfolio-item">
                 <h3>
-	                <a href="#">Result Table</a>
-	            </h3>
+                    <a href="#">Result Table</a>
+                </h3>
             </div>
             <div class="col-md-8 portfolio-item">
                 <h3>
-	                <a href="#">Map</a>
-	            </h3>
+                    <a href="#">Map</a>
+                </h3>
                 <div class="map-application">
                     <div id="map" class="map"></div>
                     <table id="properties"></table>
@@ -110,15 +117,18 @@
             <!-- /.row -->
         </footer>
     </div>
+    <script src="/bower_components/jquery/dist/jquery.js"></script>
     <!-- build:js scripts/vendor.js -->
     <script src="lib/scripts/leaflet.js"></script>
     <!-- Bootstrap Core JavaScript -->
     <script src="lib/scripts/bootstrap.min.js"></script>
+    <script src="/lib/metro-ui/docs/js/metro.js"></script>
     <!-- bower:js -->
-    <script src="bower_components/jquery/dist/jquery.js"></script>
     <script src="bower_components/topojson/topojson.js"></script>
     <!-- endbower -->
     <!-- endbuild -->
+    <script src="/bower_components/papaparse/papaparse.js"></script>
+    <script src='//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-omnivore/v0.2.0/leaflet-omnivore.min.js'></script>
     <!-- build:js scripts/main.js -->
     <script src="scripts/main.js"></script>
     <!-- endbuild -->
