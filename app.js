@@ -9,6 +9,7 @@ var multer = require('multer');
 var busboy = require('connect-busboy');
 var globalurl = __dirname + '/app';
 var turf = require('turf');
+var gdal = require("gdal");
 var _ = require('lodash');
 
 app.use(express.static(__dirname + '/app'));
@@ -104,7 +105,23 @@ function convert(file, name) {
     shapefile.pipe(fs.createWriteStream(globalurl + '/geojson/' + name + '.geojson'))
 
 }
-
+app.get('/getAllLayerColumnName/', function(req, res) {
+    var path = __dirname + '/app' + '/geojson/';
+    var name = fs.readdirSync(path);
+    var objectsSend = [];
+    for (var i = 1; i < name.length ; i++){
+       
+        var aName = name[i];
+        var object = {"name" : aName,"coloumns" : []};
+        var dir = path + aName;
+        var dataset = gdal.open(dir);
+        var layer = dataset.layers.get(0);
+        var columnsname = layer.fields.getNames();
+        object.coloumns = columnsname;
+        objectsSend.push(object);
+    }
+    res.send(objectsSend);
+});
 app.get('/getAllLayerColumnValues/:nameOfFile/:columnName', function(req, res) {
     var path = __dirname + '/app' + '/geojson/';
     var nameOfFile = req.params.nameOfFile;
