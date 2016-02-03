@@ -105,6 +105,8 @@ function convert(file, name) {
     shapefile.pipe(fs.createWriteStream(globalurl + '/geojson/' + name + '.geojson'))
 
 }
+
+// API get all Layer Columns Name
 app.get('/getAllLayerColumnName/', function(req, res) {
     var path = __dirname + '/app' + '/geojson/';
     var name = fs.readdirSync(path);
@@ -122,6 +124,7 @@ app.get('/getAllLayerColumnName/', function(req, res) {
     }
     res.send(objectsSend);
 });
+// API get all Layer Columns Values
 app.get('/getAllLayerColumnValues/:nameOfFile/:columnName', function(req, res) {
     var path = __dirname + '/app' + '/geojson/';
     var nameOfFile = req.params.nameOfFile;
