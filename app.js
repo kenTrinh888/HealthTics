@@ -8,6 +8,9 @@ var bodyParser = require('body-parser');
 var multer = require('multer');
 var busboy = require('connect-busboy');
 var globalurl = __dirname + '/app';
+var turf = require('turf');
+var _ = require('lodash');
+
 app.use(express.static(__dirname + '/app'));
 var storage = multer.diskStorage({
     destination: function(req, file, cb) {
@@ -59,7 +62,7 @@ app.post('/upload', upload.array('avatar'), function(req, res) {
     var nameString = getSecondPart(name);
     var file = __dirname + "/" + name;
     var filePath = req.files[0].path;
-    convert(filePath,nameString);
+    convert(filePath, nameString);
     res.redirect("back");
 
 
@@ -92,45 +95,39 @@ app.get('/getPostalCode/:id', function(req, res) {
 })
 
 // convert shapefile to geojson
-function convert(file, name){
-  var shapefile = ogr2ogr(file)
-          .format('GeoJSON')
-          .skipfailures()
-          // .project("EPSG:3414")
-          .stream()
-shapefile.pipe(fs.createWriteStream(globalurl + '/geojson/' + name+'.json'))
+function convert(file, name) {
+    var shapefile = ogr2ogr(file)
+        .format('GeoJSON')
+        .skipfailures()
+        // .project("EPSG:3414")
+        .stream()
+    shapefile.pipe(fs.createWriteStream(globalurl + '/geojson/' + name + '.geojson'))
 
 }
 
-var turf = require('turf');
+app.get('/getAllLayerColumnValues/:nameOfFile/:columnName', function(req, res) {
+    var path = __dirname + '/app' + '/geojson/';
+    var nameOfFile = req.params.nameOfFile;
+    nameOfFile = nameOfFile + ".geojson";
+    var columnName = req.params.columnName;
+    // var nameOfLayer = fs.readdirSync(path);
+    var propertiesArray = [];
+    var featureCollectionFile = path + nameOfFile;
+    var featurecollection = JSON.parse(fs.readFileSync(featureCollectionFile));
+    var featuresProp = featurecollection.features;
+    for (var i = 0; i < featuresProp.length; i++) {
 
-// var healthierDining = require("./app/geojson/HEALTHIERDINING.json");
-// var playSG = JSON.parse(fs.readFileSync('./app/geojson/playSG.geojson', 'utf8'));
-// // console.log(json);
+        var nameObject = featuresProp[i].properties;
+        for (var key in nameObject) {
+            if (key === columnName){
+             propertiesArray.push(nameObject[key]);
+            }
+        }
 
-
-
-// var unit = 'meters';
-// var transferJSON = playSG.features
-// // console.log(transferJSON);
-
-// var buffered = turf.buffer(playSG, 500, unit);
-// var result = turf.featurecollection([buffered, playSG]);
-// fs.writeFileSync('./app/geojson/result.json',JSON.stringify(result));
-// console.log(result);
-var pt = {
-  "type": "Feature",
-  "properties": {},
-  "geometry": {
-    "type": "Point",
-    "coordinates": [-90.548630, 14.616599]
-  }
-};
-var unit = 'miles';
-
-var buffered = turf.buffer(pt, 500, unit);
-var result = turf.featurecollection([buffered, pt]);
-fs.writeFileSync('./app/geojson/result.json',JSON.stringify(result));
+    }
+    var result = _.uniq(propertiesArray);
+    res.send(result);
+});
 
 app.listen(3000);
 console.log("Running at Port 3000");

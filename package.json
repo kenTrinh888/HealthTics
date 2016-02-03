@@ -22,11 +22,14 @@
     "connect-busboy": "0.0.2",
     "express": "^4.13.4",
     "fs": "0.0.2",
+    "gdal": "^0.8.0",
     "leaflet": "~0.7.2",
+    "lodash": "^4.2.1",
     "mapshaper": "^0.3.13",
     "multer": "^1.1.0",
     "ogr2ogr": "^0.5.1",
     "request": "^2.67.0",
+    "spatialite": "0.0.5",
     "superagent": "^1.7.2",
     "turf": "^2.0.2"
   }
