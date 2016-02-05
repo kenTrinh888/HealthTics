@@ -3,15 +3,12 @@
   "version": "0.0.0",
   "dependencies": {
     "topojson": "~1.5.2",
-<<<<<<< HEAD
     "jquery": "~2.1.0",
     "bootstrap": "~3.3.6",
-    "ionicons": "~2.0.1"
-=======
-    "jquery": "~2.1.0"
+    "ionicons": "~2.0.1",
+    "papaparse": "~4.1.2"
   },
   "resolutions": {
     "jquery": "~2.1.0"
->>>>>>> 2882f9d7e45f366ed8e288fcda4f73ed0d5c6caa
   }
 }

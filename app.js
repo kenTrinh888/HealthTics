@@ -11,6 +11,7 @@ var globalurl = __dirname + '/app';
 var turf = require('turf');
 var gdal = require("gdal");
 var _ = require('lodash');
+var mapshaper = require('mapshaper');
 
 app.use(express.static(__dirname + '/app'));
 var storage = multer.diskStorage({
@@ -53,6 +54,9 @@ app.get('/geojson', function(req, res) {
 
 // get the name for file
 function getSecondPart(str) {
+    return str.split('.')[1];
+}
+function getFirstPart(str) {
     return str.split('.')[0];
 }
 
@@ -60,14 +64,43 @@ function getSecondPart(str) {
 app.post('/upload', upload.array('avatar'), function(req, res) {
     // var newPath = __dirname + "/uploads/uploadedFileName";
     var name = req.files[0].originalname;
+    console.log(name);
     var nameString = getSecondPart(name);
+    var nameFirstPark = getFirstPart(name);
     var file = __dirname + "/" + name;
     var filePath = req.files[0].path;
-    convert(filePath, nameString);
+    if (nameString === "shp" || nameString === "zip"){
+    var from = "app/uploads" + "/"+name;
+    console.log(from);
+    var destination = "app/geojson/" + nameFirstPark +'.geojson' ;
+    console.log(destination);
+    var command = '-i ' + from + ' -o ' + destination + ' format=geojson force'
+    mapshaper.runCommands(command);
+    // convert(destination, nameFirstPark);
+    }else {
+        // console.log(file);
+        convert(filePath, nameFirstPark);
+
+    }
+ 
+
+
+
     res.redirect("back");
 
 
 });
+// convert shapefile to geojson
+function convert(file, name) {
+    var FILE = ogr2ogr(file)
+        .format('GeoJSON')
+        .skipfailures()
+        .project("EPSG:3414")
+        .stream()
+    FILE.pipe(fs.createWriteStream(globalurl + '/geojson/' + name + '.geojson'))
+
+}
+
 
 
 
@@ -95,26 +128,20 @@ app.get('/getPostalCode/:id', function(req, res) {
     });
 })
 
-// convert shapefile to geojson
-function convert(file, name) {
-    var shapefile = ogr2ogr(file)
-        .format('GeoJSON')
-        .skipfailures()
-        // .project("EPSG:3414")
-        .stream()
-    shapefile.pipe(fs.createWriteStream(globalurl + '/geojson/' + name + '.geojson'))
 
-}
 
 // API get all Layer Columns Name
 app.get('/getAllLayerColumnName/', function(req, res) {
     var path = __dirname + '/app' + '/geojson/';
     var name = fs.readdirSync(path);
     var objectsSend = [];
-    for (var i = 1; i < name.length ; i++){
-       
+    for (var i = 0; i < name.length; i++) {
+
         var aName = name[i];
-        var object = {"name" : aName,"coloumns" : []};
+        var object = {
+            "name": aName,
+            "coloumns": []
+        };
         var dir = path + aName;
         var dataset = gdal.open(dir);
         var layer = dataset.layers.get(0);
@@ -139,8 +166,8 @@ app.get('/getAllLayerColumnValues/:nameOfFile/:columnName', function(req, res) {
 
         var nameObject = featuresProp[i].properties;
         for (var key in nameObject) {
-            if (key === columnName){
-             propertiesArray.push(nameObject[key]);
+            if (key === columnName) {
+                propertiesArray.push(nameObject[key]);
             }
         }
 

@@ -49,28 +49,33 @@ var redMarker = L.AwesomeMarkers.icon({
 
 $.get("/getAllLayer", function(data) {
     var names = data;
+
     for (var i = 1; i < names.length; i++) {
         var name = names[i];
-        nameDis = name.split('.')[1];
-        var url = 'geojson/' + name;
+        console.log(name);
+        // nameDis = name.split('.')[1];
+        var url = './geojson/' + name;
+
         $.getJSON(url, function(dataLoop) {
+            console.log(dataLoop);
             L.geoJson(dataLoop, {
                 pointToLayer: function(feature, latlng) {
-                    var name = feature.properties.Name;
-                    console.log(feature.properties.Name);
+                    // var name = feature.properties.Name;
+                    // console.log(feature.properties.Name);
                     return L.marker(latlng, {
                         icon: redMarker
-                    }).bindPopup(name);
+                    })
                 }
             }).addTo(map);
 
         });
     }
 })
-
-function getSecondPart(str) {
-    return str.split('-')[1];
-}
+// omnivore.geojson('/geojson/education.json').addTo(map);
+// omnivore.geojson('/geojson/PLAYSG.geojson').addTo(map);
+// function getSecondPart(str) {
+//     return str.split('-')[1];
+// }
 
 $(document).ready(function() {
     function onEachFeature(feature, layer) {
