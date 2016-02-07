@@ -7,22 +7,26 @@ var fs = require("fs");
 var bodyParser = require('body-parser');
 var multer = require('multer');
 var busboy = require('connect-busboy');
-var globalurl = __dirname + '/app';
 var turf = require('turf');
 var gdal = require("gdal");
 var _ = require('lodash');
 var mapshaper = require('mapshaper');
+var globalurl = __dirname + '/app';
+
 
 app.use(express.static(__dirname + '/app'));
 var storage = multer.diskStorage({
     destination: function(req, file, cb) {
         cb(null, __dirname + '/app' + '/uploads')
     },
+     onError : function(err, next) {
+      console.log('error', err);
+      next(err);
+    },
     filename: function(req, file, cb) {
         cb(null, file.originalname);
     }
 });
-
 
 
 var upload = multer({
@@ -38,6 +42,48 @@ app.get('/', function(req, res) {
 
     //It will find and locate index.html from View or Scripts
 });
+
+var SPdir = globalurl + "/basemap/SingaporePools.geojson" ;
+var SingaporePools = JSON.parse(fs.readFileSync(SPdir, "utf8"));
+// console.log(SingaporePools);
+var SubzoneDir = globalurl + "/basemap/DGPSubZone.geojson";
+var SubZone = JSON.parse(fs.readFileSync(SubzoneDir, "utf8"));
+
+var counted = turf.count(SubZone, SingaporePools, 'pt_count');
+var resultFeatures = SingaporePools.features.concat(counted.features);
+var result = {
+  "type": "FeatureCollection",
+  "features": resultFeatures
+};
+var jsonfile = require('jsonfile')
+ 
+var file = globalurl + '/basemap/result.json';
+
+ 
+jsonfile.writeFile(file, result, function (err) {
+  console.error(err)
+})
+// app.get("/getResult", function (req,res){
+//     // var resultSend = JSON
+//     var file = ogr2ogr(file)
+//         .format('GeoJSON')
+//         .skipfailures()
+//         .project("EPSG:3414")
+//         .stream()
+//     FILE.pipe(fs.createWriteStream(globalurl + '/'+ "basemap"+ '/' + "result" + '.geojson'))
+// })
+// fs.createWriteStream(globalurl + '/'+ 'basemap'+ '/' + result + '.geojson');
+// convert(result,"Result","basemap");
+// convert(result,result,"basemap");
+// fs.writeFile(globalurl + "/basemap/result.geojson", result, function(err) {
+//     if(err) {
+//         return console.log(err);
+//     }
+
+//     console.log("The file was saved!");
+// });
+convert(result,"result","basemap");
+
 
 app.get('/geojson', function(req, res) {
     fs.readFile(__dirname + "/app/geojson/" + "buildings.json", "utf8", function(err, data) {
@@ -56,6 +102,7 @@ app.get('/geojson', function(req, res) {
 function getSecondPart(str) {
     return str.split('.')[1];
 }
+
 function getFirstPart(str) {
     return str.split('.')[0];
 }
@@ -69,19 +116,20 @@ app.post('/upload', upload.array('avatar'), function(req, res) {
     var nameFirstPark = getFirstPart(name);
     var file = __dirname + "/" + name;
     var filePath = req.files[0].path;
-    if (nameString === "shp" || nameString === "zip"){
-    var from = "app/uploads" + "/"+name;
-    console.log(from);
-    var destination = "app/geojson/" + nameFirstPark +'.geojson' ;
-    console.log(destination);
-    var command = '-i ' + from + ' -o ' + destination + ' format=geojson force'
-    mapshaper.runCommands(command);
-    // convert(destination, nameFirstPark);
-    }else {
-        // console.log(file);
-        convert(filePath, nameFirstPark);
+    // if (nameString === "shp" || nameString === "zip"){
+    // var from = "app/uploads" + "/"+name;
+    // console.log(from);
+    // var destination = "app/geojson/" + nameFirstPark +'.geojson' ;
+    // console.log(destination);
+    // var command = '-i ' + from + ' -o ' + destination + ' format=geojson force'
+    // mapshaper.runCommands(command);
+    // // convert(destination, nameFirstPark);
+    // }else {
+    //     // console.log(file);
 
-    }
+
+        convert(filePath, nameFirstPark,"geojson");
+    // }
  
 
 
@@ -90,18 +138,36 @@ app.post('/upload', upload.array('avatar'), function(req, res) {
 
 
 });
+// var dir =  __dirname + '/app' + '/geojson' ;
+// var source = JSON.parse(require(dir + '/SingaporePools1.geojson'));
+// fs.readFile(__dirname + "/app/geojson/" + "DGPSubZone.json", "utf8", function(err, data) {
+// var reproject = require("reproject");
+// fs.readFile(dir + '/SingaporePools1.geojson', "utf8", function(err, data) {
+//     var source = JSON.parse(data);
+//     console.log(source);
+//     reproject(source, proj4.WGS84, crss);
+
+
+// })
+
 // convert shapefile to geojson
-function convert(file, name) {
+function convert(file, name,directory) {
     var FILE = ogr2ogr(file)
         .format('GeoJSON')
         .skipfailures()
         .project("EPSG:3414")
         .stream()
-    FILE.pipe(fs.createWriteStream(globalurl + '/geojson/' + name + '.geojson'))
+    FILE.pipe(fs.createWriteStream(globalurl + '/'+ directory+ '/' + name + '.geojson'))
 
 }
 
-
+// var dir = __dirname + '/app' + '/geojson/' +"SingaporePools1.geojson";
+// // console.log(dir);
+// var dataset = gdal.open(dir);
+// var layer = dataset.layers.get(0);
+//  layer.srs.toProj4();
+//  console.log(layer);
+// fs.createWriteStream(globalurl + '/geojson/' +dataset)
 
 
 //end file upload
@@ -112,6 +178,8 @@ app.get('/getAllLayer', function(req, res) {
     var name = fs.readdirSync(path);
     res.send(name);
 });
+
+
 
 // end read all files from folder 
 
@@ -128,6 +196,32 @@ app.get('/getPostalCode/:id', function(req, res) {
     });
 })
 
+function geoCoding (postcode){
+    var urlString = "http://www.onemap.sg/APIV2/services.svc/basicSearchV2?token=qo/s2TnSUmfLz+32CvLC4RMVkzEFYjxqyti1KhByvEacEdMWBpCuSSQ+IFRT84QjGPBCuz/cBom8PfSm3GjEsGc8PkdEEOEr&searchVal=" + postcode + "&otptFlds=SEARCHVAL,CATEGORY&returnGeom=1&rset=1&projSys=WGS84";
+
+    request(urlString, function(error, response, body) {
+        if (!error && response.statusCode == 200) {
+            var data = JSON.parse(body);
+            var X = data.SearchResults[1].X; // Show the HTML for the Google homepage.
+            var Y = data.SearchResults[1].Y;
+            var coordinates = "{ 'X': " + X + ",'Y' :" + Y +"}";
+
+
+        return coordinates;
+                }
+    });
+
+}
+
+var postcodeQuery = geoCoding("560615");
+// var json = {x:"1"}
+// // console.log(json.x);
+// JSON.parse(postcodeQuery);
+// console.log(postcodeQuery);
+
+process.on('uncaughtException', function (err) {
+  console.log('Caught exception: ' + err);
+});
 
 
 // API get all Layer Columns Name
