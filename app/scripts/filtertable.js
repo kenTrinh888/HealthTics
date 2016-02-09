@@ -45,11 +45,8 @@ function addRow(table, rowCount) {
             "<input id='within-range_" + rowCount + "' type='number' name='within-range' class='within-range form-control' placeholder='numeric'>",
             "<p>OR</p>"
         ]).draw(false);
-
-        $('#layer-selected_' + rowCount).magicSuggest({
-            allowFreeEntries: false,
-            data: emptyArr
-        });
-        rowCount++;
+        var allLayers = getAllLayers();
+        setLayerDropdownlist(rowCount,allLayers); 
+        rowCount++;        
     });
 }
