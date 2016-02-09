@@ -93,7 +93,6 @@ app.get('/geojson', function(req, res) {
             return console.error(err);
         }
         // console.log(data);
-
     });
 })
 
@@ -116,6 +115,7 @@ app.post('/upload', upload.array('avatar'), function(req, res) {
     var nameFirstPark = getFirstPart(name);
     var file = __dirname + "/" + name;
     var filePath = req.files[0].path;
+
     // if (nameString === "shp" || nameString === "zip"){
     // var from = "app/uploads" + "/"+name;
     // console.log(from);
@@ -127,16 +127,8 @@ app.post('/upload', upload.array('avatar'), function(req, res) {
     // }else {
     //     // console.log(file);
 
-
-        convert(filePath, nameFirstPark,"geojson");
-    // }
- 
-
-
-
+    convert(filePath, nameFirstPark,"geojson");
     res.redirect("back");
-
-
 });
 // var dir =  __dirname + '/app' + '/geojson' ;
 // var source = JSON.parse(require(dir + '/SingaporePools1.geojson'));
@@ -181,9 +173,7 @@ app.get('/getAllLayer', function(req, res) {
 
 
 
-// end read all files from folder 
-
-
+// end read all files from folder
 app.get('/getPostalCode/:id', function(req, res) {
     var postcode = req.params.id;
     // console.log("id " + postcode);
@@ -210,7 +200,17 @@ function geoCoding (postcode){
         return coordinates;
                 }
     });
+}
 
+// convert shapefile to geojson
+function convert(file, name) {
+    var shapefile = ogr2ogr(file)
+        .format('GeoJSON')
+        .skipfailures()
+        // .project("EPSG:3414")
+        .stream();
+    console.log(globalurl + '/geojson/' + name + '.geojson');
+    shapefile.pipe(fs.createWriteStream(globalurl + '/geojson/' + name + '.geojson'))
 }
 
 var postcodeQuery = geoCoding("560615");
@@ -225,26 +225,23 @@ process.on('uncaughtException', function (err) {
 
 
 // API get all Layer Columns Name
-app.get('/getAllLayerColumnName/', function(req, res) {
+app.get('/getAllLayerColumnName', function(req, res) {
     var path = __dirname + '/app' + '/geojson/';
     var name = fs.readdirSync(path);
     var objectsSend = [];
-    for (var i = 0; i < name.length; i++) {
-
+    for (var i = 0; i < name.length ; i++){       
         var aName = name[i];
-        var object = {
-            "name": aName,
-            "coloumns": []
-        };
+        var object = {"name" : aName,"columns" : []};
         var dir = path + aName;
         var dataset = gdal.open(dir);
         var layer = dataset.layers.get(0);
         var columnsname = layer.fields.getNames();
-        object.coloumns = columnsname;
+        object.columns = columnsname;
         objectsSend.push(object);
     }
     res.send(objectsSend);
 });
+
 // API get all Layer Columns Values
 app.get('/getAllLayerColumnValues/:nameOfFile/:columnName', function(req, res) {
     var path = __dirname + '/app' + '/geojson/';

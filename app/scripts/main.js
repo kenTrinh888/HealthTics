@@ -108,6 +108,7 @@ $.getJSON("/basemap/result.geojson", function (data){
 // }
 
 $(document).ready(function() {
+
     function onEachFeature(feature, layer) {
         // does this feature have a property named popupContent?
         if (feature.properties) {
@@ -173,9 +174,7 @@ $(document).ready(function() {
                         });
                     }
                 });
-
             }
-
         }
     });
 
