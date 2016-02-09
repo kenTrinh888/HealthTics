@@ -1,6 +1,5 @@
-
 setLayersHTML(); //set layer list when page is loaded
-
+// setSubLayersHTML();
 function setLayersHTML() {
     getLayerAPI = "/getAllLayerColumnName";
     // $('.tree').treed();  
@@ -20,6 +19,7 @@ function setLayersHTML() {
                                 ";
                 $('.tree').append(listHTML); //set layers to html
                 //set columns
+
                 layer.columns.forEach(function(column) {
                     var columnHTML = "<option>" + column + "</option>"
                     $('#' + layerName + '_col   ').append(columnHTML);
@@ -27,67 +27,73 @@ function setLayersHTML() {
             });
             // setLayerDropdownlist(layersTrimmed); //fix here
         };
-        setSubLayersHTML(); //set sub layer when categorization column is selected
+        setSubLayersHiddenDiv(); //set hidden div of column values of sub layers html
+
         var allLayers = getAllLayers();
         setLayerDropdownlist(1, allLayers); //set the first row of dropdownlist
     });
     $('.tree').treed();
 };
 
-function setSubLayersHTML() {
-    console.log("setsublayer");
-    console.log($('.columns').attr('id'));
+function setSubLayersHiddenDiv() {
     $('.columns').ready(function() { //columns element is the column drop down list
         $('.columns').change(function() {
             var parentNode = $(this).parent('li').attr('id'); //the layer selected e.g. RelaxSG
             $('#' + parentNode).children('ul').remove();
             $('#' + parentNode).append('<ul></ul>');
 
-            
+            setSubLayersHTML(parentNode);
 
             var dropDownID = $(this).attr('id');
             var selectedColumn = $('#' + dropDownID + " option:selected").text();
-            getColumnValuesAPI = "/getAllLayerColumnValues/" + parentNode + "/" + selectedColumn;
-            console.log(getColumnValuesAPI);
-
-            $.get(getColumnValuesAPI, function(columnValues) {
-                console.log(columnValues);
-                columnValues.forEach(function(columnValue) {
-                    console.log(columnValue);
-                    var childNodeHTML = "<li class='node' id='"+columnValue+"'>\
-                                            " + columnValue + "</span>\
-                                        </li>\
-                                        ";
-                    console.log(childNodeHTML);
-                    $('#' + parentNode).children('ul').append(childNodeHTML);
-                })
-                console.log(columnValues);
-                // columnValues[0] = parentNode;
-                // setLayerDropdownlist(columnValues); //set layers on layer drop down list
-            });
+            callApiSetHiddenDiv(parentNode, selectedColumn); //also set hidden <div> id:#hiddenColumnValues
         });
     });
 };
 
-function getAllLayers(){
+function setSubLayersHTML(parentNode) {
+    $('#hiddenColumnValues').bind("DOMSubtreeModified", function() {
+        var columnValues = $(this).text().split(",");
+        columnValues.forEach(function(columnValue) {
+            var childNodeHTML = "<li class='node' id='" + columnValue + "'>\
+                                   " + columnValue + "</span>\
+                               </li>";
+            $('#' + parentNode).children('ul').append(childNodeHTML);
+        })
+        var allLayers = getAllLayers();
+        console.log(allLayers);
+        layerDropdownObjects.forEach(function(dropdownObject) {
+            dropdownObject.setData(allLayers);
+        })
+    });
+
+}
+
+
+function callApiSetHiddenDiv(parentNode, selectedColumn) {
+    getColumnValuesAPI = "/getAllLayerColumnValues/" + parentNode + "/" + selectedColumn;
+    // console.log(getColumnValuesAPI);
+    var columnValues = [];
+    $.ajax(getColumnValuesAPI, {
+        success: setColumnValuesHidden
+    })
+}
+
+function setColumnValuesHidden(data) {
+    // console.log(data);
+    $('#hiddenColumnValues').text(data);
+}
+
+function getAllLayers() {
     var allLayers = []; //clear initial list;
-    $('.node').each(function(){
+    $('.node').each(function() {
         layerName = $(this).attr('id');
         allLayers.push(layerName);
     });
     return allLayers;
 }
 
-function setLayerDropdownlist(dropdownID, layers){
-    console.log(dropdownID);
-    console.log(layers);
-    $('#layer-selected_'+dropdownID).magicSuggest({
-      allowFreeEntries: false,
-      data: layers
-    });
-}
-
-function clearLayerDropdownList(){
+function clearLayerDropdownList() {
     // $('.layer-selected').
 }
 

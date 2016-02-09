@@ -1,3 +1,5 @@
+var layerDropdownObjects = [];
+
 $(document).ready(function() {
     var table = $('#filterTbl').DataTable({
         "paging": false,
@@ -44,9 +46,26 @@ function addRow(table, rowCount) {
             "<div id='layer-selected_" + rowCount + "' class='layer-selected'></div>",
             "<input id='within-range_" + rowCount + "' type='number' name='within-range' class='within-range form-control' placeholder='numeric'>",
             "<p>OR</p>"
-        ]).draw(false);
+        ]).draw(false); //add the new row without redrawing the whole table
         var allLayers = getAllLayers();
         setLayerDropdownlist(rowCount,allLayers); 
         rowCount++;        
     });
+}
+
+function setLayerDropdownlist(dropdownID, layers){
+    var layerDropdownObject = $('#layer-selected_'+dropdownID).magicSuggest({
+      allowFreeEntries: false, //must only type values that are inside the dropdownlist
+      data: layers,
+      maxSelection: 1
+    });
+
+    layerDropdownObjects.push(layerDropdownObject);
+    console.log(layerDropdownObjects);
+}
+
+function refreshLayerDropdownList(dropdownID, layers){
+    var layerDropdownObject = layerDropdownObjects[dropdownID-1]; //dropdownID starts from 1, so must-1
+    console.log(layerDropdownObject);
+    console.log(layers);
 }
