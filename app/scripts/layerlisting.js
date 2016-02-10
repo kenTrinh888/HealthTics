@@ -27,7 +27,7 @@ function setLayersHTML() {
             });
             // setLayerDropdownlist(layersTrimmed); //fix here
         };
-        setSubLayersHiddenDiv(); //set hidden div of column values of sub layers html
+        setSubLayersAndHiddenDiv(); //set hidden div with sublayer values
 
         var allLayers = getAllLayers();
         setLayerDropdownlist(1, allLayers); //set the first row of dropdownlist
@@ -35,53 +35,60 @@ function setLayersHTML() {
     $('.tree').treed();
 };
 
-function setSubLayersHiddenDiv() {
+function setSubLayersAndHiddenDiv() {
     $('.columns').ready(function() { //columns element is the column drop down list
         $('.columns').change(function() {
             var parentNode = $(this).parent('li').attr('id'); //the layer selected e.g. RelaxSG
             $('#' + parentNode).children('ul').remove();
             $('#' + parentNode).append('<ul></ul>');
-
-            setSubLayersHTML(parentNode);
+            console.log("a");
+            
 
             var dropDownID = $(this).attr('id');
             var selectedColumn = $('#' + dropDownID + " option:selected").text();
-            callApiSetHiddenDiv(parentNode, selectedColumn); //also set hidden <div> id:#hiddenColumnValues
+            if (selectedColumn!=""){
+                callApiSetHiddenDiv(parentNode, selectedColumn); //also set hidden <div> with id:#hiddenColumnValues
+            }else{
+                $('#hiddenColumnValues').empty();
+                setFilterTableDropdown();
+            }
+            
         });
     });
 };
 
-function setSubLayersHTML(parentNode) {
-    $('#hiddenColumnValues').bind("DOMSubtreeModified", function() {
-        var columnValues = $(this).text().split(",");
-        columnValues.forEach(function(columnValue) {
-            var childNodeHTML = "<li class='node' id='" + columnValue + "'>\
-                                   " + columnValue + "</span>\
-                               </li>";
-            $('#' + parentNode).children('ul').append(childNodeHTML);
-        })
-        var allLayers = getAllLayers();
-        console.log(allLayers);
-        layerDropdownObjects.forEach(function(dropdownObject) {
-            dropdownObject.setData(allLayers);
-        })
-    });
-
+function setSubLayersHTML(subLayers, parentNode) {
+    subLayers.forEach(function(subLayer) {
+        var childNodeHTML = "<li class='node' id='" + subLayer + "'>\
+                               " + subLayer + "</span>\
+                           </li>";
+        $('#' + parentNode).children('ul').append(childNodeHTML);
+    });            
 }
 
+function setFilterTableDropdown(){
+    //Modify Combobox dropdownlist
+    var allLayers = getAllLayers();
+    // console.log(allLayers);
+    layerDropdownObjects.forEach(function(dropdownObject) {
+        dropdownObject.setData([]);
+        dropdownObject.setData(allLayers);
+    })
+}
 
 function callApiSetHiddenDiv(parentNode, selectedColumn) {
     getColumnValuesAPI = "/getAllLayerColumnValues/" + parentNode + "/" + selectedColumn;
     // console.log(getColumnValuesAPI);
     var columnValues = [];
     $.ajax(getColumnValuesAPI, {
-        success: setColumnValuesHidden
+        // success: setColumnValuesHidden
+        success: function(subLayers){
+            // console.log(data);
+            console.log(parentNode);
+            setSubLayersHTML(subLayers, parentNode);
+            setFilterTableDropdown();
+        }
     })
-}
-
-function setColumnValuesHidden(data) {
-    // console.log(data);
-    $('#hiddenColumnValues').text(data);
 }
 
 function getAllLayers() {
@@ -92,58 +99,3 @@ function getAllLayers() {
     });
     return allLayers;
 }
-
-function clearLayerDropdownList() {
-    // $('.layer-selected').
-}
-
-// function allowDrop(ev) {
-//     ev.preventDefault();
-// }
-
-// function drag(ev) {
-//     console.log('abc');
-//     console.log(ev.target.id);
-//     ev.dataTransfer.setData("text", ev.target.innerHTML.trim());
-// }
-
-// function drop(ev) {
-//     console.log('a');
-//     ev.preventDefault();
-//     var data = ev.dataTransfer.getData("text");
-//     console.log(data);
-//     ev.target.value = data;
-// }
-
-// $('.draggable').draggable();
-
-// var stop = true;
-// $(".draggable").on("drag", function(e) {
-
-//     stop = true;
-
-//     if (e.originalEvent.clientY < 300) {
-//         stop = false;
-//         scroll(-1)
-//     }
-
-//     if (e.originalEvent.clientY > ($(window).height() - 300)) {
-//         stop = false;
-//         scroll(1)
-//     }
-
-// });
-
-// $(".draggable").on("dragend", function(e) {
-//     stop = true;
-// });
-
-// var scroll = function(step) {
-//     var scrollY = $(window).scrollTop();
-//     $(window).scrollTop(scrollY + step);
-//     if (!stop) {
-//         setTimeout(function() {
-//             scroll(step)
-//         }, 20);
-//     }
-// }
