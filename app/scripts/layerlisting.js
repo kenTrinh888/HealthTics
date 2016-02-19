@@ -19,7 +19,6 @@ function setLayersHTML() {
                                 ";
                 $('.tree').append(listHTML); //set layers to html
                 //set columns
-
                 layer.columns.forEach(function(column) {
                     var columnHTML = "<option>" + column + "</option>"
                     $('#' + layerName + '_col   ').append(columnHTML);
@@ -27,7 +26,7 @@ function setLayersHTML() {
             });
             // setLayerDropdownlist(layersTrimmed); //fix here
         };
-        setSubLayersAndHiddenDiv(); //set hidden div with sublayer values
+        callApiThenSetSubLayers(); //set hidden div with sublayer values
 
         var allLayers = getAllLayers();
         setLayerDropdownlist(1, allLayers); //set the first row of dropdownlist
@@ -35,24 +34,20 @@ function setLayersHTML() {
     $('.tree').treed();
 };
 
-function setSubLayersAndHiddenDiv() {
+function callApiThenSetSubLayers() {
     $('.columns').ready(function() { //columns element is the column drop down list
         $('.columns').change(function() {
             var parentNode = $(this).parent('li').attr('id'); //the layer selected e.g. RelaxSG
-            $('#' + parentNode).children('ul').remove();
-            $('#' + parentNode).append('<ul></ul>');
-            console.log("a");
             
-
+            $('#' + parentNode).children('ul').remove();
+            $('#' + parentNode).append("<ul class='layerList_"+parentNode+"'></ul>");
             var dropDownID = $(this).attr('id');
             var selectedColumn = $('#' + dropDownID + " option:selected").text();
-            if (selectedColumn!=""){
-                callApiSetHiddenDiv(parentNode, selectedColumn); //also set hidden <div> with id:#hiddenColumnValues
-            }else{
-                $('#hiddenColumnValues').empty();
+            if (selectedColumn != "") {
+                callApiSetSubLayers(parentNode, selectedColumn); //also set hidden <div> with id:#hiddenColumnValues
+            } else {
                 setFilterTableDropdown();
             }
-            
         });
     });
 };
@@ -63,10 +58,11 @@ function setSubLayersHTML(subLayers, parentNode) {
                                " + subLayer + "</span>\
                            </li>";
         $('#' + parentNode).children('ul').append(childNodeHTML);
-    });            
+    });
+    hideSubLayers(3, parentNode);
 }
 
-function setFilterTableDropdown(){
+function setFilterTableDropdown() {
     //Modify Combobox dropdownlist
     var allLayers = getAllLayers();
     // console.log(allLayers);
@@ -76,13 +72,13 @@ function setFilterTableDropdown(){
     })
 }
 
-function callApiSetHiddenDiv(parentNode, selectedColumn) {
+function callApiSetSubLayers(parentNode, selectedColumn) {
     getColumnValuesAPI = "/getAllLayerColumnValues/" + parentNode + "/" + selectedColumn;
     // console.log(getColumnValuesAPI);
     var columnValues = [];
     $.ajax(getColumnValuesAPI, {
         // success: setColumnValuesHidden
-        success: function(subLayers){
+        success: function(subLayers) {
             // console.log(data);
             console.log(parentNode);
             setSubLayersHTML(subLayers, parentNode);
@@ -98,4 +94,42 @@ function getAllLayers() {
         allLayers.push(layerName);
     });
     return allLayers;
+}
+
+function hideSubLayers(startHidingFromRow, parentNode) {
+    console.log('.layerList_' + parentNode);
+    var layerListParentNode = '.layerList_' + parentNode;
+    console.log(layerListParentNode)
+    $(layerListParentNode + " li").slice(startHidingFromRow).hide();
+    $(layerListParentNode).append("<li>\
+                                <a class='showMore_'"+parentNode+" onClick='showMore("+parentNode+")'>Show more</a> ||\
+                                <a class='showLess'"+parentNode+" onClick='showLess("+parentNode+")'>Show less</a>\
+                            </li>");
+}
+
+function showMore(parentNodeHTML) {
+    var parentNode = $(parentNodeHTML).attr('id');
+    var countLayers = 0;
+    $('.layerList_'+parentNode).children('li').each(function() {        
+        countLayers++;
+        console.log($(this).attr('id'));
+        if($(this).is(":visible") == false){
+            return false;
+        }
+    });
+    $('.layerList_'+ parentNode +' li').slice(countLayers-1, countLayers+2).show(); //show 3 more
+}
+
+function showLess(parentNodeHTML) {
+    var parentNode = $(parentNodeHTML).attr('id');
+    var countLayers = 0;
+    $('.layerList_'+parentNode).children('li').each(function() {        
+        countLayers++;
+        console.log($(this).attr('id'));
+        if($(this).is(":visible") == false){
+            return false;
+        }
+    });
+    console.log(countLayers);
+    $('.layerList_'+ parentNode +' li').slice(countLayers-4, countLayers-1 ).hide(); //hide 3 from the last row
 }
