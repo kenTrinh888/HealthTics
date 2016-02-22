@@ -52,14 +52,15 @@ $.get("/getAllLayer", function(data) {
 
     for (var i = 1; i < names.length; i++) {
         var name = names[i];
-        console.log(name);
+        // console.log(name);
         // nameDis = name.split('.')[1];
         var url = './geojson/' + name;
 
         $.getJSON(url, function(dataLoop) {
-            console.log(dataLoop);
+            // console.log(dataLoop);
             L.geoJson(dataLoop, {
                 pointToLayer: function(feature, latlng) {
+                    // console.log(latlng);
                     // var name = feature.properties.Name;
                     // console.log(feature.properties.Name);
                     return L.marker(latlng, {
