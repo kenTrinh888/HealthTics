@@ -8,7 +8,6 @@ var bodyParser = require('body-parser');
 var multer = require('multer');
 var busboy = require('connect-busboy');
 var turf = require('turf');
-var gdal = require("gdal");
 var _ = require('lodash');
 var mapshaper = require('mapshaper');
 var globalurl = __dirname + '/app';
@@ -110,7 +109,7 @@ function getFirstPart(str) {
 app.post('/upload', upload.array('avatar'), function(req, res) {
     // var newPath = __dirname + "/uploads/uploadedFileName";
     var name = req.files[0].originalname;
-    console.log(name);
+    // console.log(name);
     var nameString = getSecondPart(name);
     var nameFirstPark = getFirstPart(name);
     var file = __dirname + "/" + name;
@@ -153,13 +152,6 @@ function convert(file, name,directory) {
 
 }
 
-// var dir = __dirname + '/app' + '/geojson/' +"SingaporePools1.geojson";
-// // console.log(dir);
-// var dataset = gdal.open(dir);
-// var layer = dataset.layers.get(0);
-//  layer.srs.toProj4();
-//  console.log(layer);
-// fs.createWriteStream(globalurl + '/geojson/' +dataset)
 
 
 //end file upload
@@ -229,18 +221,21 @@ app.get('/getAllLayerColumnName', function(req, res) {
     var path = __dirname + '/app' + '/geojson/';
     var name = fs.readdirSync(path);
     var objectsSend = [];
-    for (var i = 0; i < name.length ; i++){       
+    for (var i = 1; i < name.length ; i++){       
         var aName = name[i];
-        if (aName === ".DS_Store"){
-            break;
-        }
+        // if (aName === ".DS_Store"){
+        //     break;
+        // }
+        var columnsnameArray = [];
         var object = {"name" : aName,"columns" : []};
         var dir = path + aName;
-        console.log(dir);
-        var dataset = gdal.open(dir);
-        var layer = dataset.layers.get(0);
-        var columnsname = layer.fields.getNames();
-        object.columns = columnsname;
+        // console.log(dir);
+        var LayerFile = JSON.parse(fs.readFileSync(dir));
+        var layerProperties = LayerFile.features[0].properties;
+        for (key in layerProperties){
+            columnsnameArray.push(key);
+        }
+        object.columns = columnsnameArray;
         objectsSend.push(object);
     }
     res.send(objectsSend);

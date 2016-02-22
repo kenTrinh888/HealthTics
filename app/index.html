@@ -5,6 +5,7 @@
 <!--[if gt IE 8]><!-->
 <html>
 <!--<![endif]-->
+
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -15,7 +16,7 @@
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="lib/styles/bootstrap.min.css">
     <!-- build:css styles/vendor.css -->
-    <link rel="stylesheet" href="lib/styles/leaflet.css">    
+    <link rel="stylesheet" href="lib/styles/leaflet.css">
     <link rel="stylesheet" href="lib/Leaflet-awesome-markers/dist/leaflet.awesome-markers.css">
     <script src='//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-omnivore/v0.2.0/leaflet-omnivore.min.js'></script>
     <link rel="stylesheet" href="http://code.ionicframework.com/ionicons/1.5.2/css/ionicons.min.css">
@@ -66,25 +67,49 @@
         <div class="container">
             <!-- Projects Row -->
             <div class="row">
-                <div class="col-md-4 portfolio-item">
+                <div class="col-md-3 portfolio-item">
                     <h3>
-                    <a href="#">Layers</a>
+                    <a href="#">Layers Settings</a>
 
                 </h3>
-                    <h5>
-                    <a href="#">Upload Layer</a>
-
-                </h5>
-                    <form action="/upload" method="post" enctype="multipart/form-data">
-                        <input type="file" name="avatar">
-                        <input type="submit" id="uploadFiles" value="Upload">
-                    </form>
-                    <div class="slidebar">
+                    <!-- Upload New layer -->
+                    <button type="button" class="btn btn-info button-accordion collapsible_section" data-toggle="collapse" data-target="#uploadLayer">
+                        Upload Layer
+                    </button>
+                    <div id="uploadLayer" class="collapse collapse-part">
+                        <form id="convert" action="https://ogre.adc4gis.com/convert" method="post" enctype="multipart/form-data" class="form-horizontal">
+                            <!-- <legend>Convert to GeoJSON</legend> -->
+                            <div class="control-group">
+                                <label for="upload" class="control-label">File*:</label>
+                                <div class="controls">
+                                    <input id="upload" type="file" name="upload" accept=".csv,.zip,.dgn,.bna,.json,.geojson,.kml,.kmz,.gpx,.gmt,.gml">
+                                    <a class="top" title="" data-placement="top" data-toggle="tooltip" href="#" data-original-title="Please refer to the accepted file extension at User Guide or http://ogre.adc4gis.com/"> <img src="/images/question-mark.png" alt="questionmark" style="width:15px;height:15px;"></a>
+                                </div>
+                                <label for="upload" class="control-label">
+                                    Target Projection
+                                </label>
+                                <input type="text" id="targetSrs" name="targetSrs" value="EPSG:3414" style="width:100px">
+                                <div class="control-group">
+                                    <div class="controls">
+                                        <button type="button" class="btn btn-default" style="display:inline">Submit</button>
+                                        </p>
+                                    </div>
+                                </div>
+                        </form>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-info button-accordion collapsible_section" data-toggle="collapse" data-target="#uploadHDB">
+                        Upload HDB
+                    </button>
+                    <div id="uploadHDB" class="collapse collapse-part">
                         <h5><a href="#">Upload HDB Postal Code</a></h5>
                         <input type="file" id="files" name="files" multiple="multiple" />
                         <input type="text" id="csvHeader" checked>
                     </div>
-                    <div class="treeview">
+                    <button type="button" class="btn btn-info button-accordion collapsible_section" data-toggle="collapse" data-target="#treeview">
+                        Tree View
+                    </button>
+                    <div id="treeview" class="treeview collapse collapse-part">
                         <ul class="tree">
                         </ul>
                     </div>
@@ -129,16 +154,16 @@
                             </form>
                         </tbody>
                     </table>
-                    <div class = "resultTableSection">
+                    <div class="resultTableSection">
                         <h3><a href="#">Result Table</a></h3>
                     </div>
-                    <div class = "mapSection">
+                    <div class="mapSection">
                         <h3><a href="#">Map</a></h3>
                         <div class="map-application">
                             <div id="map" class="map"></div>
                             <table id="properties"></table>
                         </div>
-                    </div>                    
+                    </div>
                 </div>
             </div>
             <!-- /.row -->
@@ -158,12 +183,10 @@
         <!-- build:js scripts/vendor.js -->
         <script src="lib/scripts/leaflet.js"></script>
         <!-- Bootstrap Core JavaScript -->
-        
         <!-- // <script src="/lib/metro-ui/docs/js/metro.js"></script> -->
         <!-- bower:js -->
         <script src="bower_components/proj4/dist/proj4.js"></script>
         <script src="bower_components/proj4leaflet/src/proj4leaflet.js"></script>
-
         <script src="bower_components/topojson/topojson.js"></script>
         <!-- endbower -->
         <!-- endbuild -->
@@ -180,4 +203,5 @@
         <script src="scripts/main.js"></script>
         <!-- endbuild -->
     </body>
+
 </html>

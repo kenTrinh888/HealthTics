@@ -29,8 +29,8 @@ html {
 	height: 100%;
 }
 .map {
-	width: 1000px;
-	height: 700px;
+	width: 800px;
+	height: 500px;
 }
 
 .map-application {
@@ -61,3 +61,10 @@ header .appName {
 
 #div1, #div2
 {width:100px; height:35px; border:1px solid #aaaaaa;}
+
+.collapsible_section {
+	display: block;
+	margin-top:20px;
+	width:150px
+
+}

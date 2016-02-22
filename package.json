@@ -1,5 +1,4 @@
 {
-
   "name": "map-application",
   "version": "0.0.0",
   "main": "app.js",
@@ -24,7 +23,6 @@
     "connect-busboy": "0.0.2",
     "express": "^4.13.4",
     "fs": "0.0.2",
-    "gdal": "^0.8.0",
     "jsonfile": "^2.2.3",
     "leaflet": "~0.7.2",
     "lodash": "^4.2.1",
@@ -36,7 +34,7 @@
     "superagent": "^1.7.2",
     "turf": "^2.0.2"
   },
-    "engines": {
+  "engines": {
     "node": "0.10.30"
   }
 }
