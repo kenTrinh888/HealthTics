@@ -6,7 +6,11 @@
     "jquery": "~2.1.0",
     "bootstrap": "~3.3.6",
     "ionicons": "~2.0.1",
-    "papaparse": "~4.1.2"
+    "papaparse": "~4.1.2",
+    "proj4leaflet": "~0.7.2",
+    "datatables.net": "~1.10.10",
+    "datatables.net-dt": "~1.10.10",
+    "magicsuggest": "~2.1.4"
   },
   "resolutions": {
     "jquery": "~2.1.0"

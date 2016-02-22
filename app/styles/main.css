@@ -29,8 +29,8 @@ html {
 	height: 100%;
 }
 .map {
-	width: 750px;
-	height: 500px;
+	width: 1000px;
+	height: 700px;
 }
 
 .map-application {
@@ -52,3 +52,12 @@ header {
 header .appName {
 	float: left;
 }
+
+
+/*slider for filter table*/
+.slider-track {
+    background: #BABABA;
+}
+
+#div1, #div2
+{width:100px; height:35px; border:1px solid #aaaaaa;}

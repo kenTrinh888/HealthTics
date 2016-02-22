@@ -1,44 +1,23 @@
-L.Icon.Default.imagePath = 'images/';
+L.Icon.Default.imagePath = '/images';
 L.AwesomeMarkers.Icon.prototype.options.prefix = 'ion';
 /* create leaflet map */
 var map = L.map('map', {
     center: [1.35, 103.8],
-    zoom: 11
+    zoom: 12
 });
 
+// features = JSON.parse(feature);
+// omnivore.geojson(features).addTo(map);
+
+// $.getJSON('/geojson/PLAYSG.json', function(data) {
+//     omnivore.geojson(data).addTo(map);
+// })
 new L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     minZoom: 0,
-    maxZoom: 18,
+    maxZoom: 50,
     attribution: 'Map data © <a href="http://www.openstreetmap.org">OpenStreetMap contributors</a>'
 }).addTo(map);
-
-function handleFeature(feature, layer) {
-    layer.on({
-        mouseover: mouseoverfunction,
-        mouseout: mouseoutfunction
-    });
-}
-
-function mouseoverfunction(e) {
-    var properties = e.target.feature.properties;
-    for (var prop in properties) {
-        // console.log(prop);
-        if (properties.hasOwnProperty(prop)) {
-            // or if (Object.prototype.hasOwnProperty.call(obj,prop)) for safety...
-            console.log("prop: " + prop + " value: " + properties[prop]);
-            document.getElementById("properties").innerHTML = document.getElementById("properties").innerHTML + "<tr><td>" + prop + "</td><td>" + properties[prop] + "</td></tr>";
-        }
-    }
-}
-
-function mouseoutfunction(e) {
-    document.getElementById("properties").innerHTML = "";
-}
-var iconJc = L.AwesomeMarkers.icon({
-    icon: 'fa-graduation-cap',
-    markerColor: 'red',
-    prefix: 'fa'
-});
+// omnivore.geojson('/geojson/PLAYSG.json').addTo(map);
 
 var redMarker = L.AwesomeMarkers.icon({
     icon: 'sitemap',
@@ -46,19 +25,41 @@ var redMarker = L.AwesomeMarkers.icon({
     prefix: 'fa'
 });
 
+// var url = 'geojson/PLAYSG.geojson';
+// $.getJSON(url, function(dataLoop) {
+//      L.geoJson(dataLoop, {
+//                 pointToLayer: function(feature, latlng) {
+//                     // console.log(latlng);
+//                     // var name = feature.properties.Name;
+//                     // console.log(feature.properties.Name);
+//                     return L.marker(latlng, {
+//                         icon: redMarker
+//                     })
+//                 }
+//             }).addTo(map);
+    
+
+// });
+// proj4.defs("EPSG:3414","+proj=tmerc +lat_0=1.366666666666667 +lon_0=103.8333333333333 +k=1 +x_0=28001.642 +y_0=38744.572 +ellps=WGS84 +units=m +no_defs");
 
 $.get("/getAllLayer", function(data) {
     var names = data;
 
     for (var i = 1; i < names.length; i++) {
         var name = names[i];
-        // console.log(name);
+
+        console.log(name);
         // nameDis = name.split('.')[1];
         var url = './geojson/' + name;
 
         $.getJSON(url, function(dataLoop) {
-            // console.log(dataLoop);
+
+            // // console.log(dataLoop);
+            // L.Proj.geoJson(dataLoop,function(){
+            //     console.log(dataLoop)
+            // });
             L.geoJson(dataLoop, {
+
                 pointToLayer: function(feature, latlng) {
                     // console.log(latlng);
                     // var name = feature.properties.Name;
@@ -72,13 +73,43 @@ $.get("/getAllLayer", function(data) {
         });
     }
 })
-// omnivore.geojson('/geojson/education.json').addTo(map);
-// omnivore.geojson('/geojson/PLAYSG.geojson').addTo(map);
+
+// $.getJSON("basemap/SingaporePools.geojson", function(data) {
+//      L.Proj.geoJson(data, {
+
+//                 pointToLayer: function(feature, latlng) {
+//                     // var name = feature.properties.Name;
+//                     // console.log(feature.properties.Gp1Gp2Winn);
+//                     return L.marker(latlng, {
+//                         // radius: feature.properties.Gp1Gp2Winn
+//                         icon: redMarker
+//                     })
+//                 }
+//             }).addTo(map);
+
+// })
+// $.getJSON("basemap/DGPSubZone.geojson", function(data) {
+//      console.log(data)
+//      L.Proj.geoJson(data).addTo(map);
+
+// })
+// $.getJSON("/basemap/result.geojson", function (data){
+//     console.log(data);
+//      L.Proj.geoJson(data).addTo(map);
+
+// })
+// $.getJSON("basemap/result.geojson", function(data) {
+//      console.log(data)
+//      L.Proj.geoJson(data).addTo(map);
+
+// })
+// omnivore.geojson('/geojson/SingaporePools.geojson').addTo(map);
 // function getSecondPart(str) {
 //     return str.split('-')[1];
 // }
 
 $(document).ready(function() {
+
     function onEachFeature(feature, layer) {
         // does this feature have a property named popupContent?
         if (feature.properties) {
@@ -144,9 +175,7 @@ $(document).ready(function() {
                         });
                     }
                 });
-
             }
-
         }
     });
 
