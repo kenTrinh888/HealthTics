@@ -131,7 +131,8 @@ function setFilterTableData(requestBody){
                     subLayer = completeLayerName.split("_")[0];
                     parentLayer = completeLayerName.split("_")[1];                    
                 } else{
-                    parentLayer,subLayer = completeLayerName;
+                    subLayer = completeLayerName;
+                    parentLayer = completeLayerName;
                 }
                 filterTableData[i]['parentLayer'] = parentLayer;
                 filterTableData[i]['subLayer'] = subLayer;
