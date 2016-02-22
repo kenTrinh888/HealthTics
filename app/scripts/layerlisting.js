@@ -44,7 +44,7 @@ function callApiThenSetSubLayers() {
             var dropDownID = $(this).attr('id');
             var selectedColumn = $('#' + dropDownID + " option:selected").text();
             if (selectedColumn != "") {
-                callApiSetSubLayers(parentNode, selectedColumn); //also set hidden <div> with id:#hiddenColumnValues
+                callApiSetSubLayers(parentNode, selectedColumn);
             } else {
                 setFilterTableDropdown();
             }
@@ -90,8 +90,13 @@ function callApiSetSubLayers(parentNode, selectedColumn) {
 function getAllLayers() {
     var allLayers = []; //clear initial list;
     $('.node').each(function() {
+        parentName = $(this).parent('ul').attr('class').split('_')[1];
         layerName = $(this).attr('id');
-        allLayers.push(layerName);
+        if(parentName){
+            allLayers.push(layerName+"_"+parentName);
+        }else{
+             allLayers.push(layerName);
+        }        
     });
     return allLayers;
 }
