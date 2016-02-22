@@ -5,6 +5,7 @@
 <!--[if gt IE 8]><!-->
 <html>
 <!--<![endif]-->
+
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -15,7 +16,7 @@
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="lib/styles/bootstrap.min.css">
     <!-- build:css styles/vendor.css -->
-    <link rel="stylesheet" href="lib/styles/leaflet.css">    
+    <link rel="stylesheet" href="lib/styles/leaflet.css">
     <link rel="stylesheet" href="lib/Leaflet-awesome-markers/dist/leaflet.awesome-markers.css">
     <script src='//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-omnivore/v0.2.0/leaflet-omnivore.min.js'></script>
     <link rel="stylesheet" href="http://code.ionicframework.com/ionicons/1.5.2/css/ionicons.min.css">
@@ -93,18 +94,18 @@
                     <h3><a href="#">Filter Table</a></h3>
                     <button id="addRow" class="btn btn-primary">Add new row</button>
                     <button id="deleteRow" class="btn btn-danger">Delete selected row</button>
-                    <table class="filterTbl" id="filterTbl">
-                        <thead>
-                            <tr>
-                                <th class="col-md-2">Logical Operator</th>
-                                <th class="col-md-2">Value</th>
-                                <th class="col-md-4">Layer</th>
-                                <th class="col-md-2">Within Distance</th>
-                                <th class="col-md-2">AND/OR</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <form action="submit">
+                    <form method="post" action="/submitFilter">
+                        <table class="filterTbl" id="filterTbl">
+                            <thead>
+                                <tr>
+                                    <th class="col-md-2">Logical Operator</th>
+                                    <th class="col-md-2">Value</th>
+                                    <th class="col-md-4">Layer</th>
+                                    <th class="col-md-2">Within Distance</th>
+                                    <th class="col-md-2">AND/OR</th>
+                                </tr>
+                            </thead>
+                            <tbody>
                                 <tr class="tblRow" id="tblRow1">
                                     <td>
                                         <select class="form-control" name="operator">
@@ -117,28 +118,29 @@
                                         <input type="number" name="operator-amt" class="operator-amt form-control" placeholder="numeric">
                                     </td>
                                     <td>
-                                        <div id="layer-selected_1" class="layer-selected"></div>
+                                        <input id="layer-selected_1" class="layer-selected">
                                     </td>
                                     <td>
-                                        <input type="number" name="input-value" class="input-value form-control" placeholder="numeric">
+                                        <input type="number" name="within-range" class="input-value form-control" placeholder="numeric">
                                     </td>
                                     <td>
                                         <p>OR</p>
                                     </td>
-                                    <button type="button" class="btn btn-primary pull-right" style="display:inline">Submit</button>
-                            </form>
-                        </tbody>
-                    </table>
-                    <div class = "resultTableSection">
+                                    <input type="submit" value="Submit" class="btn btn-primary pull-right" style="display:inline;">
+                                </tr>
+                            </tbody>
+                        </table>
+                    </form>
+                    <div class="resultTableSection">
                         <h3><a href="#">Result Table</a></h3>
                     </div>
-                    <div class = "mapSection">
+                    <div class="mapSection">
                         <h3><a href="#">Map</a></h3>
                         <div class="map-application">
                             <div id="map" class="map"></div>
                             <table id="properties"></table>
                         </div>
-                    </div>                    
+                    </div>
                 </div>
             </div>
             <!-- /.row -->
@@ -158,12 +160,10 @@
         <!-- build:js scripts/vendor.js -->
         <script src="lib/scripts/leaflet.js"></script>
         <!-- Bootstrap Core JavaScript -->
-        
         <!-- // <script src="/lib/metro-ui/docs/js/metro.js"></script> -->
         <!-- bower:js -->
         <script src="bower_components/proj4/dist/proj4.js"></script>
         <script src="bower_components/proj4leaflet/src/proj4leaflet.js"></script>
-
         <script src="bower_components/topojson/topojson.js"></script>
         <!-- endbower -->
         <!-- endbuild -->
@@ -180,4 +180,5 @@
         <script src="scripts/main.js"></script>
         <!-- endbuild -->
     </body>
+
 </html>

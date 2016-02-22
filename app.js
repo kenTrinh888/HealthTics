@@ -106,6 +106,42 @@ function getFirstPart(str) {
     return str.split('.')[0];
 }
 
+app.use( bodyParser.json() );       // to support JSON-encoded bodies
+app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
+  extended: true
+})); 
+
+app.post('/submitFilter', function(request, response){
+    var filterTableData = setFilterTableData(request.body);
+    console.log(filterTableData);
+    //ken do from here
+});
+
+function setFilterTableData(requestBody){
+    var filterTableData = [];
+    for(var prop in requestBody){
+        for(var i = 0; i < requestBody[prop].length;i++){
+            if(!filterTableData[i]){
+                filterTableData[i] = {};
+            }
+            if(prop ==="layerSelected"){
+                var completeLayerName = requestBody[prop][i];
+                var parentLayer,subLayer = "";
+                if(completeLayerName.indexOf("_") != -1){
+                    subLayer = completeLayerName.split("_")[0];
+                    parentLayer = completeLayerName.split("_")[1];                    
+                } else{
+                    parentLayer,subLayer = completeLayerName;
+                }
+                filterTableData[i]['parentLayer'] = parentLayer;
+                filterTableData[i]['subLayer'] = subLayer;
+            }else{
+                filterTableData[i][prop] = requestBody[prop][i];
+            }                        
+        }
+    }
+    return filterTableData;
+}
 
 app.post('/upload', upload.array('avatar'), function(req, res) {
     // var newPath = __dirname + "/uploads/uploadedFileName";
@@ -170,8 +206,6 @@ app.get('/getAllLayer', function(req, res) {
     var name = fs.readdirSync(path);
     res.send(name);
 });
-
-
 
 // end read all files from folder
 app.get('/getPostalCode/:id', function(req, res) {
