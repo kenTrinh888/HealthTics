@@ -116,9 +116,10 @@
                 </div>
                 <div class="col-md-8 portfolio-item">
                     <h3><a href="#">Filter Table</a></h3>
-                    <button id="addRow" class="btn btn-primary">Add new row</button>
-                    <button id="deleteRow" class="btn btn-danger">Delete selected row</button>
+                    
                     <form method="post" action="/submitFilter">
+                        <button id="addFilterRow" class="btn btn-primary">Add new row</button>
+                        <button id="deleteFilterRow" class="btn btn-danger">Delete selected row</button>
                         <table class="filterTbl" id="filterTbl">
                             <thead>
                                 <tr>
@@ -158,6 +159,32 @@
                     </form>
                     <div class="resultTableSection">
                         <h3><a href="#">Result Table</a></h3>
+                        <form method="post" action="/submitFilter">
+                            <button id="deleteResultRow" class="btn btn-danger">Delete selected row</button>
+                            <table class="resultTbl" id="resultTbl">
+                                <thead>
+                                    <tr>
+                                        <th class="col-md-2">Checked</th>
+                                        <th class="col-md-2">Filter Condition</th>
+                                        <th class="col-md-4">No. of HDB</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="tblRow" id="tblRow1">
+                                        <td class="col-lg-1">
+                                            <input type="checkbox" name="test" value="test" class="form-control">
+                                        </td>
+                                        <td class="col-lg-7">                           
+                                            <input type="text" name="filterCondition" class="filterCondition form-control" placeholder="filter condition" disabled="disabled">
+                                        </td>
+                                        <td class="col-lg-2">
+                                            <input id="hdbCount" class="hdbCount form-control"  disabled="disabled">
+                                        </td>                                        
+                                        <input type="submit" value="Submit" class="btn btn-primary pull-right" style="display:inline;">
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </form>
                     </div>
                     <div class="mapSection">
                         <h3><a href="#">Map</a></h3>
@@ -201,6 +228,7 @@
         <script type="text/javascript" charset="utf8" src="bower_components/datatables.net/js/jquery.datatables.min.js"></script>
         <!-- build:js scripts/main.js -->
         <script src="scripts/filtertable.js"></script>
+        <script src="scripts/resulttable.js"></script>
         <script src="scripts/layerlisting.js"></script>
         <script src="scripts/main.js"></script>
         <!-- endbuild -->

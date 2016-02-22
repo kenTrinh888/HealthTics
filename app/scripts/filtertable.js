@@ -1,20 +1,21 @@
 var layerDropdownObjects = [];
 
 $(document).ready(function() {
-    var table = $('#filterTbl').DataTable({
+    var filterTableSelector = $('#filterTbl');
+    var filterTable = filterTableSelector.DataTable({
         "paging": false,
         "ordering": false,
         "info": false,
         "searching": false
     });
-    var rowCount = 2;
-    addRow(table, rowCount);
-    deleteRow(table);
+    var filterTableRowCount = 2;
+    addRow(filterTable, filterTableRowCount,'#addFilterRow');
+    deleteRow(filterTable,filterTableSelector,"#deleteFilterRow");
 })
 
-function deleteRow(table) {
+function deleteRow(table,tableSelector,deleteType) {
 
-    $('#filterTbl tbody').on('click', 'tr', function() {
+   tableSelector.children('tbody').on('click', 'tr', function() {
 
         if ($(this).hasClass('selected')) {
             $(this).removeClass('selected');
@@ -24,7 +25,7 @@ function deleteRow(table) {
         }
     });
 
-    $('#deleteRow').click(function() {
+    $(deleteType).click(function() {
         if (table.rows().count() == 1) {
             alert("error: unable to delete row");
             return;
@@ -33,8 +34,8 @@ function deleteRow(table) {
     });
 }
 
-function addRow(table, rowCount) {
-    $('#addRow').on('click', function() {
+function addRow(table, rowCount,addType) {
+    $(addType).on('click', function() {
         var emptyArr = [];
         table.row.add([
             "<select id='operator_" + rowCount + "' class='form-control' name='operator'>\
