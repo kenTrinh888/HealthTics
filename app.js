@@ -11,7 +11,8 @@ var turf = require('turf');
 var _ = require('lodash');
 var mapshaper = require('mapshaper');
 var globalurl = __dirname + '/app';
-
+var proj4 = require('proj4')
+proj4.defs("EPSG:3414", "+proj=tmerc +lat_0=1.366666666666667 +lon_0=103.8333333333333 +k=1 +x_0=28001.642 +y_0=38744.572 +ellps=WGS84 +units=m +no_defs");
 
 app.use(express.static(__dirname + '/app'));
 var storage = multer.diskStorage({
@@ -42,18 +43,18 @@ app.get('/', function(req, res) {
     //It will find and locate index.html from View or Scripts
 });
 
-var SPdir = globalurl + "/basemap/SingaporePools.geojson" ;
-var SingaporePools = JSON.parse(fs.readFileSync(SPdir, "utf8"));
-// console.log(SingaporePools);
-var SubzoneDir = globalurl + "/basemap/DGPSubZone.geojson";
-var SubZone = JSON.parse(fs.readFileSync(SubzoneDir, "utf8"));
+// var SPdir = globalurl + "/basemap/SingaporePools.geojson" ;
+// var SingaporePools = JSON.parse(fs.readFileSync(SPdir, "utf8"));
+// // console.log(SingaporePools);
+// var SubzoneDir = globalurl + "/basemap/DGPSubZone.geojson";
+// var SubZone = JSON.parse(fs.readFileSync(SubzoneDir, "utf8"));
 
-var counted = turf.count(SubZone, SingaporePools, 'pt_count');
-var resultFeatures = SingaporePools.features.concat(counted.features);
-var result = {
-  "type": "FeatureCollection",
-  "features": resultFeatures
-};
+// var counted = turf.count(SubZone, SingaporePools, 'pt_count');
+// var resultFeatures = SingaporePools.features.concat(counted.features);
+// var result = {
+//   "type": "FeatureCollection",
+//   "features": resultFeatures
+// };
 // var jsonfile = require('jsonfile')
  
 // var file = globalurl + '/basemap/result.json';
@@ -81,7 +82,7 @@ var result = {
 
 //     console.log("The file was saved!");
 // });
-convert(result,"result","basemap");
+// convert(result,"result","basemap");
 
 
 app.get('/geojson', function(req, res) {
@@ -143,28 +144,51 @@ function setFilterTableData(requestBody){
     return filterTableData;
 }
 
-app.post('/upload', upload.array('avatar'), function(req, res) {
-    // var newPath = __dirname + "/uploads/uploadedFileName";
-    var name = req.files[0].originalname;
-    // console.log(name);
-    var nameString = getSecondPart(name);
-    var nameFirstPark = getFirstPart(name);
-    var file = __dirname + "/" + name;
-    var filePath = req.files[0].path;
+app.post('/upload', function(req, res) {
+    var jsonString = '';
 
-    // if (nameString === "shp" || nameString === "zip"){
-    // var from = "app/uploads" + "/"+name;
-    // console.log(from);
-    // var destination = "app/geojson/" + nameFirstPark +'.geojson' ;
-    // console.log(destination);
-    // var command = '-i ' + from + ' -o ' + destination + ' format=geojson force'
-    // mapshaper.runCommands(command);
-    // // convert(destination, nameFirstPark);
-    // }else {
-    //     // console.log(file);
+    req.on('data', function(data) {
+        jsonString += data;
+    });
 
-    convert(filePath, nameFirstPark,"geojson");
-    res.redirect("back");
+    req.on('end', function() {
+        var JSONReturn = JSON.parse(jsonString);
+        // console.log(JSONReturn.datamain);
+        var objectWrite = JSONReturn.datamain;
+        var nameofFile = JSONReturn.name;
+        // var beautyJSON = JSON.parse(objectWrite);
+        //         for (var key in p) {
+        //   if (p.hasOwnProperty(key)) {
+        //     alert(key + " -> " + p[key]);
+        //   }
+        // }
+
+        var features = objectWrite.features;
+        for (var i = 0; i < features.length; i++) {
+            var oldCor = features[i].geometry.coordinates;
+            var newCoor = proj4(proj4("EPSG:3414")).inverse(oldCor);
+            objectWrite.features[i].geometry.coordinates = newCoor;
+        }
+        var beautyJSON = JSON.stringify(objectWrite);
+        console.log(beautyJSON);
+
+        // for (var key in features) {
+        //     console.log(features.geometry);
+        // }
+
+        var nameFirstPart = getFirstPart(nameofFile);
+        var urlDestination = globalurl + "/geojson/" + nameFirstPart + ".geojson";
+        fs.writeFile(urlDestination, beautyJSON, function(err) {
+            if (err) {
+                return console.log(err);
+            }
+        });
+        res.redirect("back");
+
+    })
+
+
+
 });
 // var dir =  __dirname + '/app' + '/geojson' ;
 // var source = JSON.parse(require(dir + '/SingaporePools1.geojson'));
@@ -200,6 +224,18 @@ app.get('/getAllLayer', function(req, res) {
     res.send(name);
 });
 
+app.get('/getPolygon/:coordinates', function (req,res){
+    var coordinates = req.params.coordinates;
+    var consumerKey = "Mub69kgiH4aBo6yLb1eAvdCBBgnGYHMf";
+    var APItest = "http://open.mapquestapi.com/nominatim/v1/search.php?key="+consumerKey+"&format=json&polygon_geojson=1&q=" +coordinates;
+  request(APItest, function(error, response, body) {
+        if (!error && response.statusCode == 200) {
+            // console.log(body) // Show the HTML for the Google homepage.
+            res.send(JSON.parse(body));
+        }
+    });
+})
+
 // end read all files from folder
 app.get('/getPostalCode/:id', function(req, res) {
     var postcode = req.params.id;
@@ -207,7 +243,7 @@ app.get('/getPostalCode/:id', function(req, res) {
     var urlString = "http://www.onemap.sg/APIV2/services.svc/basicSearchV2?token=qo/s2TnSUmfLz+32CvLC4RMVkzEFYjxqyti1KhByvEacEdMWBpCuSSQ+IFRT84QjGPBCuz/cBom8PfSm3GjEsGc8PkdEEOEr&searchVal=" + postcode + "&otptFlds=SEARCHVAL,CATEGORY&returnGeom=1&rset=1&projSys=WGS84";
     request(urlString, function(error, response, body) {
         if (!error && response.statusCode == 200) {
-            console.log(body) // Show the HTML for the Google homepage.
+            // console.log(body) // Show the HTML for the Google homepage.
             res.send(body);
         }
     });
@@ -248,6 +284,7 @@ var postcodeQuery = geoCoding("560615");
 process.on('uncaughtException', function (err) {
   console.log('Caught exception: ' + err);
 });
+
 
 
 // API get all Layer Columns Name

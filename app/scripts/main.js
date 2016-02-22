@@ -25,6 +25,7 @@ var redMarker = L.AwesomeMarkers.icon({
     prefix: 'fa'
 });
 
+
 // var url = 'geojson/PLAYSG.geojson';
 // $.getJSON(url, function(dataLoop) {
 //      L.geoJson(dataLoop, {
@@ -41,15 +42,47 @@ var redMarker = L.AwesomeMarkers.icon({
 
 // });
 // proj4.defs("EPSG:3414","+proj=tmerc +lat_0=1.366666666666667 +lon_0=103.8333333333333 +k=1 +x_0=28001.642 +y_0=38744.572 +ellps=WGS84 +units=m +no_defs");
+$('#convert').submit(function(e) {
+    var file = $("#upload")[0].files[0];
 
+    var layerName = file.name;
+
+    e.preventDefault();
+    $(this).ajaxSubmit({
+        // console.log("submit");
+        success: function(data, textStatus, jqXHR) {
+
+            console.log(data);
+            var layer = {
+                    "name": layerName,
+                    "datamain": data
+                }
+                // layer.data = data
+            var dataSend = JSON.stringify(layer);
+            // console.log(dataSend);
+            $.ajax({
+                url: '/upload',
+                type: 'POST',
+                data: dataSend,
+                contentType: 'application/json',
+
+                success: function(data) {
+                    console.log('success');
+                    location.reload();
+                }
+            });
+        }
+
+    })
+
+});
 $.get("/getAllLayer", function(data) {
     var names = data;
 
     for (var i = 1; i < names.length; i++) {
         var name = names[i];
 
-        console.log(name);
-        // nameDis = name.split('.')[1];
+
         var url = './geojson/' + name;
 
         $.getJSON(url, function(dataLoop) {
@@ -114,7 +147,6 @@ $(document).ready(function() {
         // does this feature have a property named popupContent?
         if (feature.properties) {
             var popupContent = "";
-            console.log("a");
             for (var propertyname in feature.properties) {
                 // console.log(feature.properties[propertyname]);
                 popupContent += "<b>" + propertyname + "</b>" + ": " + feature.properties[propertyname].toString() + "</br>";
@@ -125,6 +157,7 @@ $(document).ready(function() {
     var layerFiles = [];
 
     $('#files').change(function(evt) {
+        var HDBsent = [];
         var files = evt.target.files;
 
         for (var i = 0; i < files.length; i++) {
@@ -147,16 +180,44 @@ $(document).ready(function() {
                             var leafletFeature = new Object(); //single leaflet object
                             leafletFeature["type"] = "Feature";
                             leafletFeature["properties"] = field;
-                            console.log(leafletFeature);
+                            // console.log(leafletFeature);
                             var postcode = field["POSTCODE"].toString();
+                            if (postcode.length < 6){
+                                postcode = "0" + postcode;
+                            }
                             var localApi = '/getPostalCode/' + postcode;
 
                             $.get(localApi, function(geocodedData, status) {
                                 var geocodedDataJson = JSON.parse(geocodedData); //response from geocoding API
                                 searchResults = geocodedDataJson["SearchResults"]; //array containing response of geocoding API
-
                                 if (searchResults[0].hasOwnProperty("ErrorMessage") === false) {
                                     if (searchResults.length > 1) {
+                                        var longitude = searchResults[1]["X"];
+                                        var latitude = searchResults[1]["Y"];
+                                        var buildingQuery = latitude + "," + longitude;
+                                        // var consumerKey = "Mub69kgiH4aBo6yLb1eAvdCBBgnGYHMf";
+                                        // var OSMAPI =  "http://open.mapquestapi.com/nominatim/v1/search.php?key=Mub69kgiH4aBo6yLb1eAvdCBBgnGYHMf&format=json&polygon_geojson=1&json_callback=renderBasicSearchNarrative&q=" + buildingQuery;
+                                        // console.log(OSMAPI);
+                                        $.getJSON("/getPolygon/" + buildingQuery,function(data){
+                                            console.log(data);
+                                            var properties = {}
+                                            var display_name = data[0].display_name;
+                                            var lat = data[0].lat;
+                                            var lon = data[0].lon;
+                                            properties["Name"] = display_name;
+                                            properties["Latitude"] = lat;
+                                            properties["Longitude"] = lon;
+                                            properties["POSTAL CODE "] = postcode;
+                                            // console.log(properties);
+
+                                            var HDBbuilding = data[0].geojson;
+                                            HDBbuilding["properties"] = properties;
+
+                                            console.log(JSON.stringify(HDBbuilding));
+                                             L.geoJson(HDBbuilding, {
+                                            onEachFeature: onEachFeature
+                                        }).addTo(map);
+                                        })
                                         var geoObj = {};
                                         geoObj["type"] = "Point";
                                         geoObj["coordinates"] = [];
@@ -165,14 +226,16 @@ $(document).ready(function() {
                                         leafletFeature["geometry"] = geoObj;
                                         leafletFeatures.push(leafletFeature);
 
-                                        L.geoJson(leafletFeature, {
-                                            onEachFeature: onEachFeature
-                                        }).addTo(map);
+                                        // L.geoJson(leafletFeature, {
+                                        //     onEachFeature: onEachFeature
+                                        // }).addTo(map);
                                     }
                                 }
                             });
-                            console.log(leafletFeatures);
+                            // HDBsent.push(leafletFeatures);
+                            
                         });
+                        // console.log(HDBsent);
                     }
                 });
             }
