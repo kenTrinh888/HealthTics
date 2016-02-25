@@ -26,21 +26,7 @@ var redMarker = L.AwesomeMarkers.icon({
 });
 
 
-// var url = 'geojson/PLAYSG.geojson';
-// $.getJSON(url, function(dataLoop) {
-//      L.geoJson(dataLoop, {
-//                 pointToLayer: function(feature, latlng) {
-//                     // console.log(latlng);
-//                     // var name = feature.properties.Name;
-//                     // console.log(feature.properties.Name);
-//                     return L.marker(latlng, {
-//                         icon: redMarker
-//                     })
-//                 }
-//             }).addTo(map);
 
-
-// });
 // proj4.defs("EPSG:3414","+proj=tmerc +lat_0=1.366666666666667 +lon_0=103.8333333333333 +k=1 +x_0=28001.642 +y_0=38744.572 +ellps=WGS84 +units=m +no_defs");
 $('#convert').submit(function(e) {
     var file = $("#upload")[0].files[0];
@@ -106,7 +92,27 @@ $.get("/getAllLayer", function(data) {
         });
     }
 })
+var urlforHDB = 'ORResults/ORresult.json';
+$.getJSON(urlforHDB, function(dataLoop) {
 
+    for (var i = 0; i < dataLoop.length; i++) {
+
+        var buffer = dataLoop[i].buffer;
+        // console.log(buffer);
+        L.geoJson(buffer, {
+            pointToLayer: function(feature, latlng) {
+                // console.log(latlng);
+                // var name = feature.properties.Name;
+                // console.log(feature.properties.Name);
+                return L.marker(latlng, {
+                    icon: redMarker
+                })
+            }
+        }).addTo(map);
+    }
+
+
+});
 // $.getJSON("basemap/SingaporePools.geojson", function(data) {
 //      L.Proj.geoJson(data, {
 
@@ -222,8 +228,10 @@ $(document).ready(function() {
                                             HDBsent.push(HDBbuilding);
                                             var breakPoint = HDBsent.length;
                                             // HDBsentFinal = JSON.parse(HDBsent);
+                                            // console.log(HDBsent);
                                             if (breakPoint === fields.length) {
                                                 HDBJSON = JSON.stringify(HDBsent);
+                                                // console.log(HDBJSON);
                                                 $.ajax({
                                                     url: '/uploadHDB',
                                                     type: 'POST',
@@ -231,7 +239,7 @@ $(document).ready(function() {
                                                     contentType: 'application/json',
 
                                                     success: function(data) {
-                                                        console.log('success');
+                                                        console.log("sucess");
                                                         location.reload();
                                                     }
                                                 });

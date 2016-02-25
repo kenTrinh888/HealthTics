@@ -155,16 +155,25 @@ app.post('/upload', function(req, res) {
 });
 // ===================================Upload HDB to folder=====================================
 app.post("/uploadHDB", function(req, res) {
-    jsonString = req.body;
-    // console.log(JSON.stringify(req.body));
-    // var JSONReturn = JSON.stringify(jsonString);
-    var urlDestination = globalurl + "/HDB/HDB.json";
-    fs.writeFile(urlDestination, JSON.stringify(jsonString), function(err) {
-        if (err) {
-            return console.log(err);
-        }
+    var jsonString = '';
+    req.on('data', function(data) {
+        jsonString += data;
     });
-    res.redirect("back");
+    req.on('end', function() {
+            var JSONReturn = JSON.parse(jsonString);
+            var urlDestination = globalurl + "/HDB/HDB.json";
+            fs.writeFile(urlDestination, JSON.stringify(JSONReturn), function(err) {
+                if (err) {
+                    return console.log(err);
+                }
+            });
+            res.redirect("back");
+
+        })
+        // console.log( JSON.stringify(jsonString));
+        // var JSONReturn = JSON.stringify(jsonString);
+    console.log(req.body);
+
 
 });
 // ===================================Upload HDB to folder===========================================
@@ -187,75 +196,28 @@ app.post('/submitFilter', function(req, res) {
         "operator_amt": "1",
         "parentLayer": "Education",
         "Name": "primary",
-        "within_range": "1"
+        "within_range": "2"
     }]
 
     // console.log(objectReceived[])
-    var url = globalurl + "/HDB/HDB.json";
 
-    for (var i = 0; i < objectReceived.length; i++) {
-        ORrequirement = objectReceived[i];
-        fs.readFile(url, "utf8", function(err, data) {
-            var HDB = JSON.parse(data);
+
+    var url = globalurl + "/HDB/HDB.json";
+    fs.readFile(url, "utf8", function(err, data) {
+        var HDB = JSON.parse(data);
+        for (var i = 0; i < objectReceived.length; i++) {
+            var lengthOfRequirements = objectReceived.length;
+            ORrequirement = objectReceived[i];
             for (var m = 0; m < HDB.length; m++) {
                 var aHDB = HDB[m];
-                var currentPoint = {
-                    "type": "Feature",
-                    "properties": {},
-                    "geometry": {}
-                };
-                currentPoint["properties"] = aHDB.properties;
-                currentPoint["geometry"]["coordinates"] = aHDB.coordinates;
-                currentPoint["geometry"]["type"] = aHDB.type;
-                // aHDB["type"] = "Feature";
-                // console.log(JSON.stringify(pt));
-                var unit = "kilometers";
-                var distance = parseInt(ORrequirement.within_range);
-                // console.log(distance);
-                // console.log(aHDB);
-                var HDBbuffered = turf.buffer(currentPoint, distance, unit);
-                HDBbuffered.features[0].properties = {
-                "fill": "#6BC65F",
-                "stroke": "#25561F",
-                "stroke-width": 2
-                };
-                HDBbuffered.csr = { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::3414" } },
-                urlLayerRetrieved = globalurl + "/geojson/" + ORrequirement.parentLayer + ".geojson";
-                var results =[];
-                fs.readFile(urlLayerRetrieved, "utf8", function(err, dataLayer) {
-                    var objectSend = {"buffer" : null,"points":null};
-                    var layerRequest = JSON.parse(dataLayer);
-                    // for (var key in p) {
-                    //     if (p.hasOwnProperty(key)) {
-                    //         alert(key + " -> " + p[key]);
-                    //     }
-                    // }
-                    var key = Object.keys(ORrequirement)[3];
-                    var value = ORrequirement[key];
-                    // console.log(value);
-                    var filtered = turf.filter(layerRequest, key, value);
+                calculateBuffer(aHDB, ORrequirement, lengthOfRequirements, HDB.length);
 
-                    var ptsWithin = turf.within(filtered, HDBbuffered);
-                    ptsWithin.csr = { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::3414" } },
-                    HDBbuffered.features.push(currentPoint)
-                    objectSend.buffer = HDBbuffered;
-                    objectSend.points  = ptsWithin;
-
-
-                    results.push(objectSend)
-                    // console.log(JSON.stringify(ptsWithin));
-                    var urlDestination = globalurl + "/ORResults/ORresult.json";
-                    fs.writeFile(urlDestination, JSON.stringify(results), function(err) {
-                        if (err) {
-                            return console.log(err);
-                        }
-                    });
-
-                });
             }
-        })
+        }
+    })
 
-    }
+    // console.log(objectCalculated);
+
     // console.log(HDB);
     // var filterTableData = setFilterTableData(request.body);
     // var filterTableData = JSON.stringify(request.body);
@@ -276,6 +238,79 @@ app.post('/submitFilter', function(req, res) {
     res.redirect("/");
     //ken do from here
 });
+
+function calculateBuffer(aHDB, ORrequirement, lengthOfRequirements, lengthofHDBfile) {
+    // var url = globalurl + "/HDB/HDB.json";
+    // fs.readFile(url, "utf8", function(err, data) {
+    //     var HDB = JSON.parse(data);
+    result = [];
+    // for (var m = 0; m < HDB.length; m++) {
+    //     var aHDB = HDB[m];
+
+    var currentPoint = {
+        "type": "Feature",
+        "properties": {},
+        "geometry": {}
+    };
+    currentPoint["properties"] = aHDB.properties;
+    currentPoint["geometry"]["coordinates"] = aHDB.coordinates;
+    currentPoint["geometry"]["type"] = aHDB.type;
+    var unit = "kilometers";
+    var distance = parseInt(ORrequirement.within_range);
+    var HDBbuffered = turf.buffer(currentPoint, distance, unit);
+    HDBbuffered.features[0].properties = {
+        "fill": "#6BC65F",
+        "stroke": "#25561F",
+        "stroke-width": 2
+    };
+    HDBbuffered.csr = { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::3414" } },
+        urlLayerRetrieved = globalurl + "/geojson/" + ORrequirement.parentLayer + ".geojson";
+    // var file = fs.readFile(urlLayerRetrieved, "utf8", function(err, dataLayer) {
+    // })
+    // console.log(file);
+    fs.readFile(urlLayerRetrieved, "utf8", function(err, dataLayer) {
+        var objectSend = { "buffer": null, "points": null };
+
+        // retrieved Layer Object
+        var layerRequest = JSON.parse(dataLayer);
+
+        //Filter necssary Layer
+        var key = Object.keys(ORrequirement)[3];
+        var value = ORrequirement[key];
+        var filtered = turf.filter(layerRequest, key, value);
+
+        // Check Buffer Point Within
+        var ptsWithin = turf.within(filtered, HDBbuffered);
+        ptsWithin.csr = { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::3414" } },
+            HDBbuffered.features.push(currentPoint)
+
+        objectSend.buffer = HDBbuffered;
+        objectSend.points = ptsWithin;
+        // console.log(JSON.stringify(objectSend));
+
+        var breakPoint = lengthOfRequirements * lengthofHDBfile;
+        result.push(objectSend);
+        // console.log(result);
+
+        // console.log(JSON.stringify(ptsWithin));
+
+        // console.log("length :" + result.length);
+        if (result.length === breakPoint) {
+            var urlDestination = globalurl + "/ORResults/ORresult.json";
+            fs.writeFile(urlDestination, JSON.stringify(result), function(err) {
+                if (err) {
+                    return console.log(err);
+                }
+            });
+
+        }
+
+
+    });
+    // }
+
+    // })
+}
 // ===================================Recieve Filter and Process HDB=================================
 
 
