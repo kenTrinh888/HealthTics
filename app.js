@@ -114,6 +114,7 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
 app.post('/submitFilter', function(request, response){
     var filterTableData = setFilterTableData(request.body);
     console.log(filterTableData);
+    // response.redirect("/");
     //ken do from here
 });
 
