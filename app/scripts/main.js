@@ -38,7 +38,7 @@ var redMarker = L.AwesomeMarkers.icon({
 //                     })
 //                 }
 //             }).addTo(map);
-    
+
 
 // });
 // proj4.defs("EPSG:3414","+proj=tmerc +lat_0=1.366666666666667 +lon_0=103.8333333333333 +k=1 +x_0=28001.642 +y_0=38744.572 +ellps=WGS84 +units=m +no_defs");
@@ -175,14 +175,17 @@ $(document).ready(function() {
                         var leafletFeatures = []; //array of leaflet feature objects
                         fields = results["data"];
 
-                        fields.forEach(function(field) {
+
+
+                        for (var i = 0; i < fields.length; i++) {
+                            field = fields[i];
 
                             var leafletFeature = new Object(); //single leaflet object
                             leafletFeature["type"] = "Feature";
                             leafletFeature["properties"] = field;
                             // console.log(leafletFeature);
                             var postcode = field["POSTCODE"].toString();
-                            if (postcode.length < 6){
+                            if (postcode.length < 6) {
                                 postcode = "0" + postcode;
                             }
                             var localApi = '/getPostalCode/' + postcode;
@@ -198,8 +201,10 @@ $(document).ready(function() {
                                         // var consumerKey = "Mub69kgiH4aBo6yLb1eAvdCBBgnGYHMf";
                                         // var OSMAPI =  "http://open.mapquestapi.com/nominatim/v1/search.php?key=Mub69kgiH4aBo6yLb1eAvdCBBgnGYHMf&format=json&polygon_geojson=1&json_callback=renderBasicSearchNarrative&q=" + buildingQuery;
                                         // console.log(OSMAPI);
-                                        $.getJSON("/getPolygon/" + buildingQuery,function(data){
-                                            console.log(data);
+
+
+                                        $.getJSON("/getPolygon/" + buildingQuery, function(data) {
+
                                             var properties = {}
                                             var display_name = data[0].display_name;
                                             var lat = data[0].lat;
@@ -213,18 +218,48 @@ $(document).ready(function() {
                                             var HDBbuilding = data[0].geojson;
                                             HDBbuilding["properties"] = properties;
 
-                                            console.log(JSON.stringify(HDBbuilding));
-                                             L.geoJson(HDBbuilding, {
-                                            onEachFeature: onEachFeature
-                                        }).addTo(map);
+                                            // console.log(JSON.stringify(HDBbuilding));
+                                            HDBsent.push(HDBbuilding);
+                                            var breakPoint = HDBsent.length;
+                                            // HDBsentFinal = JSON.parse(HDBsent);
+                                            if (breakPoint === fields.length) {
+                                                HDBJSON = JSON.stringify(HDBsent);
+                                                $.ajax({
+                                                    url: '/uploadHDB',
+                                                    type: 'POST',
+                                                    data: HDBJSON,
+                                                    contentType: 'application/json',
+
+                                                    success: function(data) {
+                                                        console.log('success');
+                                                        location.reload();
+                                                    }
+                                                });
+
+
+                                            }
+
+                                            // console.log(fields.length);
+                                            // console.log(fields.length);
+                                            // console.log("i" + i);
+                                            // if(i === (fields.length - 1)){
+                                            //     console.log("break");
+                                            // }
+
+
+                                            //      L.geoJson(HDBbuilding, {
+                                            //     onEachFeature: onEachFeature
+                                            // }).addTo(map);
                                         })
-                                        var geoObj = {};
-                                        geoObj["type"] = "Point";
-                                        geoObj["coordinates"] = [];
-                                        geoObj["coordinates"].push(searchResults[1]["X"]); //long
-                                        geoObj["coordinates"].push(searchResults[1]["Y"]); //lat
-                                        leafletFeature["geometry"] = geoObj;
-                                        leafletFeatures.push(leafletFeature);
+
+
+                                        // var geoObj = {};
+                                        // geoObj["type"] = "Point";
+                                        // geoObj["coordinates"] = [];
+                                        // geoObj["coordinates"].push(searchResults[1]["X"]); //long
+                                        // geoObj["coordinates"].push(searchResults[1]["Y"]); //lat
+                                        // leafletFeature["geometry"] = geoObj;
+                                        // leafletFeatures.push(leafletFeature);
 
                                         // L.geoJson(leafletFeature, {
                                         //     onEachFeature: onEachFeature
@@ -232,10 +267,13 @@ $(document).ready(function() {
                                     }
                                 }
                             });
-                            // HDBsent.push(leafletFeatures);
-                            
-                        });
-                        // console.log(HDBsent);
+
+
+
+                        };
+
+
+
                     }
                 });
             }
