@@ -21,10 +21,14 @@ new L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 
 var redMarker = L.AwesomeMarkers.icon({
     icon: 'sitemap',
+    markerColor: 'red',
+    prefix: 'fa'
+});
+var blueMarker = L.AwesomeMarkers.icon({
+    icon: 'sitemap',
     markerColor: 'blue',
     prefix: 'fa'
 });
-
 
 
 // proj4.defs("EPSG:3414","+proj=tmerc +lat_0=1.366666666666667 +lon_0=103.8333333333333 +k=1 +x_0=28001.642 +y_0=38744.572 +ellps=WGS84 +units=m +no_defs");
@@ -62,43 +66,43 @@ $('#convert').submit(function(e) {
     })
 
 });
-$.get("/getAllLayer", function(data) {
-    var names = data;
+// $.get("/getAllLayer", function(data) {
+//     var names = data;
 
-    for (var i = 1; i < names.length; i++) {
-        var name = names[i];
+//     for (var i = 1; i < names.length; i++) {
+//         var name = names[i];
 
 
-        var url = './geojson/' + name;
+//         var url = './geojson/' + name;
 
-        $.getJSON(url, function(dataLoop) {
+//         $.getJSON(url, function(dataLoop) {
 
-            // // console.log(dataLoop);
-            // L.Proj.geoJson(dataLoop,function(){
-            //     console.log(dataLoop)
-            // });
-            L.geoJson(dataLoop, {
+//             // // console.log(dataLoop);
+//             // L.Proj.geoJson(dataLoop,function(){
+//             //     console.log(dataLoop)
+//             // });
+//             L.geoJson(dataLoop, {
 
-                pointToLayer: function(feature, latlng) {
-                    // console.log(latlng);
-                    // var name = feature.properties.Name;
-                    // console.log(feature.properties.Name);
-                    return L.marker(latlng, {
-                        icon: redMarker
-                    })
-                }
-            }).addTo(map);
+//                 pointToLayer: function(feature, latlng) {
+//                     // console.log(latlng);
+//                     // var name = feature.properties.Name;
+//                     // console.log(feature.properties.Name);
+//                     return L.marker(latlng, {
+//                         icon: redMarker
+//                     })
+//                 }
+//             }).addTo(map);
 
-        });
-    }
-})
+//         });
+//     }
+// })
 var urlforHDB = 'ORResults/ORresult.json';
 $.getJSON(urlforHDB, function(dataLoop) {
 
     for (var i = 0; i < dataLoop.length; i++) {
-
+        var points = dataLoop[i].points;
         var buffer = dataLoop[i].buffer;
-        // console.log(buffer);
+        console.log(points);
         L.geoJson(buffer, {
             pointToLayer: function(feature, latlng) {
                 // console.log(latlng);
@@ -106,6 +110,16 @@ $.getJSON(urlforHDB, function(dataLoop) {
                 // console.log(feature.properties.Name);
                 return L.marker(latlng, {
                     icon: redMarker
+                })
+            }
+        }).addTo(map);
+        L.geoJson(points, {
+            pointToLayer: function(feature, latlng) {
+                // console.log(latlng);
+                // var name = feature.properties.Name;
+                // console.log(feature.properties.Name);
+                return L.marker(latlng, {
+                    icon: blueMarker
                 })
             }
         }).addTo(map);

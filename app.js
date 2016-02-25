@@ -189,13 +189,13 @@ app.post('/submitFilter', function(req, res) {
         "operator": "≥",
         "operator_amt": "2",
         "parentLayer": "Education",
-        "Name": "JC", //Erwin : Change the key name
+        "SCH_TYPE": "JC", //Erwin : Change the key name
         "within_range": "1"
     }, {
         "operator": "≤",
         "operator_amt": "1",
         "parentLayer": "Education",
-        "Name": "primary",
+        "SCH_TYPE": "primary",
         "within_range": "2"
     }]
 
@@ -282,11 +282,23 @@ function calculateBuffer(aHDB, ORrequirement, lengthOfRequirements, lengthofHDBf
         // Check Buffer Point Within
         var ptsWithin = turf.within(filtered, HDBbuffered);
         ptsWithin.csr = { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::3414" } },
-            HDBbuffered.features.push(currentPoint)
-
+        HDBbuffered.features.push(currentPoint)
         objectSend.buffer = HDBbuffered;
         objectSend.points = ptsWithin;
-        // console.log(JSON.stringify(objectSend));
+        console.log("======================================================");
+        // console.log("key " + key);
+        // console.log("value "+ value);
+        // console.log(filtered);
+        // console.log(JSON.stringify(ptsWithin));
+        console.log("======================================================");
+        // if(lengthOfRequirements === 2){
+        //     console.log(JSON.stringify(layerRequest));
+        // }
+        
+        // console.log("key " + key);
+        // console.log("value "+ value);
+        // console.log(filtered);
+        // console.log(JSON.stringify(ptsWithin));
 
         var breakPoint = lengthOfRequirements * lengthofHDBfile;
         result.push(objectSend);
