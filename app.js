@@ -35,41 +35,6 @@ app.get('/', function(req, res) {
     res.sendFile((path.join(__dirname + '/index.html')));
     //It will find and locate index.html from View or Scripts
 });
-// var SPdir = globalurl + "/basemap/SingaporePools.geojson" ;
-// var SingaporePools = JSON.parse(fs.readFileSync(SPdir, "utf8"));
-// // console.log(SingaporePools);
-// var SubzoneDir = globalurl + "/basemap/DGPSubZone.geojson";
-// var SubZone = JSON.parse(fs.readFileSync(SubzoneDir, "utf8"));
-// var counted = turf.count(SubZone, SingaporePools, 'pt_count');
-// var resultFeatures = SingaporePools.features.concat(counted.features);
-// var result = {
-//   "type": "FeatureCollection",
-//   "features": resultFeatures
-// };
-// var jsonfile = require('jsonfile')
-// var file = globalurl + '/basemap/result.json';
-// jsonfile.writeFile(file, result, function (err) {
-//   console.error(err)
-// })
-// app.get("/getResult", function (req,res){
-//     // var resultSend = JSON
-//     var file = ogr2ogr(file)
-//         .format('GeoJSON')
-//         .skipfailures()
-//         .project("EPSG:3414")
-//         .stream()
-//     FILE.pipe(fs.createWriteStream(globalurl + '/'+ "basemap"+ '/' + "result" + '.geojson'))
-// })
-// fs.createWriteStream(globalurl + '/'+ 'basemap'+ '/' + result + '.geojson');
-// convert(result,"Result","basemap");
-// convert(result,result,"basemap");
-// fs.writeFile(globalurl + "/basemap/result.geojson", result, function(err) {
-//     if(err) {
-//         return console.log(err);
-//     }
-//     console.log("The file was saved!");
-// });
-// convert(result,"result","basemap");
 app.get('/geojson', function(req, res) {
         fs.readFile(__dirname + "/app/geojson/" + "buildings.json", "utf8", function(err, data) {
             data = JSON.parse(data);
@@ -88,7 +53,6 @@ function getSecondPart(str) {
 function getFirstPart(str) {
     return str.split('.')[0];
 }
-
 
 function setFilterTableData(requestBody) {
     var filterTableData = [];
@@ -153,50 +117,22 @@ app.post('/upload', function(req, res) {
         res.redirect("back");
     })
 });
-// ===================================Upload HDB to folder=====================================
-app.post("/uploadHDB", function(req, res) {
-    var jsonString = '';
-    req.on('data', function(data) {
-        jsonString += data;
-    });
-    req.on('end', function() {
-            var JSONReturn = JSON.parse(jsonString);
-            var urlDestination = globalurl + "/HDB/HDB.json";
-            fs.writeFile(urlDestination, JSON.stringify(JSONReturn), function(err) {
-                if (err) {
-                    return console.log(err);
-                }
-            });
-            res.redirect("back");
-
-        })
-        // console.log( JSON.stringify(jsonString));
-        // var JSONReturn = JSON.stringify(jsonString);
-    console.log(req.body);
-
-
-});
-// ===================================Upload HDB to folder===========================================
 // ===================================Recieve Filter and Process HDB=================================
-
 app.use(bodyParser.json()); // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({ // to support URL-encoded bodies
     extended: true
 }));
-
 app.post('/submitFilter', function(req, res) {
     // var objectReceived = [{
-        // "operator": "≥",
-        // "operator_amt": "1",
-        // "parentLayer": "Education",
-        // "SCH_TYPE": "secondary", //Erwin : Change the key name
-        // "within_range": "5"
+    // "operator": "≥",
+    // "operator_amt": "1",
+    // "parentLayer": "Education",
+    // "SCH_TYPE": "secondary", //Erwin : Change the key name
+    // "within_range": "5"
     // }];
-
     // console.log(objectReceived[])
-    objectReceived = console.log(req.body);
+    // objectReceived = console.log(req.body);
     objectReceived = req.body;
-
     var url = globalurl + "/HDB/HDB.json";
     fs.readFile(url, "utf8", function(err, data) {
         var HDB = JSON.parse(data);
@@ -206,12 +142,9 @@ app.post('/submitFilter', function(req, res) {
                 var lengthOfRequirements = objectReceived.length;
                 ORrequirement = objectReceived[i];
                 calculateBuffer(aHDB, ORrequirement, lengthOfRequirements, HDB.length);
-
             }
         }
     })
-
-
     res.redirect("/");
     //ken do from here
 });
@@ -226,15 +159,19 @@ function calculateBuffer(aHDB, ORrequirement, lengthOfRequirements, lengthofHDBf
     TempHDBArray = [];
     // for (var m = 0; m < HDB.length; m++) {
     //     var aHDB = HDB[m];
-
-    var currentPoint = {
-        "type": "Feature",
-        "properties": {},
-        "geometry": {}
-    };
-    currentPoint["properties"] = aHDB.properties;
-    currentPoint["geometry"]["coordinates"] = aHDB.coordinates;
-    currentPoint["geometry"]["type"] = aHDB.type;
+    var typeofGEOJSOB = aHDB.type;
+    if (typeofGEOJSOB === "Feature") {
+        var currentPoint = aHDB;
+    } else {
+        var currentPoint = {
+            "type": "Feature",
+            "properties": {},
+            "geometry": {}
+        };
+        currentPoint["properties"] = aHDB.properties;
+        currentPoint["geometry"]["coordinates"] = aHDB.coordinates;
+        currentPoint["geometry"]["type"] = aHDB.type;
+    }
     var unit = "kilometers";
     var distance = parseInt(ORrequirement.within_range);
     var HDBbuffered = turf.buffer(currentPoint, distance, unit);
@@ -248,42 +185,27 @@ function calculateBuffer(aHDB, ORrequirement, lengthOfRequirements, lengthofHDBf
     // var file = fs.readFile(urlLayerRetrieved, "utf8", function(err, dataLayer) {
     // })
     // console.log(file);
-
-
     fs.readFile(urlLayerRetrieved, "utf8", function(err, dataLayer) {
-
-
         var objectSend = { "buffer": null, "points": null };
-
         // retrieved Layer Object
         var layerRequest = JSON.parse(dataLayer);
-
         //Filter necssary Layer
         var key = Object.keys(ORrequirement)[3];
         var value = ORrequirement[key];
         var filtered = turf.filter(layerRequest, key, value);
-
         // Check Buffer Point Within
         var ptsWithin = turf.within(filtered, HDBbuffered);
-
         ptsWithin.csr = { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::3414" } },
-
-
             HDBbuffered.features.push(currentPoint)
-
         objectSend.buffer = HDBbuffered;
         objectSend.points = ptsWithin;
-
         var requirement = {};
         requirement["requirement_description"] = ORrequirement;
         requirement["requirement_points"] = ptsWithin;
-
-
-
         var hdbOBject = TempHDBArray[TempHDBArray.length - 1];
+        // var currentPoint["geometry"]["coordinates"]
         TempHDBArray.push(currentPoint);
-
-        if (_.isMatch(hdbOBject, currentPoint)) {
+        if (_.isEqual(hdbOBject, currentPoint)) {
             // console.log(true);
             // console.log(HDBArray);
             var hdbOBject = _.find(HDBArray, function(HDB) {
@@ -299,9 +221,6 @@ function calculateBuffer(aHDB, ORrequirement, lengthOfRequirements, lengthofHDBf
             HDB.ORREquirement.push(requirement);
             HDBArray.push(HDB)
         }
-
-
-
         var breakPoint = lengthOfRequirements * lengthofHDBfile;
         if (TempHDBArray.length === breakPoint) {
             var path = globalurl + "/ORResults/";
@@ -309,27 +228,17 @@ function calculateBuffer(aHDB, ORrequirement, lengthOfRequirements, lengthofHDBf
             var rowCount = name.length;
             var ANDREquirementNameFile = "ORresult" + rowCount;
             var urlDestination = globalurl + "/ORResults/" + ANDREquirementNameFile + ".json";
-
             fs.writeFile(urlDestination, JSON.stringify(HDBArray), function(err) {
                 if (err) {
                     return console.log(err);
                 }
             });
-
         }
-
-
-
-
     });
     // }
-
     // })
 }
 // ===================================Recieve Filter and Process HDB=================================
-
-
-
 // var dir =  __dirname + '/app' + '/geojson' ;
 // var source = JSON.parse(require(dir + '/SingaporePools1.geojson'));
 // fs.readFile(__dirname + "/app/geojson/" + "DGPSubZone.json", "utf8", function(err, data) {
@@ -355,56 +264,123 @@ app.get('/getAllLayer', function(req, res) {
     var name = fs.readdirSync(path);
     res.send(name);
 });
-app.get('/getPolygon/:coordinates', function(req, res) {
-        var coordinates = req.params.coordinates;
-        var consumerKey = "Mub69kgiH4aBo6yLb1eAvdCBBgnGYHMf";
-        var APItest = "http://open.mapquestapi.com/nominatim/v1/search.php?key=" + consumerKey + "&format=json&polygon_geojson=1&q=" + coordinates;
-        request(APItest, function(error, response, body) {
+app.post('/findHDBPolygon', function(req, res) {
+        var objectReceived = req.body;
+        // console.log(JSON.stringify(objectReceived));
+        var lengthOfRequest = objectReceived.length;
+        var postcode = String(objectReceived.POSTCODE);
+        // console.log("id " + postcode);
+        if (postcode.length < 6) {
+            postcode = "0" + postcode;
+        }
+        var urlString = "http://www.onemap.sg/APIV2/services.svc/basicSearchV2?token=qo/s2TnSUmfLz+32CvLC4RMVkzEFYjxqyti1KhByvEacEdMWBpCuSSQ+IFRT84QjGPBCuz/cBom8PfSm3GjEsGc8PkdEEOEr&searchVal=" + postcode + "&otptFlds=SEARCHVAL,CATEGORY&returnGeom=1&rset=1&projSys=WGS84";
+        leafletFeatures = [];
+        request(urlString, function(error, response, geocodedData) {
             if (!error && response.statusCode == 200) {
-                // console.log(body) // Show the HTML for the Google homepage.
-                res.send(JSON.parse(body));
+                var geocodedDataJson = JSON.parse(geocodedData);
+                searchResults = geocodedDataJson["SearchResults"]; //array containing response of geocoding API
+                var leafletFeature = new Object(); //single leaflet object
+                leafletFeature["type"] = "Feature";
+                leafletFeature["properties"] = objectReceived;
+                if (searchResults[0].hasOwnProperty("ErrorMessage") === false) {
+                    if (searchResults.length > 1) {
+                        var longitude = searchResults[1]["X"];
+                        var latitude = searchResults[1]["Y"];
+                        var coordinates = latitude + "," + longitude;
+                        var consumerKey = "Mub69kgiH4aBo6yLb1eAvdCBBgnGYHMf";
+                        var APItest = "http://open.mapquestapi.com/nominatim/v1/search.php?key=" + consumerKey + "&format=json&polygon_geojson=1&q=" + coordinates;
+                        HDBArray = [];
+                        request(APItest, function(error, response, body) {
+                            if (!error && response.statusCode == 200) {
+                                // console.log(body) // Show the HTML for the Google homepage.
+                                var data = JSON.parse(body);
+                                // console.log(HDBPoly);
+                                var properties = {}
+                                var display_name = data[0].display_name;
+                                var lat = data[0].lat;
+                                var lon = data[0].lon;
+                                // properties["Name"] = display_name;
+                                // properties["Latitude"] = lat;
+                                // properties["Longitude"] = lon;
+                                // properties["POSTAL CODE "] = postcode;
+                                // console.log(properties);
+                                var HDBbuilding = new Object();
+                                HDBbuilding = data[0].geojson;
+                                // console.log(objectReceived);
+                                HDBbuilding["properties"] = objectReceived;
+                                HDBArray.push(HDBbuilding);
+                                var lengthOfHDB = HDBArray.length;
+                                if (lengthOfHDB === lengthOfRequest) {
+                                    var urlDestination = globalurl + "/HDB/HDB.json";
+                                    fs.writeFile(urlDestination, JSON.stringify(HDBArray), function(err) {
+                                        if (err) {
+                                            return console.log(err);
+                                        }
+                                    });
+                                }
+
+                            }
+                        })
+                    }
+                }
             }
         });
+        res.redirect("/");
     })
-    // end read all files from folder
-app.get('/getPostalCode/:id', function(req, res) {
-    var postcode = req.params.id;
-    // console.log("id " + postcode);
-    var urlString = "http://www.onemap.sg/APIV2/services.svc/basicSearchV2?token=qo/s2TnSUmfLz+32CvLC4RMVkzEFYjxqyti1KhByvEacEdMWBpCuSSQ+IFRT84QjGPBCuz/cBom8PfSm3GjEsGc8PkdEEOEr&searchVal=" + postcode + "&otptFlds=SEARCHVAL,CATEGORY&returnGeom=1&rset=1&projSys=WGS84";
-    request(urlString, function(error, response, body) {
-        if (!error && response.statusCode == 200) {
-            // console.log(body) // Show the HTML for the Google homepage.
-            res.send(body);
+    // ======================
+app.post('/findPostalCode', function(req, res) {
+        var objectReceived = req.body;
+        // console.log(JSON.stringify(objectReceived));
+        var lengthOfRequest = objectReceived.length;
+        var postcode = String(objectReceived.POSTCODE);
+        // console.log("id " + postcode);
+        if (postcode.length < 6) {
+            postcode = "0" + postcode;
         }
-    });
-})
-
-function geoCoding(postcode) {
-    var urlString = "http://www.onemap.sg/APIV2/services.svc/basicSearchV2?token=qo/s2TnSUmfLz+32CvLC4RMVkzEFYjxqyti1KhByvEacEdMWBpCuSSQ+IFRT84QjGPBCuz/cBom8PfSm3GjEsGc8PkdEEOEr&searchVal=" + postcode + "&otptFlds=SEARCHVAL,CATEGORY&returnGeom=1&rset=1&projSys=WGS84";
-    request(urlString, function(error, response, body) {
-        if (!error && response.statusCode == 200) {
-            var data = JSON.parse(body);
-            var X = data.SearchResults[1].X; // Show the HTML for the Google homepage.
-            var Y = data.SearchResults[1].Y;
-            var coordinates = "{ 'X': " + X + ",'Y' :" + Y + "}";
-            return coordinates;
-        }
-    });
-}
-// convert shapefile to geojson
-function convert(file, name) {
-    var shapefile = ogr2ogr(file)
-        .format('GeoJSON')
-        .skipfailures()
-        // .project("EPSG:3414")
-        .stream();
-    shapefile.pipe(fs.createWriteStream(globalurl + '/geojson/' + name + '.geojson'))
-}
-var postcodeQuery = geoCoding("560615");
-// var json = {x:"1"}
-// // console.log(json.x);
-// JSON.parse(postcodeQuery);
-// console.log(postcodeQuery);
+        var urlString = "http://www.onemap.sg/APIV2/services.svc/basicSearchV2?token=qo/s2TnSUmfLz+32CvLC4RMVkzEFYjxqyti1KhByvEacEdMWBpCuSSQ+IFRT84QjGPBCuz/cBom8PfSm3GjEsGc8PkdEEOEr&searchVal=" + postcode + "&otptFlds=SEARCHVAL,CATEGORY&returnGeom=1&rset=1&projSys=WGS84";
+        leafletFeatures = [];
+        request(urlString, function(error, response, geocodedData) {
+            if (!error && response.statusCode == 200) {
+                var geocodedDataJson = JSON.parse(geocodedData);
+                searchResults = geocodedDataJson["SearchResults"]; //array containing response of geocoding API
+                var leafletFeature = new Object(); //single leaflet object
+                leafletFeature["type"] = "Feature";
+                leafletFeature["properties"] = objectReceived;
+                if (searchResults[0].hasOwnProperty("ErrorMessage") === false) {
+                    if (searchResults.length > 1) {
+                        var longitude = searchResults[1]["X"];
+                        var latitude = searchResults[1]["Y"];
+                        var geoObj = {};
+                        geoObj["type"] = "Point";
+                        geoObj["coordinates"] = [];
+                        geoObj["coordinates"].push(parseFloat(longitude)); //long
+                        geoObj["coordinates"].push(parseFloat(latitude)); //lat
+                        leafletFeature["geometry"] = geoObj;
+                        leafletFeatures.push(leafletFeature);
+                        var lengthOfHDB = leafletFeatures.length;
+                        if (lengthOfHDB === lengthOfRequest) {
+                            var urlDestination = globalurl + "/HDB/HDB.json";
+                            fs.writeFile(urlDestination, JSON.stringify(leafletFeatures), function(err) {
+                                if (err) {
+                                    return console.log(err);
+                                }
+                            });
+                        }
+                    }
+                }
+            }
+        });
+        res.redirect("/");
+    })
+//     // convert shapefile to geojson
+// function convert(file, name) {
+//     var shapefile = ogr2ogr(file)
+//         .format('GeoJSON')
+//         .skipfailures()
+//         // .project("EPSG:3414")
+//         .stream();
+//     shapefile.pipe(fs.createWriteStream(globalurl + '/geojson/' + name + '.geojson'))
+// }
 process.on('uncaughtException', function(err) {
     console.log('Caught exception: ' + err);
 });
