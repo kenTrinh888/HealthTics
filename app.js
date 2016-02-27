@@ -185,56 +185,33 @@ app.use(bodyParser.urlencoded({ // to support URL-encoded bodies
 }));
 
 app.post('/submitFilter', function(req, res) {
-    var objectReceived = [{
-        "operator": "≥",
-        "operator_amt": "2",
-        "parentLayer": "Education",
-        "SCH_TYPE": "JC", //Erwin : Change the key name
-        "within_range": "1"
-    }, {
-        "operator": "≤",
-        "operator_amt": "1",
-        "parentLayer": "Education",
-        "SCH_TYPE": "primary",
-        "within_range": "2"
-    }]
+    // var objectReceived = [{
+        // "operator": "≥",
+        // "operator_amt": "1",
+        // "parentLayer": "Education",
+        // "SCH_TYPE": "secondary", //Erwin : Change the key name
+        // "within_range": "5"
+    // }];
 
     // console.log(objectReceived[])
-
+    objectReceived = console.log(req.body);
+    objectReceived = req.body;
 
     var url = globalurl + "/HDB/HDB.json";
     fs.readFile(url, "utf8", function(err, data) {
         var HDB = JSON.parse(data);
-        for (var i = 0; i < objectReceived.length; i++) {
-            var lengthOfRequirements = objectReceived.length;
-            ORrequirement = objectReceived[i];
-            for (var m = 0; m < HDB.length; m++) {
-                var aHDB = HDB[m];
+        for (var m = 0; m < HDB.length; m++) {
+            var aHDB = HDB[m];
+            for (var i = 0; i < objectReceived.length; i++) {
+                var lengthOfRequirements = objectReceived.length;
+                ORrequirement = objectReceived[i];
                 calculateBuffer(aHDB, ORrequirement, lengthOfRequirements, HDB.length);
 
             }
         }
     })
 
-    // console.log(objectCalculated);
 
-    // console.log(HDB);
-    // var filterTableData = setFilterTableData(request.body);
-    // var filterTableData = JSON.stringify(request.body);
-    // console.log(req.body)
-
-    // fs.readFile(url, "utf8",function(err, data) {
-    //     var HDB = JSON.parse(data);
-    //     console.log(HDB[0]);
-
-    // })
-
-    // console.log(filterTableData);
-    // fs.readFile(url, "utf8",function(err, data) {
-    //     var HDB = JSON.parse(data);
-    //     console.log(HDB[0]);
-
-    // })
     res.redirect("/");
     //ken do from here
 });
@@ -243,7 +220,10 @@ function calculateBuffer(aHDB, ORrequirement, lengthOfRequirements, lengthofHDBf
     // var url = globalurl + "/HDB/HDB.json";
     // fs.readFile(url, "utf8", function(err, data) {
     //     var HDB = JSON.parse(data);
+    requirementArray = [];
+    HDBArray = [];
     result = [];
+    TempHDBArray = [];
     // for (var m = 0; m < HDB.length; m++) {
     //     var aHDB = HDB[m];
 
@@ -268,7 +248,11 @@ function calculateBuffer(aHDB, ORrequirement, lengthOfRequirements, lengthofHDBf
     // var file = fs.readFile(urlLayerRetrieved, "utf8", function(err, dataLayer) {
     // })
     // console.log(file);
+
+
     fs.readFile(urlLayerRetrieved, "utf8", function(err, dataLayer) {
+
+
         var objectSend = { "buffer": null, "points": null };
 
         // retrieved Layer Object
@@ -281,41 +265,60 @@ function calculateBuffer(aHDB, ORrequirement, lengthOfRequirements, lengthofHDBf
 
         // Check Buffer Point Within
         var ptsWithin = turf.within(filtered, HDBbuffered);
+
         ptsWithin.csr = { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::3414" } },
-        HDBbuffered.features.push(currentPoint)
+
+
+            HDBbuffered.features.push(currentPoint)
+
         objectSend.buffer = HDBbuffered;
         objectSend.points = ptsWithin;
-        console.log("======================================================");
-        // console.log("key " + key);
-        // console.log("value "+ value);
-        // console.log(filtered);
-        // console.log(JSON.stringify(ptsWithin));
-        console.log("======================================================");
-        // if(lengthOfRequirements === 2){
-        //     console.log(JSON.stringify(layerRequest));
-        // }
-        
-        // console.log("key " + key);
-        // console.log("value "+ value);
-        // console.log(filtered);
-        // console.log(JSON.stringify(ptsWithin));
+
+        var requirement = {};
+        requirement["requirement_description"] = ORrequirement;
+        requirement["requirement_points"] = ptsWithin;
+
+
+
+        var hdbOBject = TempHDBArray[TempHDBArray.length - 1];
+        TempHDBArray.push(currentPoint);
+
+        if (_.isMatch(hdbOBject, currentPoint)) {
+            // console.log(true);
+            // console.log(HDBArray);
+            var hdbOBject = _.find(HDBArray, function(HDB) {
+                // console.log(currentPoint);
+                return HDB.HDB_details === JSON.stringify(currentPoint);
+            });
+            // console.log(object);
+            hdbOBject["ORREquirement"].push(requirement);
+        } else {
+            // console.log(false);
+            var HDB = { "ORREquirement": [] };
+            HDB["HDB_details"] = JSON.stringify(currentPoint);
+            HDB.ORREquirement.push(requirement);
+            HDBArray.push(HDB)
+        }
+
+
 
         var breakPoint = lengthOfRequirements * lengthofHDBfile;
-        result.push(objectSend);
-        // console.log(result);
+        if (TempHDBArray.length === breakPoint) {
+            var path = globalurl + "/ORResults/";
+            var name = fs.readdirSync(path);
+            var rowCount = name.length;
+            var ANDREquirementNameFile = "ORresult" + rowCount;
+            var urlDestination = globalurl + "/ORResults/" + ANDREquirementNameFile + ".json";
 
-        // console.log(JSON.stringify(ptsWithin));
-
-        // console.log("length :" + result.length);
-        if (result.length === breakPoint) {
-            var urlDestination = globalurl + "/ORResults/ORresult.json";
-            fs.writeFile(urlDestination, JSON.stringify(result), function(err) {
+            fs.writeFile(urlDestination, JSON.stringify(HDBArray), function(err) {
                 if (err) {
                     return console.log(err);
                 }
             });
 
         }
+
+
 
 
     });
