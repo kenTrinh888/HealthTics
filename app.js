@@ -103,7 +103,7 @@ app.post('/upload', function(req, res) {
             objectWrite.features[i].geometry.coordinates = newCoor;
         }
         var beautyJSON = JSON.stringify(objectWrite);
-        console.log(beautyJSON);
+        // console.log(beautyJSON);
         // for (var key in features) {
         //     console.log(features.geometry);
         // }
@@ -133,6 +133,7 @@ app.post('/submitFilter', function(req, res) {
     // console.log(objectReceived[])
     // objectReceived = console.log(req.body);
     objectReceived = req.body;
+    // console.log(objectReceived);
     var url = globalurl + "/HDB/HDB.json";
     fs.readFile(url, "utf8", function(err, data) {
         var HDB = JSON.parse(data);
@@ -202,6 +203,29 @@ function calculateBuffer(aHDB, ORrequirement, lengthOfRequirements, lengthofHDBf
         var requirement = {};
         requirement["requirement_description"] = ORrequirement;
         requirement["requirement_points"] = ptsWithin;
+        var numberofPoints = ptsWithin.features.length;
+        var operator = ORrequirement.operator;
+        var operator_amt = ORrequirement.operator_amt;
+
+        if(operator === "≥"){
+           if(numberofPoints >= operator_amt){
+                requirement["requirement_result"] = true;
+           }else {
+                requirement["requirement_result"] = false;
+           }
+        } else if (operator === "≤"){
+            if(numberofPoints <= operator_amt){
+                requirement["requirement_result"] = true;
+           }else {
+                requirement["requirement_result"] = false;
+           }
+        }else{
+             if(numberofPoints === operator_amt){
+                requirement["requirement_result"] = true;
+           }else {
+                requirement["requirement_result"] = false;
+           }
+        }
         var hdbOBject = TempHDBArray[TempHDBArray.length - 1];
         // var currentPoint["geometry"]["coordinates"]
         TempHDBArray.push(currentPoint);
@@ -226,8 +250,36 @@ function calculateBuffer(aHDB, ORrequirement, lengthOfRequirements, lengthofHDBf
             var path = globalurl + "/ORResults/";
             var name = fs.readdirSync(path);
             var rowCount = name.length;
+            // console.log(HDBArray);
+           
             var ANDREquirementNameFile = "ORresult" + rowCount;
             var urlDestination = globalurl + "/ORResults/" + ANDREquirementNameFile + ".json";
+            
+            for (var i = 0; i < HDBArray.length; i++){
+                
+                var oneHDB = HDBArray[i];
+                 // console.log(oneHDB);
+                var ORREquirementArray = oneHDB.ORREquirement;
+                var evaluationArray = [];
+                for (var m = 0 ; m < ORREquirementArray.length ; m++){
+                    var evaluation = ORREquirementArray[m].requirement_result;
+                    evaluationArray.push(evaluation);
+                }
+
+                var totalEvaluation = _.uniq(evaluationArray);
+                // console.log(evaluationArray);
+
+                if(totalEvaluation.length > 1 ){
+                    HDBArray[i]["totalRequirement"] = true;
+                }else{
+                    if(totalEvaluation[0] === true){
+                        HDBArray[i]["totalRequirement"] = true;
+                    }else{
+                        HDBArray[i]["totalRequirement"] = false;
+                    }
+                }
+
+            }
             fs.writeFile(urlDestination, JSON.stringify(HDBArray), function(err) {
                 if (err) {
                     return console.log(err);
