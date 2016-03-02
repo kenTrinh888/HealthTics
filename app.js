@@ -127,7 +127,27 @@ function createEmptyFilterTableData(requestBody){
     return filterTableData;
 }
 
-function setFilterTableForArray(filterTableData, requestBody, prop){
+function setFilterTableForSingleRow(filterTableData, requestBody, prop){
+    if (prop === "layerSelected") {
+        var completeLayerName = requestBody[prop];
+        var parentLayer, subLayer = "";
+        if (completeLayerName.indexOf("_") != -1) {
+            subLayer = completeLayerName.split("_")[0];
+            parentLayer = completeLayerName.split("_")[1];
+        } else {
+            subLayer = completeLayerName;
+            parentLayer = completeLayerName;
+        }
+        filterTableData[0]["parentLayer"] = parentLayer;
+        filterTableData[0]["subLayer"] = subLayer;
+    } else {
+        filterTableData[0][prop] = requestBody[prop];
+    }
+    
+    return filterTableData;
+}
+
+function setFilterTableForMultipleRows(filterTableData, requestBody, prop){
     requestBody[prop].forEach(function(element,i){
         if (prop === "layerSelected") {
             var completeLayerName = requestBody[prop][i];
@@ -148,22 +168,22 @@ function setFilterTableForArray(filterTableData, requestBody, prop){
     });
     return filterTableData;
 }
+
 function setFilterTableData(requestBody) {
     console.log(requestBody);   
     try{
         var filterTableData = createEmptyFilterTableData(requestBody);
         for (var prop in requestBody) {
             if(Array.isArray(requestBody[prop])){
-                filterTableData = setFilterTableForArray(filterTableData, requestBody, prop);
+                filterTableData = setFilterTableForMultipleRows(filterTableData, requestBody, prop);
             } else{
-                // filterTableData[i]["parentLayer"] = parentLayer;
-                //         filterTableData[i]["subLayer"] = subLayer;
+                filterTableData = setFilterTableForSingleRow(filterTableData, requestBody, prop);
             }              
         };
         console.log(filterTableData);
     }
-    catch(AssertionFailedException){
-        console.log("e");
+    catch(err){
+        console.log("err: " + err);
     }
     
     return filterTableData;
@@ -197,17 +217,25 @@ app.post('/submitFilter', function(req, res) {
     // console.log(objectReceived);
     console.log(objectReceived[0].operator_amt);
     var url = globalurl + "/HDB/HDB.json";
-    fs.readFile(url, "utf8", function(err, data) {
-        var HDB = JSON.parse(data);
-        for (var m = 0; m < HDB.length; m++) {
-            var aHDB = HDB[m];
-            for (var i = 0; i < objectReceived.length; i++) {
-                var lengthOfRequirements = objectReceived.length;
-                ORrequirement = objectReceived[i];
-                calculateBuffer(aHDB, ORrequirement, lengthOfRequirements, HDB.length);
+    try{
+        fs.readFile(url, "utf8", function(err, data) {
+            var HDB = JSON.parse(data);
+            for (var m = 0; m < HDB.length; m++) {
+                var aHDB = HDB[m];
+                for (var i = 0; i < objectReceived.length; i++) {
+                    var lengthOfRequirements = objectReceived.length;
+                    ORrequirement = objectReceived[i];
+                    calculateBuffer(aHDB, ORrequirement, lengthOfRequirements, HDB.length);
+                }
             }
-        }
-    })
+            if(err){
+                console.log(err);
+            }
+        })
+    }catch(err){
+        // console.log(err);
+    }
+    
     res.redirect("/");
     //ken do from here
 });
