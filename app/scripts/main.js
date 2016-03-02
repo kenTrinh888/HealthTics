@@ -174,9 +174,8 @@ function getPostalCodeGeo(layerName,aPoint, postcode,breakPoint) {
 //         }).addTo(map);
 //     }
 // });
-$.get("/getNumberofHDB", function (data){
-    
-})
+
+
 $(document).ready(function() {
     function onEachFeature(feature, layer) {
         // does this feature have a property named popupContent?
