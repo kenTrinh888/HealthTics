@@ -23,33 +23,106 @@ var blueMarker = L.AwesomeMarkers.icon({
 });
 // proj4.defs("EPSG:3414","+proj=tmerc +lat_0=1.366666666666667 +lon_0=103.8333333333333 +k=1 +x_0=28001.642 +y_0=38744.572 +ellps=WGS84 +units=m +no_defs");
 $('#convert').submit(function(e) {
+    var postcodeContain = true;
     var file = $("#upload")[0].files[0];
+
     var layerName = file.name;
+
     e.preventDefault();
+
     $(this).ajaxSubmit({
         // console.log("submit");
         success: function(data, textStatus, jqXHR) {
-            console.log(data);
-            var layer = {
-                    "name": layerName,
-                    "datamain": data
+            if (postcodeContain === true) {
+                var arrayofPoints = data.features;
+
+                for (index in arrayofPoints) {
+
+                    aPoint = arrayofPoints[index];
+                    var postcode = aPoint.properties.POSTALCODE;
+                    if (postcode.length < 6) {
+                        postcode = "0" + postcode;
+                    }
+                    var breakPoint= arrayofPoints.length;
+                    getPostalCodeGeo(layerName,aPoint,postcode,breakPoint)
+                    // data.features[index].geometry = [1,1];
                 }
-                // layer.data = data
-            var dataSend = JSON.stringify(layer);
-            // console.log(dataSend);
-            $.ajax({
-                url: '/upload',
-                type: 'POST',
-                data: dataSend,
-                contentType: 'application/json',
-                success: function(data) {
-                    console.log('success');
-                    location.reload();
-                }
-            });
+
+            }
+            //     var layer = {
+            //             "name": layerName,
+            //             "datamain": data
+            //         }
+            //         // layer.data = data
+            //     var dataSend = JSON.stringify(layer);
+            //     // console.log(dataSend);
+            //     $.ajax({
+            //         url: '/upload',
+            //         type: 'POST',
+            //         data: dataSend,
+            //         contentType: 'application/json',
+
+            //         success: function(data) {
+            //             console.log('success');
+            //             location.reload();
+            //         }
+            //     });
+        }
+
+    })
+
+});
+
+function getPostalCodeGeo(layerName,aPoint, postcode,breakPoint) {
+    breakPoint = parseInt(breakPoint);
+    url = "/getPostalCode/" + postcode;
+    InvalidPostalCode = []
+    coordinateArray = [];
+    $.getJSON(url, function(objectReturn) {
+        // var breakPoint = parseInt(index) + 1;
+        var objectLocation = {"type" : "Point","coordinates": objectReturn}
+       if(!objectReturn.hasOwnProperty("postalcode")){
+         aPoint.geometry= objectLocation;
+        // console.log(JSON.stringify(aPoint));
+        coordinateArray.push(aPoint);
+        // console.log(coordinateArray.length);
+        
+       }else{
+        InvalidPostalCode.push(objectReturn);
+        console.log(objectReturn);
+       }
+       var loopendPoint = coordinateArray.length + InvalidPostalCode.length;
+       console.log(loopendPoint);
+        if (loopendPoint === breakPoint) {
+             console.log("dataSend");
+            var dataReturn = {
+                "type": "FeatureCollection",
+                "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::3414" } },
+                "features": []
+            }
+            dataReturn.features = coordinateArray;
+                var layer = {
+                        "name": layerName,
+                        "datamain": dataReturn
+                    }
+                    // layer.data = data
+                var dataSend = JSON.stringify(layer);
+                // console.log(dataSend);
+                $.ajax({
+                    url: '/uploadlayer',
+                    type: 'POST',
+                    data: dataSend,
+                    contentType: 'application/json',
+
+                    success: function(data) {
+                        console.log('success');
+                        location.reload();
+                    }
+                });
         }
     })
-});
+
+}
 // $.get("/getAllLayer", function(data) {
 //     var names = data;
 //     for (var i = 1; i < names.length; i++) {
@@ -73,35 +146,37 @@ $('#convert').submit(function(e) {
 //         });
 //     }
 // })
-var urlforHDB = 'ORResults/ORresult.json';
-$.getJSON(urlforHDB, function(dataLoop) {
-    for (var i = 0; i < dataLoop.length; i++) {
-        var points = dataLoop[i].points;
-        var buffer = dataLoop[i].buffer;
-        console.log(points);
-        L.geoJson(buffer, {
-            pointToLayer: function(feature, latlng) {
-                // console.log(latlng);
-                // var name = feature.properties.Name;
-                // console.log(feature.properties.Name);
-                return L.marker(latlng, {
-                    icon: redMarker
-                })
-            }
-        }).addTo(map);
-        L.geoJson(points, {
-            pointToLayer: function(feature, latlng) {
-                // console.log(latlng);
-                // var name = feature.properties.Name;
-                // console.log(feature.properties.Name);
-                return L.marker(latlng, {
-                    icon: blueMarker
-                })
-            }
-        }).addTo(map);
-    }
-});
-
+// var urlforHDB = 'ORResults/ORresult.json';
+// $.getJSON(urlforHDB, function(dataLoop) {
+//     for (var i = 0; i < dataLoop.length; i++) {
+//         var points = dataLoop[i].points;
+//         var buffer = dataLoop[i].buffer;
+//         console.log(points);
+//         L.geoJson(buffer, {
+//             pointToLayer: function(feature, latlng) {
+//                 // console.log(latlng);
+//                 // var name = feature.properties.Name;
+//                 // console.log(feature.properties.Name);
+//                 return L.marker(latlng, {
+//                     icon: redMarker
+//                 })
+//             }
+//         }).addTo(map);
+//         L.geoJson(points, {
+//             pointToLayer: function(feature, latlng) {
+//                 // console.log(latlng);
+//                 // var name = feature.properties.Name;
+//                 // console.log(feature.properties.Name);
+//                 return L.marker(latlng, {
+//                     icon: blueMarker
+//                 })
+//             }
+//         }).addTo(map);
+//     }
+// });
+$.get("/getNumberofHDB", function (data){
+    
+})
 $(document).ready(function() {
     function onEachFeature(feature, layer) {
         // does this feature have a property named popupContent?

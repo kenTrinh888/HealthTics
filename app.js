@@ -9,6 +9,7 @@ var multer = require('multer');
 var busboy = require('connect-busboy');
 var turf = require('turf');
 var _ = require('lodash');
+// var path = require('path');
 var mapshaper = require('mapshaper');
 var globalurl = __dirname + '/app';
 var proj4 = require('proj4')
@@ -117,21 +118,50 @@ app.post('/upload', function(req, res) {
         res.redirect("back");
     })
 });
+app.post('/uploadlayer', function(req, res) {
+    var jsonString = '';
+    req.on('data', function(data) {
+        jsonString += data;
+    });
+    req.on('end', function() {
+        var JSONReturn = JSON.parse(jsonString);
+        var objectWrite = JSONReturn.datamain;
+        var nameofFile = JSONReturn.name;
+
+        var beautyJSON = JSON.stringify(objectWrite);
+
+        var nameFirstPart = getFirstPart(nameofFile);
+        var urlDestination = globalurl + "/geojson/" + nameFirstPart + ".geojson";
+        fs.writeFile(urlDestination, beautyJSON, function(err) {
+            if (err) {
+                return console.log(err);
+            }
+        });
+        res.redirect("back");
+    })
+});
 // ===================================Recieve Filter and Process HDB=================================
 app.use(bodyParser.json()); // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({ // to support URL-encoded bodies
     extended: true
 }));
 app.post('/submitFilter', function(req, res) {
+    // console.log(req.body);
     // var objectReceived = [{
     // "operator": "≥",
     // "operator_amt": "1",
     // "parentLayer": "Education",
-    // "SCH_TYPE": "secondary", //Erwin : Change the key name
+    // "SCH_TYPE": "secondary",
     // "within_range": "5"
-    // }];
+    // },
+    //  {"operator": "≥",
+    // "operator_amt": "1",
+    // "parentLayer": "HealthierDinning",
+    // "classification": "Restaurant", 
+    // "within_range": "2"}];
+
     // console.log(objectReceived[])
-    // objectReceived = console.log(req.body);
+    objectReceived = console.log(req.body);
     objectReceived = req.body;
     // console.log(objectReceived);
     var url = globalurl + "/HDB/HDB.json";
@@ -207,24 +237,24 @@ function calculateBuffer(aHDB, ORrequirement, lengthOfRequirements, lengthofHDBf
         var operator = ORrequirement.operator;
         var operator_amt = ORrequirement.operator_amt;
 
-        if(operator === "≥"){
-           if(numberofPoints >= operator_amt){
+        if (operator === "≥") {
+            if (numberofPoints >= operator_amt) {
                 requirement["requirement_result"] = true;
-           }else {
+            } else {
                 requirement["requirement_result"] = false;
-           }
-        } else if (operator === "≤"){
-            if(numberofPoints <= operator_amt){
+            }
+        } else if (operator === "≤") {
+            if (numberofPoints <= operator_amt) {
                 requirement["requirement_result"] = true;
-           }else {
+            } else {
                 requirement["requirement_result"] = false;
-           }
-        }else{
-             if(numberofPoints === operator_amt){
+            }
+        } else {
+            if (numberofPoints === operator_amt) {
                 requirement["requirement_result"] = true;
-           }else {
+            } else {
                 requirement["requirement_result"] = false;
-           }
+            }
         }
         var hdbOBject = TempHDBArray[TempHDBArray.length - 1];
         // var currentPoint["geometry"]["coordinates"]
@@ -242,6 +272,7 @@ function calculateBuffer(aHDB, ORrequirement, lengthOfRequirements, lengthofHDBf
             // console.log(false);
             var HDB = { "ORREquirement": [] };
             HDB["HDB_details"] = JSON.stringify(currentPoint);
+            HDB["HDB_JSON"] = currentPoint;
             HDB.ORREquirement.push(requirement);
             HDBArray.push(HDB)
         }
@@ -251,17 +282,17 @@ function calculateBuffer(aHDB, ORrequirement, lengthOfRequirements, lengthofHDBf
             var name = fs.readdirSync(path);
             var rowCount = name.length;
             // console.log(HDBArray);
-           
+
             var ANDREquirementNameFile = "ORresult" + rowCount;
             var urlDestination = globalurl + "/ORResults/" + ANDREquirementNameFile + ".json";
-            
-            for (var i = 0; i < HDBArray.length; i++){
-                
+
+            for (var i = 0; i < HDBArray.length; i++) {
+
                 var oneHDB = HDBArray[i];
-                 // console.log(oneHDB);
+                // console.log(oneHDB);
                 var ORREquirementArray = oneHDB.ORREquirement;
                 var evaluationArray = [];
-                for (var m = 0 ; m < ORREquirementArray.length ; m++){
+                for (var m = 0; m < ORREquirementArray.length; m++) {
                     var evaluation = ORREquirementArray[m].requirement_result;
                     evaluationArray.push(evaluation);
                 }
@@ -269,12 +300,12 @@ function calculateBuffer(aHDB, ORrequirement, lengthOfRequirements, lengthofHDBf
                 var totalEvaluation = _.uniq(evaluationArray);
                 // console.log(evaluationArray);
 
-                if(totalEvaluation.length > 1 ){
+                if (totalEvaluation.length > 1) {
                     HDBArray[i]["totalRequirement"] = true;
-                }else{
-                    if(totalEvaluation[0] === true){
+                } else {
+                    if (totalEvaluation[0] === true) {
                         HDBArray[i]["totalRequirement"] = true;
-                    }else{
+                    } else {
                         HDBArray[i]["totalRequirement"] = false;
                     }
                 }
@@ -424,42 +455,83 @@ app.post('/findPostalCode', function(req, res) {
         });
         res.redirect("/");
     })
-//     // convert shapefile to geojson
-// function convert(file, name) {
-//     var shapefile = ogr2ogr(file)
-//         .format('GeoJSON')
-//         .skipfailures()
-//         // .project("EPSG:3414")
-//         .stream();
-//     shapefile.pipe(fs.createWriteStream(globalurl + '/geojson/' + name + '.geojson'))
-// }
+    //     // convert shapefile to geojson
+    // function convert(file, name) {
+    //     var shapefile = ogr2ogr(file)
+    //         .format('GeoJSON')
+    //         .skipfailures()
+    //         // .project("EPSG:3414")
+    //         .stream();
+    //     shapefile.pipe(fs.createWriteStream(globalurl + '/geojson/' + name + '.geojson'))
+    // }
 process.on('uncaughtException', function(err) {
     console.log('Caught exception: ' + err);
 });
+
+// app.get("/getNumberofHDB",function(req,res){
+
+//     var directory = path.join(__dirname, 'app/ORResults');
+//     var name = fs.readdirSync(directory);
+
+//     res.send(name);
+
+// });
+
 // API get all Layer Columns Name
 app.get('/getAllLayerColumnName', function(req, res) {
     var path = __dirname + '/app' + '/geojson/';
     var name = fs.readdirSync(path);
     var objectsSend = [];
-    for (var i = 1; i < name.length; i++) {
+    for (var i = 0; i < name.length; i++) {
         var aName = name[i];
-        // if (aName === ".DS_Store"){
-        //     break;
-        // }
-        var columnsnameArray = [];
-        var object = { "name": aName, "columns": [] };
-        var dir = path + aName;
-        // console.log(dir);
-        var LayerFile = JSON.parse(fs.readFileSync(dir));
-        var layerProperties = LayerFile.features[0].properties;
-        for (key in layerProperties) {
-            columnsnameArray.push(key);
+        if (aName != ".DS_Store") {
+
+
+            var columnsnameArray = [];
+            var object = { "name": aName, "columns": [] };
+            var dir = path + aName;
+            // console.log(dir);
+            var LayerFile = JSON.parse(fs.readFileSync(dir));
+            var layerProperties = LayerFile.features[0].properties;
+            for (key in layerProperties) {
+                columnsnameArray.push(key);
+            }
+            object.columns = columnsnameArray;
+            objectsSend.push(object);
         }
-        object.columns = columnsnameArray;
-        objectsSend.push(object);
     }
     res.send(objectsSend);
 });
+
+//get coordinate  for postal code
+app.get('/getPostalCode/:postalcode', function(req, res) {
+    var postcode = req.params.postalcode;
+    var coordinates;
+
+    var urlString = "http://www.onemap.sg/APIV2/services.svc/basicSearchV2?token=qo/s2TnSUmfLz+32CvLC4RMVkzEFYjxqyti1KhByvEacEdMWBpCuSSQ+IFRT84QjGPBCuz/cBom8PfSm3GjEsGc8PkdEEOEr&searchVal=" + postcode + "&otptFlds=SEARCHVAL,CATEGORY&returnGeom=1&rset=1&projSys=WGS84";
+    request(urlString, function(error, response, body) {
+        if (!error && response.statusCode == 200) {
+            var data = JSON.parse(body);
+            // console.log(data);
+            var search_result = data.SearchResults;
+            if (search_result[0].hasOwnProperty("ErrorMessage")) {
+                coordinates = {};
+                coordinates["postalcode"] = postcode;
+
+            } else {
+                var X = data.SearchResults[1].X; // Show the HTML for the Google homepage.
+                var Y = data.SearchResults[1].Y;
+                coordinates = "[" + X + "," + Y + "]";
+            }
+            // console.log(coordinates);
+            // console.log(typeof coordinates)
+            res.send(coordinates);
+
+        }
+
+    });
+})
+
 // API get all Layer Columns Values
 app.get('/getAllLayerColumnValues/:nameOfFile/:columnName', function(req, res) {
     var path = __dirname + '/app' + '/geojson/';
@@ -481,6 +553,38 @@ app.get('/getAllLayerColumnValues/:nameOfFile/:columnName', function(req, res) {
     }
     var result = _.uniq(propertiesArray);
     res.send(result);
+});
+app.get("/getNumberofHDB", function(req, res) {
+    var path = __dirname + '/app' + '/ORResults';
+    var name = fs.readdirSync(path);
+    var results = [];
+    for (var i = 0; i < name.length; i++) {
+        aName = name[i];
+        if (aName != ".DS_Store") {
+            url = __dirname + "/app/ORResults/" + aName;
+            fs.readFile(url, "utf8", function(err, data) {
+                data = JSON.parse(data);
+                var tempArray = [];
+                for (index in data ){
+                    delete data[index].HDB_details
+                    tempArray.push(data[index]);
+                }
+                
+                results.push(tempArray);
+                // console.log(tempArray)
+                if (err) {
+                    return console.error(err);
+                }
+                // console.log(i);
+                // console.log(results.length);
+                if(results.length === i-1){
+                    res.send(results);
+                }
+                
+            });
+        }
+    }
+
 });
 app.listen(3000);
 console.log("Running at Port 3000");
