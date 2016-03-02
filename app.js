@@ -54,32 +54,6 @@ function getFirstPart(str) {
     return str.split('.')[0];
 }
 
-function setFilterTableData(requestBody) {
-    var filterTableData = [];
-    for (var prop in requestBody) {
-        for (var i = 0; i < requestBody[prop].length; i++) {
-            if (!filterTableData[i]) {
-                filterTableData[i] = {};
-            }
-            if (prop === "layerSelected") {
-                var completeLayerName = requestBody[prop][i];
-                var parentLayer, subLayer = "";
-                if (completeLayerName.indexOf("_") != -1) {
-                    subLayer = completeLayerName.split("_")[0];
-                    parentLayer = completeLayerName.split("_")[1];
-                } else {
-                    subLayer = completeLayerName;
-                    parentLayer = completeLayerName;
-                }
-                filterTableData[i]['parentLayer'] = parentLayer;
-                filterTableData[i]['subLayer'] = subLayer;
-            } else {
-                filterTableData[i][prop] = requestBody[prop][i];
-            }
-        }
-    }
-    return filterTableData;
-}
 app.post('/upload', function(req, res) {
     var jsonString = '';
     req.on('data', function(data) {
@@ -117,6 +91,61 @@ app.post('/upload', function(req, res) {
         res.redirect("back");
     })
 });
+
+function createEmptyFilterTableData(requestBody){
+    var filterTableData = [];
+    if(Array.isArray(requestBody["operator"])){ //if the requestBody object is an array
+        requestBody["operator"].forEach(function(element,index){
+            filterTableData.push({});
+        })
+    }else{
+        filterTableData.push({});
+    }
+    return filterTableData;
+}
+
+function setFilterTableForArray(filterTableData, requestBody, prop){
+    requestBody[prop].forEach(function(element,i){
+        if (prop === "layerSelected") {
+            var completeLayerName = requestBody[prop][i];
+            var parentLayer, subLayer = "";
+            if (completeLayerName.indexOf("_") != -1) {
+                subLayer = completeLayerName.split("_")[0];
+                parentLayer = completeLayerName.split("_")[1];
+            } else {
+                subLayer = completeLayerName;
+                parentLayer = completeLayerName;
+            }
+            filterTableData[i]["parentLayer"] = parentLayer;
+            filterTableData[i]["subLayer"] = subLayer;
+        } 
+        else {
+            filterTableData[i][prop] = requestBody[prop][i];
+        }
+    });
+    return filterTableData;
+}
+function setFilterTableData(requestBody) {
+    console.log(requestBody);   
+    try{
+        var filterTableData = createEmptyFilterTableData(requestBody);
+        for (var prop in requestBody) {
+            if(Array.isArray(requestBody[prop])){
+                filterTableData = setFilterTableForArray(filterTableData, requestBody, prop);
+            } else{
+                // filterTableData[i]["parentLayer"] = parentLayer;
+                //         filterTableData[i]["subLayer"] = subLayer;
+            }              
+        };
+        console.log(filterTableData);
+    }
+    catch(AssertionFailedException){
+        console.log("e");
+    }
+    
+    return filterTableData;
+}
+
 // ===================================Recieve Filter and Process HDB=================================
 app.use(bodyParser.json()); // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({ // to support URL-encoded bodies
@@ -131,8 +160,9 @@ app.post('/submitFilter', function(req, res) {
     // "within_range": "5"
     // }];
     // console.log(objectReceived[])
-    // objectReceived = console.log(req.body);
-    objectReceived = req.body;
+    // objectReceived = req.body;
+    objectReceived = setFilterTableData(req.body); //transform data to the preferred geojson format
+    // console.log(objectReceived);
     // console.log(objectReceived);
     var url = globalurl + "/HDB/HDB.json";
     fs.readFile(url, "utf8", function(err, data) {
@@ -441,7 +471,7 @@ app.get('/getAllLayerColumnName', function(req, res) {
     var path = __dirname + '/app' + '/geojson/';
     var name = fs.readdirSync(path);
     var objectsSend = [];
-    for (var i = 1; i < name.length; i++) {
+    for (var i = 0; i < name.length; i++) {
         var aName = name[i];
         // if (aName === ".DS_Store"){
         //     break;

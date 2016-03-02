@@ -83,7 +83,7 @@
                                 <label for="upload" class="control-label">File*:</label>
                                 <div class="controls">
                                     <input id="upload" type="file" name="upload" accept=".csv,.zip,.dgn,.bna,.json,.geojson,.kml,.kmz,.gpx,.gmt,.gml">
-                                    <a class="top" title="" data-placement="top" data-toggle="tooltip" href="#" data-original-title="Please refer to the accepted file extension at User Guide or http://ogre.adc4gis.com/"> <img src="/images/question-mark.png" alt="questionmark" style="width:15px;height:15px;"></a>
+                                   <!--  <a class="top" title="" data-placement="top" data-toggle="tooltip" href="#" data-original-title="Please refer to the accepted file extension at User Guide or http://ogre.adc4gis.com/"> <img src="/images/question-mark.png" alt="questionmark" style="width:15px;height:15px;"></a> -->
                                 </div>
                                 <label for="upload" class="control-label">
                                     Target Projection
@@ -115,11 +115,10 @@
                     </div>
                 </div>
                 <div class="col-md-8 portfolio-item">
-                    <h3><a href="#">Filter Table</a></h3>
-                    
+                    <h3><a href="#">Filter Table</a></h3>                    
                     <form method="post" action="/submitFilter">
-                        <button id="addFilterRow" class="btn btn-primary">Add new row</button>
-                        <button id="deleteFilterRow" class="btn btn-danger">Delete selected row</button>
+                        <button id="addFilterRow" class="btn btn-primary" onClick="return false">Add new row</button>
+                        <button id="deleteFilterRow" class="btn btn-danger" onClick="return false">Delete selected row</button>
                         <table class="filterTbl" id="filterTbl">
                             <thead>
                                 <tr>
@@ -140,13 +139,14 @@
                                         </select>
                                     </td>
                                     <td>
-                                        <input type="number" name="operator-amt" class="operator-amt form-control" placeholder="numeric">
+                                        <input type="number" name="operator_amt" class="operator-amt form-control" placeholder="numeric">
                                     </td>
                                     <td>
                                         <input id="layer-selected_1" class="layer-selected">
+                                        <input type="hidden" name="sublayer_column" class="sublayer-column" id="sublayer-column_1">
                                     </td>
                                     <td>
-                                        <input type="number" name="within-range" class="input-value form-control" placeholder="numeric">
+                                        <input type="number" name="within_range" class="input-value form-control" placeholder="numeric">
                                     </td>
                                     <td>
                                         <p>OR</p>

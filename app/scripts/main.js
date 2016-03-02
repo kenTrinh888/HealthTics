@@ -73,34 +73,34 @@ $('#convert').submit(function(e) {
 //         });
 //     }
 // })
-var urlforHDB = 'ORResults/ORresult.json';
-$.getJSON(urlforHDB, function(dataLoop) {
-    for (var i = 0; i < dataLoop.length; i++) {
-        var points = dataLoop[i].points;
-        var buffer = dataLoop[i].buffer;
-        console.log(points);
-        L.geoJson(buffer, {
-            pointToLayer: function(feature, latlng) {
-                // console.log(latlng);
-                // var name = feature.properties.Name;
-                // console.log(feature.properties.Name);
-                return L.marker(latlng, {
-                    icon: redMarker
-                })
-            }
-        }).addTo(map);
-        L.geoJson(points, {
-            pointToLayer: function(feature, latlng) {
-                // console.log(latlng);
-                // var name = feature.properties.Name;
-                // console.log(feature.properties.Name);
-                return L.marker(latlng, {
-                    icon: blueMarker
-                })
-            }
-        }).addTo(map);
-    }
-});
+// var urlforHDB = 'ORResults/ORresult.json';
+// $.getJSON(urlforHDB, function(dataLoop) {
+//     for (var i = 0; i < dataLoop.length; i++) {
+//         var points = dataLoop[i].points;
+//         var buffer = dataLoop[i].buffer;
+//         console.log(points);
+//         L.geoJson(buffer, {
+//             pointToLayer: function(feature, latlng) {
+//                 // console.log(latlng);
+//                 // var name = feature.properties.Name;
+//                 // console.log(feature.properties.Name);
+//                 return L.marker(latlng, {
+//                     icon: redMarker
+//                 })
+//             }
+//         }).addTo(map);
+//         L.geoJson(points, {
+//             pointToLayer: function(feature, latlng) {
+//                 // console.log(latlng);
+//                 // var name = feature.properties.Name;
+//                 // console.log(feature.properties.Name);
+//                 return L.marker(latlng, {
+//                     icon: blueMarker
+//                 })
+//             }
+//         }).addTo(map);
+//     }
+// });
 
 $(document).ready(function() {
     function onEachFeature(feature, layer) {
