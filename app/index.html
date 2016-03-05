@@ -162,14 +162,17 @@
                     </form>
                     <div class="resultTableSection">
                         <h3><a href="#">Result Table</a></h3>
-                        <form method="post" action="/submitFilter">
-                            <button id="deleteResultRow" class="btn btn-danger">Delete selected row</button>
+                        <form method="post" action="/sendModifiedRequirements">
+                            <button id="addResultRow" class="btn btn-primary" onClick="return false" style="display:none">Add new row</button>
+                            <button id="deleteResultRow" class="btn btn-danger" onClick="return false">Delete selected row</button>
                             <table class="resultTbl" id="resultTbl">
                                 <thead>
                                     <tr>
-                                        <th class="col-md-2">Checked</th>
-                                        <th class="col-md-2">Filter Condition</th>
-                                        <th class="col-md-4">No. of HDB</th>
+                                        <th class="col-md-1">Checked</th>
+                                        <th class="col-md-3">Filter Condition</th>
+                                        <th class="col-md-2">No. of HDB</th>
+                                        <th class="col-md-2">Total Dwelling Units</th>
+                                        <th class="col-md-2">% household with access</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -177,13 +180,19 @@
                                         <td class="col-lg-1">
                                             <input type="checkbox" name="test" value="test" class="form-control">
                                         </td>
-                                        <td class="col-lg-7">                           
-                                            <input type="text" name="filterCondition" class="filterCondition form-control" placeholder="filter condition" disabled="disabled">
+                                        <td class="col-lg-5">
+                                            <span class='filterCondition'id='filterCondition_1'></span>          
                                         </td>
                                         <td class="col-lg-2">
-                                            <input id="hdbCount" class="hdbCount form-control"  disabled="disabled">
-                                        </td>                                        
-                                        <input type="submit" value="Submit" class="btn btn-primary pull-right" style="display:inline;">
+                                            <span class='hdbCount' id='hdbCount_1'></span>
+                                        </td>
+                                        <td class="col-lg-2">
+                                            <span class='dwellingUnits' id='dwellingUnits_1'></span>
+                                        </td>
+                                        <td class="col-lg-2">
+                                            <span class='percentPopulation' id='percentPopulation_1'></span>
+                                        </td>                                       
+                                        <input type="submit" value="Submit" class="resultTableSubmit btn btn-primary pull-right" style="display:inline;">
                                     </tr>
                                 </tbody>
                             </table>

@@ -115,19 +115,19 @@ app.post('/uploadlayer', function(req, res) {
     })
 });
 
-function createEmptyFilterTableData(requestBody){
+function createEmptyFilterTableData(requestBody) {
     var filterTableData = [];
-    if(Array.isArray(requestBody["operator"])){ //if the requestBody object is an array
-        requestBody["operator"].forEach(function(element,index){
+    if (Array.isArray(requestBody["operator"])) { //if the requestBody object is an array
+        requestBody["operator"].forEach(function(element, index) {
             filterTableData.push({});
         })
-    }else{
+    } else {
         filterTableData.push({});
     }
     return filterTableData;
 }
 
-function setFilterTableForSingleRow(filterTableData, requestBody, prop){
+function setFilterTableForSingleRow(filterTableData, requestBody, prop) {
     if (prop === "layerSelected") {
         var completeLayerName = requestBody[prop];
         var parentLayer, subLayer = "";
@@ -143,12 +143,12 @@ function setFilterTableForSingleRow(filterTableData, requestBody, prop){
     } else {
         filterTableData[0][prop] = requestBody[prop];
     }
-    
+
     return filterTableData;
 }
 
-function setFilterTableForMultipleRows(filterTableData, requestBody, prop){
-    requestBody[prop].forEach(function(element,i){
+function setFilterTableForMultipleRows(filterTableData, requestBody, prop) {
+    requestBody[prop].forEach(function(element, i) {
         if (prop === "layerSelected") {
             var completeLayerName = requestBody[prop][i];
             var parentLayer, subLayer = "";
@@ -161,8 +161,7 @@ function setFilterTableForMultipleRows(filterTableData, requestBody, prop){
             }
             filterTableData[i]["parentLayer"] = parentLayer;
             filterTableData[i]["subLayer"] = subLayer;
-        } 
-        else {
+        } else {
             filterTableData[i][prop] = requestBody[prop][i];
         }
     });
@@ -170,22 +169,21 @@ function setFilterTableForMultipleRows(filterTableData, requestBody, prop){
 }
 
 function setFilterTableData(requestBody) {
-    console.log(requestBody);   
-    try{
+    console.log(requestBody);
+    try {
         var filterTableData = createEmptyFilterTableData(requestBody);
         for (var prop in requestBody) {
-            if(Array.isArray(requestBody[prop])){
+            if (Array.isArray(requestBody[prop])) {
                 filterTableData = setFilterTableForMultipleRows(filterTableData, requestBody, prop);
-            } else{
+            } else {
                 filterTableData = setFilterTableForSingleRow(filterTableData, requestBody, prop);
-            }              
+            }
         };
         console.log(filterTableData);
-    }
-    catch(err){
+    } catch (err) {
         console.log("err: " + err);
     }
-    
+
     return filterTableData;
 }
 
@@ -194,30 +192,26 @@ app.use(bodyParser.json()); // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({ // to support URL-encoded bodies
     extended: true
 }));
+
+app.post('/sendModifiedRequirements',function(req,res){
+    //ken modify from here
+    var requirements = req.body;
+    requirements.forEach(function(req,index){
+        req.failed_HDB_JSONs.forEach(function(hdb,index){
+            console.log(hdb.properties);
+        })
+        req.success_HDB_JSONs.forEach(function(hdb,index){
+            console.log(hdb.properties);
+        })
+    });
+    res.redirect('/');
+})
+    
+
 app.post('/submitFilter', function(req, res) {
-    // console.log(req.body);
-    // var objectReceived = [{
-    // "operator": "≥",
-    // "operator_amt": "1",
-    // "parentLayer": "Education",
-    // "SCH_TYPE": "secondary",
-    // "within_range": "5"
-    // },
-    //  {"operator": "≥",
-    // "operator_amt": "1",
-    // "parentLayer": "HealthierDinning",
-    // "classification": "Restaurant", 
-    // "within_range": "2"}];
-
-    // console.log(objectReceived[])
-
-    // objectReceived = req.body;
     objectReceived = setFilterTableData(req.body); //transform data to the preferred geojson format
-    // console.log(objectReceived);
-    // console.log(objectReceived);
-    console.log(objectReceived[0].operator_amt);
     var url = globalurl + "/HDB/HDB.json";
-    try{
+    try {
         fs.readFile(url, "utf8", function(err, data) {
             var HDB = JSON.parse(data);
             for (var m = 0; m < HDB.length; m++) {
@@ -228,14 +222,14 @@ app.post('/submitFilter', function(req, res) {
                     calculateBuffer(aHDB, ORrequirement, lengthOfRequirements, HDB.length);
                 }
             }
-            if(err){
+            if (err) {
                 console.log(err);
             }
         })
-    }catch(err){
+    } catch (err) {
         // console.log(err);
     }
-    
+
     res.redirect("/");
     //ken do from here
 });
@@ -622,29 +616,19 @@ app.get("/getNumberofHDB", function(req, res) {
         aName = name[i];
         if (aName != ".DS_Store") {
             url = __dirname + "/app/ORResults/" + aName;
-            fs.readFile(url, "utf8", function(err, data) {
-                data = JSON.parse(data);
-                var tempArray = [];
-                for (index in data ){
-                    delete data[index].HDB_details
-                    tempArray.push(data[index]);
-                }
-                
-                results.push(tempArray);
-                // console.log(tempArray)
-                if (err) {
-                    return console.error(err);
-                }
-                // console.log(i);
-                // console.log(results.length);
-                if(results.length === i-1){
-                    res.send(results);
-                }
-                
-            });
+            // console.log(url);
+            var fileData = fs.readFileSync(url, "utf8");
+            data = JSON.parse(fileData);
+            var tempArray = [];
+            for (index in data) {
+                delete data[index].HDB_details
+                tempArray.push(data[index]);
+            }
+            // console.log(tempArray);
+            results.push(tempArray);
         }
     }
-
+    res.send(results);
 });
 app.listen(3000);
 console.log("Running at Port 3000");
