@@ -25,8 +25,6 @@
     <link rel="stylesheet" type="text/css" href="bower_components/datatables.net-dt/css/jquery.datatables.min.css">
     <link href="lib/bootsnipp/treeview.css" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="bower_components/magicsuggest/magicsuggest-min.css" />
-
-
     <!-- <end -->
     <!-- bower:css -->
     <!-- endbower -->
@@ -79,13 +77,12 @@
                         Upload Layer
                     </button>
                     <div id="uploadLayer" class="collapse collapse-part">
-                        <form id="convert"  action="https://ogre.adc4gis.com/convert" method="post" enctype="multipart/form-data" class="form-horizontal">
+                        <form id="convert" action="https://ogre.adc4gis.com/convert" method="post" enctype="multipart/form-data" class="form-horizontal">
                             <!-- <legend>Convert to GeoJSON</legend> -->
                             <div class="control-group">
                                 <label for="upload" class="control-label">File*:</label>
                                 <div class="controls">
                                     <input id="upload" type="file" name="upload" accept=".csv,.zip,.dgn,.bna,.json,.geojson,.kml,.kmz,.gpx,.gmt,.gml">
-
                                 </div>
                                 <label for="upload" class="control-label">
                                     Target Projection
@@ -93,8 +90,8 @@
                                 <input type="text" id="targetSrs" name="targetSrs" value="EPSG:3414" style="width:100px">
                                 <div class="control-group">
                                     <div class="controls">
-                                    <input id="button" type="submit" value="Submit" class="btn btn-default" style="display:inline">
-                                       <!--  <button type="button" class="btn btn-default" style="display:inline">Submit</button> -->
+                                        <input id="button" type="submit" value="Submit" class="btn btn-default" style="display:inline">
+                                        <!--  <button type="button" class="btn btn-default" style="display:inline">Submit</button> -->
                                         </p>
                                     </div>
                                 </div>
@@ -118,7 +115,7 @@
                     </div>
                 </div>
                 <div class="col-md-8 portfolio-item">
-                    <h3><a href="#">Filter Table</a></h3>                    
+                    <h3><a href="#">OR Query Table</a></h3>
                     <form method="post" action="/submitFilter">
                         <button id="addFilterRow" class="btn btn-primary" onClick="return false">Add new row</button>
                         <button id="deleteFilterRow" class="btn btn-danger" onClick="return false">Delete selected row</button>
@@ -154,21 +151,20 @@
                                     <td>
                                         <p>OR</p>
                                     </td>
-
                                     <input type="submit" value="Submit" class="btn btn-primary pull-right" style="display:inline;">
                                 </tr>
                             </tbody>
                         </table>
                     </form>
-                    <div class="resultTableSection">
-                        <h3><a href="#">Result Table</a></h3>
+                    <div class="andTblSection">
+                        <h3><a href="#">AND Query Table</a></h3>
                         <form method="post" action="/sendModifiedRequirements">
                             <button id="addResultRow" class="btn btn-primary" onClick="return false" style="display:none">Add new row</button>
                             <button id="deleteResultRow" class="btn btn-danger" onClick="return false">Delete selected row</button>
-                            <table class="resultTbl" id="resultTbl">
+                            <table class="andTbl" id="andTbl">
                                 <thead>
                                     <tr>
-                                        <th class="col-md-1">Checked</th>
+                                        <th class="col-md-1">Show Layer</th>
                                         <th class="col-md-3">Filter Condition</th>
                                         <th class="col-md-2">No. of HDB</th>
                                         <th class="col-md-2">Total Dwelling Units</th>
@@ -181,7 +177,7 @@
                                             <input type="checkbox" name="test" value="test" class="form-control">
                                         </td>
                                         <td class="col-lg-5">
-                                            <span class='filterCondition'id='filterCondition_1'></span>          
+                                            <span class='filterCondition' id='filterCondition_1'></span>
                                         </td>
                                         <td class="col-lg-2">
                                             <span class='hdbCount' id='hdbCount_1'></span>
@@ -191,10 +187,25 @@
                                         </td>
                                         <td class="col-lg-2">
                                             <span class='percentPopulation' id='percentPopulation_1'></span>
-                                        </td>                                       
-                                        <input type="submit" value="Submit" class="resultTableSubmit btn btn-primary pull-right" style="display:inline;">
+                                        </td>
+                                        <input type="submit" value="Submit" class="andTableSubmit btn btn-primary pull-right" style="display:inline;">
                                     </tr>
                                 </tbody>
+                            </table>
+                        </form>
+                    </div>
+                    <div class="resultTblSection">
+                        <h3><a href="#">Result Table</a></h3>
+                        <form method="post" action="#">
+                            <table class="table table-hover table-responsive resultTbl" id="resultTbl">
+                                <tr>
+                                    <th class="col-md-5">No. of Residents With Access</th>
+                                    <td class="col-lg-5"><span>Fill Number here</span></td>
+                                </tr>
+                                <tr>
+                                    <th class="col-md-5">% of Residents With Access</th>
+                                    <td class="col-lg-5"><span>Fill Percentage here</span></td>
+                                </tr>                                
                             </table>
                         </form>
                     </div>
@@ -241,7 +252,7 @@
         <script type="text/javascript" charset="utf8" src="bower_components/datatables.net/js/jquery.datatables.min.js"></script>
         <!-- build:js scripts/main.js -->
         <script src="scripts/filtertable.js"></script>
-        <script src="scripts/resulttable.js"></script>
+        <script src="scripts/andTable.js"></script>
         <script src="scripts/layerlisting.js"></script>
         <script src="scripts/main.js"></script>
         <!-- endbuild -->
