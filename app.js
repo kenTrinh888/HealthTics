@@ -193,20 +193,21 @@ app.use(bodyParser.urlencoded({ // to support URL-encoded bodies
     extended: true
 }));
 
-app.post('/sendModifiedRequirements',function(req,res){
+app.post('/sendModifiedRequirements', function(req, res) {
     //ken modify from here
     var requirements = req.body;
-    requirements.forEach(function(req,index){
-        req.failed_HDB_JSONs.forEach(function(hdb,index){
+    console.log(requirements);
+    requirements.forEach(function(req, index) {
+        req.failed_HDB_JSONs.forEach(function(hdb, index) {
             console.log(hdb.properties);
         })
-        req.success_HDB_JSONs.forEach(function(hdb,index){
+        req.success_HDB_JSONs.forEach(function(hdb, index) {
             console.log(hdb.properties);
         })
     });
     res.redirect('/');
 })
-    
+
 
 app.post('/submitFilter', function(req, res) {
     objectReceived = setFilterTableData(req.body); //transform data to the preferred geojson format
@@ -611,22 +612,40 @@ app.get('/getAllLayerColumnValues/:nameOfFile/:columnName', function(req, res) {
 app.get("/getNumberofHDB", function(req, res) {
     var path = __dirname + '/app' + '/ORResults';
     var name = fs.readdirSync(path);
+    var directories = [];
     var results = [];
     for (var i = 0; i < name.length; i++) {
         aName = name[i];
         if (aName != ".DS_Store") {
             url = __dirname + "/app/ORResults/" + aName;
+            url = url.replace("\\", "/");
+            directories.push(url);
             // console.log(url);
             var fileData = fs.readFileSync(url, "utf8");
             data = JSON.parse(fileData);
+            // data.forEach(function(element,index){
+            //     console.log(JSON.stringify(element));
+            // })
             var tempArray = [];
             for (index in data) {
+                // console.log(index);
                 delete data[index].HDB_details
                 tempArray.push(data[index]);
             }
+
             // console.log(tempArray);
             results.push(tempArray);
         }
+    }
+
+    for (index in results) {
+        var elementCopy = results[index];
+        delete results[index];
+        var reqObject = {
+            "bigORs": elementCopy,
+            "directory": directories[index]
+        };
+        results[index] = reqObject;      
     }
     res.send(results);
 });

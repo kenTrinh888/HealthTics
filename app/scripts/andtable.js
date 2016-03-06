@@ -4,14 +4,15 @@ var addResultButton = '#addResultRow';
 
 //main method
 $(document).ready(function() {
-    setResultTable();
-    loadResultTableData();
+    setAndTable();
+    loadAndTableData();
     
 })
 
 function sendModifiedRequirements(modifiedRequirements){
-    $('.resultTableSubmit').click(function(e){
+    $('.andTableSubmit').click(function(e){
         e.preventDefault();
+        console.log(modifiedRequirements);
         $.ajax({
             type: 'POST',
             data: JSON.stringify(modifiedRequirements),
@@ -26,20 +27,20 @@ function sendModifiedRequirements(modifiedRequirements){
     });   
 }
 
-function setResultTable() {
-    var resultTableSelector = $('#resultTbl');
-    var resultTable = resultTableSelector.DataTable({
+function setAndTable() {
+    var andTableSelector = $('#andTbl');
+    var andTable = andTableSelector.DataTable({
         "paging": false,
         "ordering": false,
         "info": false,
         "searching": false
     });
-    var resultTableRowCount = 2;
-    deleteRow(resultTable, resultTableSelector, "#deleteResultRow");
-    addRow(resultTable, resultTableRowCount, addResultButton);
+    var andTableRowCount = 2;
+    deleteRow(andTable, andTableSelector, "#deleteResultRow");
+    addRow(andTable, andTableRowCount, addResultButton);
 }
 
-function loadResultTableData() {
+function loadAndTableData() {
     var getDataAPI = '/getNumberofHDB';
     $.get(getDataAPI, function(HDBData, err) {
         if (err) {
@@ -48,10 +49,9 @@ function loadResultTableData() {
         var reqStrings = [];
         var requirements = getRequirements(HDBData);
         modifiedRequirements = modifyRequirements(requirements);
-        // console.log(requirements);
         // console.log(modifiedRequirements);
         sendModifiedRequirements(modifiedRequirements)
-        populateResultTable(modifiedRequirements);
+        populateAndTable(modifiedRequirements);
     })
 }
 
@@ -67,7 +67,6 @@ function modifyRequirements(requirements) {
                 countSuccessDwellings += HDB_JSON.properties.DwellingUnits;
             });
         }
-
         if (countFailedHDB > 0) {
             reqObject.failed_HDB_JSONs.forEach(function(HDB_JSON, index) {
                 countFailedDwellings += HDB_JSON.properties.DwellingUnits;
@@ -87,7 +86,8 @@ function getRequirements(HDBData) {
     var requirements = [];
     HDBData.forEach(function(HDBs, HDBsIndex) {
         var reqObject = {};
-        HDBs.forEach(function(HDB, HDBindex) {
+        reqObject.directory = HDBs.directory;
+        HDBs.bigORs.forEach(function(HDB, HDBindex) {
             if (HDBindex == 0) {
                 var ORRequirements = HDB.ORREquirement;
                 var reqString = getReqString(ORRequirements);
@@ -103,6 +103,7 @@ function getRequirements(HDBData) {
         });
         requirements.push(reqObject);
     });
+
     return requirements;
 }
 
@@ -126,9 +127,9 @@ function getReqString(ORRequirements) {
     return reqString;
 }
 
-function populateResultTable(modifiedRequirements) {
+function populateAndTable(modifiedRequirements) {
     modifiedRequirements.forEach(function(reqObject, index) {
-        var lastRow = $('.resultTbl tbody tr').length;
+        var lastRow = $('.andTbl tbody tr').length;
         $('#filterCondition_' + lastRow).html(reqObject.reqString);
         $('#hdbCount_' + lastRow).html(reqObject.countSuccessHDB);
         $('#dwellingUnits_' + lastRow).html(reqObject.countSuccessDwellings);
@@ -178,6 +179,6 @@ function addRow(table, rowCount, addType) {
     });
 }
 
-function doAddRow(resultTableSelector) {
-    $(resultTableSelector).click();
+function doAddRow(andTableSelector) {
+    $(andTableSelector).click();
 }
