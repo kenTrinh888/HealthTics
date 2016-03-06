@@ -23,7 +23,7 @@ var blueMarker = L.AwesomeMarkers.icon({
 });
 // proj4.defs("EPSG:3414","+proj=tmerc +lat_0=1.366666666666667 +lon_0=103.8333333333333 +k=1 +x_0=28001.642 +y_0=38744.572 +ellps=WGS84 +units=m +no_defs");
 $('#convert').submit(function(e) {
-    var postcodeContain = true;
+    var postcodeContain = false;
     var file = $("#upload")[0].files[0];
 
     var layerName = file.name;
@@ -43,10 +43,30 @@ $('#convert').submit(function(e) {
                     if (postcode.length < 6) {
                         postcode = "0" + postcode;
                     }
-                    var breakPoint= arrayofPoints.length;
-                    getPostalCodeGeo(layerName,aPoint,postcode,breakPoint)
-                    // data.features[index].geometry = [1,1];
+                    var breakPoint = arrayofPoints.length;
+                    getPostalCodeGeo(layerName, aPoint, postcode, breakPoint)
+                        // data.features[index].geometry = [1,1];
                 }
+
+            } else {
+                var layer = {
+                        "name": layerName,
+                        "datamain": data
+                    }
+                    // layer.data = data
+                var dataSend = JSON.stringify(layer);
+                // console.log(dataSend);
+                $.ajax({
+                    url: '/upload',
+                    type: 'POST',
+                    data: dataSend,
+                    contentType: 'application/json',
+
+                    success: function(data) {
+                        console.log('success');
+                        location.reload();
+                    }
+                });
 
             }
             //     var layer = {
@@ -73,52 +93,52 @@ $('#convert').submit(function(e) {
 
 });
 
-function getPostalCodeGeo(layerName,aPoint, postcode,breakPoint) {
+function getPostalCodeGeo(layerName, aPoint, postcode, breakPoint) {
     breakPoint = parseInt(breakPoint);
     url = "/getPostalCode/" + postcode;
     InvalidPostalCode = []
     coordinateArray = [];
     $.getJSON(url, function(objectReturn) {
         // var breakPoint = parseInt(index) + 1;
-        var objectLocation = {"type" : "Point","coordinates": objectReturn}
-       if(!objectReturn.hasOwnProperty("postalcode")){
-         aPoint.geometry= objectLocation;
-        // console.log(JSON.stringify(aPoint));
-        coordinateArray.push(aPoint);
-        // console.log(coordinateArray.length);
-        
-       }else{
-        InvalidPostalCode.push(objectReturn);
-        console.log(objectReturn);
-       }
-       var loopendPoint = coordinateArray.length + InvalidPostalCode.length;
-       console.log(loopendPoint);
+        var objectLocation = { "type": "Point", "coordinates": objectReturn }
+        if (!objectReturn.hasOwnProperty("postalcode")) {
+            aPoint.geometry = objectLocation;
+            // console.log(JSON.stringify(aPoint));
+            coordinateArray.push(aPoint);
+            // console.log(coordinateArray.length);
+
+        } else {
+            InvalidPostalCode.push(objectReturn);
+            console.log(objectReturn);
+        }
+        var loopendPoint = coordinateArray.length + InvalidPostalCode.length;
+        console.log(loopendPoint);
         if (loopendPoint === breakPoint) {
-             console.log("dataSend");
+            console.log("dataSend");
             var dataReturn = {
                 "type": "FeatureCollection",
                 "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::3414" } },
                 "features": []
             }
             dataReturn.features = coordinateArray;
-                var layer = {
-                        "name": layerName,
-                        "datamain": dataReturn
-                    }
-                    // layer.data = data
-                var dataSend = JSON.stringify(layer);
-                // console.log(dataSend);
-                $.ajax({
-                    url: '/uploadlayer',
-                    type: 'POST',
-                    data: dataSend,
-                    contentType: 'application/json',
+            var layer = {
+                    "name": layerName,
+                    "datamain": dataReturn
+                }
+                // layer.data = data
+            var dataSend = JSON.stringify(layer);
+            // console.log(dataSend);
+            $.ajax({
+                url: '/uploadlayer',
+                type: 'POST',
+                data: dataSend,
+                contentType: 'application/json',
 
-                    success: function(data) {
-                        console.log('success');
-                        location.reload();
-                    }
-                });
+                success: function(data) {
+                    console.log('success');
+                    location.reload();
+                }
+            });
         }
     })
 
