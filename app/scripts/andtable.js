@@ -1,12 +1,10 @@
 //global variables
 var modifiedRequirements = [];
-var addResultButton = '#addResultRow';
 
 //main method
 $(document).ready(function() {
     setAndTable();
     loadAndTableData();
-    
 })
 
 function sendModifiedRequirements(modifiedRequirements){
@@ -37,7 +35,7 @@ function setAndTable() {
     });
     var andTableRowCount = 2;
     deleteRow(andTable, andTableSelector, "#deleteResultRow");
-    addRow(andTable, andTableRowCount, addResultButton);
+    addRow(andTable, andTableRowCount, '#addResultRow');
 }
 
 function loadAndTableData() {
@@ -50,7 +48,7 @@ function loadAndTableData() {
         var requirements = getRequirements(HDBData);
         modifiedRequirements = modifyRequirements(requirements);
         // console.log(modifiedRequirements);
-        sendModifiedRequirements(modifiedRequirements)
+        // sendModifiedRequirements(modifiedRequirements)
         populateAndTable(modifiedRequirements);
     })
 }
@@ -135,7 +133,7 @@ function populateAndTable(modifiedRequirements) {
         $('#dwellingUnits_' + lastRow).html(reqObject.countSuccessDwellings);
         $('#percentPopulation_' + lastRow).html(reqObject.percentPopulation + " %");
         if (lastRow < modifiedRequirements.length) {
-            doAddRow(addResultButton);
+            doAddRow('#addResultRow');
         }
     })
 }
