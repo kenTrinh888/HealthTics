@@ -9,11 +9,11 @@ $(document).ready(function() {
         "searching": false
     });
     var filterTableRowCount = 2;
-    addRow(filterTable, filterTableRowCount, '#addFilterRow');
-    deleteRow(filterTable, filterTableSelector, "#deleteFilterRow");
+    addFilterRow(filterTable, filterTableRowCount, '#addFilterRow');
+    deleteFilterRow(filterTable, filterTableSelector, "#deleteFilterRow");
 })
 
-function deleteRow(table, tableSelector, deleteType) {
+function deleteFilterRow(table, tableSelector, deleteType) {
 
     tableSelector.children('tbody').on('click', 'tr', function(e) {
         // e.preventDefault();
@@ -34,14 +34,14 @@ function deleteRow(table, tableSelector, deleteType) {
     });
 }
 
-function addRow(table, rowCount, addType) {
+function addFilterRow(table, rowCount, addType) {
     $(addType).on('click', function(e) {
         // e.preventDefault();
         var emptyArr = [];
         table.row.add([
             "<select id='operator_" + rowCount + "' class='form-control' name='operator'>\
-                <option>&le;</option>\
                 <option>&ge;</option>\
+                <option>&le;</option>\
                 <option>=</option>\
             </select>", //add col 1
             "<input id='operator-amt_" + rowCount + "' type='number' name='operator_amt' class='operator-amt form-control' placeholder='numeric'>",

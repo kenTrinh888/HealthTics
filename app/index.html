@@ -125,16 +125,16 @@
                                     <th class="col-md-2">Logical Operator</th>
                                     <th class="col-md-2">Value</th>
                                     <th class="col-md-4">Layer</th>
-                                    <th class="col-md-2">Within Distance</th>
+                                    <th class="col-md-2">Within Distance (meter)</th>
                                     <th class="col-md-2">AND/OR</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr class="tblRow" id="tblRow1">
                                     <td>
-                                        <select class="form-control" name="operator">
-                                            <option>&le;</option>
+                                        <select class="form-control" name="operator">   
                                             <option>&ge;</option>
+                                            <option>&le;</option>
                                             <option>=</option>
                                         </select>
                                     </td>
@@ -166,7 +166,7 @@
                                     <tr>
                                         <th class="col-md-1">Show Layer</th>
                                         <th class="col-md-3">Filter Condition</th>
-                                        <th class="col-md-2">No. of HDB</th>
+                                        <th class="col-md-2">Number of HDB</th>
                                         <th class="col-md-2">Total Dwelling Units</th>
                                         <th class="col-md-2">% household with access</th>
                                     </tr>
@@ -199,13 +199,13 @@
                         <form method="post" action="#">
                             <table class="table table-hover table-responsive resultTbl" id="resultTbl">
                                 <tr>
-                                    <th class="col-md-5">No. of Residents With Access</th>
-                                    <td class="col-lg-5"><span>Fill Number here</span></td>
+                                    <th class="col-md-5">Number of Households With Access</th>
+                                    <td class="col-lg-5"><span class="countSuccessDwellings">Fill Number here</span></td>
                                 </tr>
                                 <tr>
-                                    <th class="col-md-5">% of Residents With Access</th>
-                                    <td class="col-lg-5"><span>Fill Percentage here</span></td>
-                                </tr>                                
+                                    <th class="col-md-5">% of Households With Access</th>
+                                    <td class="col-lg-5"><span class="percentPopulation">Fill Percentage here</span></td>
+                                </tr>
                             </table>
                         </form>
                     </div>
@@ -252,6 +252,7 @@
         <script type="text/javascript" charset="utf8" src="bower_components/datatables.net/js/jquery.datatables.min.js"></script>
         <!-- build:js scripts/main.js -->
         <script src="scripts/filtertable.js"></script>
+        <script src="scripts/resulttable.js"></script>
         <script src="scripts/andTable.js"></script>
         <script src="scripts/layerlisting.js"></script>
         <script src="scripts/main.js"></script>
