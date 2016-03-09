@@ -210,7 +210,7 @@ $(document).ready(function() {
     }
     var layerFiles = [];
     $('#files').change(function(evt) {
-        var findpolygon = true;
+        var findpolygon = false;
         var HDBsent = [];
         var files = evt.target.files;
         for (var i = 0; i < files.length; i++) {
@@ -225,6 +225,7 @@ $(document).ready(function() {
                     complete: function(results) {
                         var leafletFeatures = []; //array of leaflet feature objects
                         fields = results["data"];
+                        var objectsSend = [];
                         var lengthofHDBRequest = fields.length;
                         for (var i = 0; i < fields.length; i++) {
                             field = fields[i];
@@ -234,16 +235,21 @@ $(document).ready(function() {
                             // console.log(field);
                             // console.log(leafletFeature);
                             var postcode = field["POSTCODE"].toString();
+                            console.log(lengthofHDBRequest);
                             if (postcode.length < 6) {
                                 postcode = "0" + postcode;
                             }
                             field["length"] = lengthofHDBRequest;
-                            if (findpolygon) {
+                            objectsSend.push(field);
+                
+
+                        };
+                           if (findpolygon) {
 
                                 $.ajax({
                                     url: '/findHDBPolygon',
                                     type: 'POST',
-                                    data: JSON.stringify(field),
+                                    data: JSON.stringify(objectsSend),
                                     contentType: 'application/json',
                                     success: function(data) {
                                         // console.log(data);
@@ -254,7 +260,7 @@ $(document).ready(function() {
                                 $.ajax({
                                     url: '/findPostalCode',
                                     type: 'POST',
-                                    data: JSON.stringify(field),
+                                    data: JSON.stringify(objectsSend),
                                     contentType: 'application/json',
                                     success: function(data) {
                                         // console.log(data);
@@ -262,8 +268,6 @@ $(document).ready(function() {
                                     }
                                 });
                             }
-
-                        };
                     }
                 });
             }
