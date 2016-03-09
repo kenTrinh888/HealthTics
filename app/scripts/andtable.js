@@ -1,6 +1,6 @@
 //global variables
-var modifiedRequirements = [];
-
+var andTable = {};
+var andTableSelector = {};
 //main method
 $(document).ready(function() {
     setAndTable();
@@ -10,7 +10,6 @@ $(document).ready(function() {
 function sendModifiedRequirements(modifiedRequirements){
     $('.andTableSubmit').click(function(e){
         e.preventDefault();
-        console.log(modifiedRequirements);
         $.ajax({
             type: 'POST',
             data: JSON.stringify(modifiedRequirements),
@@ -26,31 +25,27 @@ function sendModifiedRequirements(modifiedRequirements){
 }
 
 function setAndTable() {
-    var andTableSelector = $('#andTbl');
-    var andTable = andTableSelector.DataTable({
+    andTableSelector = $('#andTbl');
+    andTable = andTableSelector.DataTable({
         "paging": false,
         "ordering": false,
         "info": false,
         "searching": false
     });
     var andTableRowCount = 2;
-    deleteRow(andTable, andTableSelector, "#deleteResultRow");
+    
     addRow(andTable, andTableRowCount, '#addResultRow');
 }
 
 function loadAndTableData() {
     var getDataAPI = '/getNumberofHDB';
-    $.get(getDataAPI, function(HDBData, err) {
-        if (err) {
-            console.log(err);
-        }
+    $.get(getDataAPI,function(HDBData,err){
         var reqStrings = [];
         var requirements = getRequirements(HDBData);
-        modifiedRequirements = modifyRequirements(requirements);
-        // console.log(modifiedRequirements);
-        // sendModifiedRequirements(modifiedRequirements)
+        var modifiedRequirements = modifyRequirements(requirements);
+        deleteRow(andTable, andTableSelector, "#deleteResultRow", modifiedRequirements);
         populateAndTable(modifiedRequirements);
-    })
+    });
 }
 
 function modifyRequirements(requirements) {
@@ -126,6 +121,7 @@ function getReqString(ORRequirements) {
 }
 
 function populateAndTable(modifiedRequirements) {
+    // console.log(modifiedRequirements);
     modifiedRequirements.forEach(function(reqObject, index) {
         var lastRow = $('.andTbl tbody tr').length;
         $('#filterCondition_' + lastRow).html(reqObject.reqString);
@@ -138,10 +134,9 @@ function populateAndTable(modifiedRequirements) {
     })
 }
 
-function deleteRow(table, tableSelector, deleteType) {
+function deleteRow(table, tableSelector, deleteType, modifiedRequirements) {
 
     tableSelector.children('tbody').on('click', 'tr', function() {
-
         if ($(this).hasClass('selected')) {
             $(this).removeClass('selected');
         } else {
@@ -155,10 +150,32 @@ function deleteRow(table, tableSelector, deleteType) {
             alert("error: unable to delete row");
             return;
         }
-        table.row('.selected').remove().draw(false);
+        var selectedRow = table.row('.selected');
+        var selectedRowIndex = selectedRow.index();
+        if(selectedRowIndex === undefined || selectedRowIndex === null){
+            alert('ERROR: please click on a row before deleting it');
+            return;
+        }
+        deleteORResult(selectedRowIndex, modifiedRequirements);
+        selectedRow.remove().draw(false);
     });
 }
 
+function deleteORResult(selectedRowIndex,modifiedRequirements){
+    
+    var fileToDelete = {};
+    fileToDelete.directory = modifiedRequirements[selectedRowIndex].directory;
+    $.ajax({
+        type: 'POST',
+        data: JSON.stringify(fileToDelete),
+        contentType: 'application/json',
+        url: 'http://localhost:3000/deleteORResult',
+        success:function(data){
+            console.log(data);
+        }
+    });
+    // location.reload();
+}
 function addRow(table, rowCount, addType) {
     $(addType).on('click', function(e) {
         // e.preventDefault();

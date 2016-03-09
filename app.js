@@ -55,6 +55,7 @@ function getFirstPart(str) {
     return str.split('.')[0];
 }
 
+
 app.post('/upload', function(req, res) {
     var jsonString = '';
     req.on('data', function(data) {
@@ -182,6 +183,13 @@ app.use(bodyParser.json()); // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({ // to support URL-encoded bodies
     extended: true
 }));
+
+app.post('/deleteORResult',function(req,res){
+    fileToDelete = req.body;
+
+    fs.unlinkSync(fileToDelete.directory);
+    console.log("deleted:" + fileToDelete.directory);
+});
 
 //don't care about this one below
 app.post('/sendModifiedRequirements', function(req, res) {
