@@ -3,6 +3,10 @@ $(document).ready(function() {
     loadResultTableData();
 })
 
+function getCheckedFileDirectories(){
+    $('#')
+}
+
 function loadResultTableData() {
     var getDataAPI = '/getNumberofHDB';
     $.get(getDataAPI, function(HDBData, err) {
@@ -17,7 +21,6 @@ function loadResultTableData() {
         var finalRequirements = getFinalRequirements(requirements);
         sendFinalRequirements(finalRequirements);
         populateResultTable(finalRequirements);
-
     })
 }
 

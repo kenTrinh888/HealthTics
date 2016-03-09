@@ -50,27 +50,25 @@ function loadAndTableData() {
 
 function modifyRequirements(requirements) {
     requirements.forEach(function(reqObject, index) {
-        var countSuccessHDB = reqObject.success_HDB_JSONs.length;
-        var countFailedHDB = reqObject.failed_HDB_JSONs.length;
-        var countAllHDB = countSuccessHDB + countFailedHDB;
-        var countSuccessDwellings = 0;
-        var countFailedDwellings = 0;
-        if (countSuccessHDB > 0) {
+        reqObject.countSuccessHDB = reqObject.success_HDB_JSONs.length;
+        reqObject.countFailedHDB = reqObject.failed_HDB_JSONs.length;
+        reqObject.countAllHDB = reqObject.countSuccessHDB + reqObject.countFailedHDB;
+        reqObject.countSuccessDwellings = 0;
+        reqObject.countFailedDwellings = 0;
+
+        if (reqObject.countSuccessHDB > 0) {
             reqObject.success_HDB_JSONs.forEach(function(HDB_JSON, index) {
-                countSuccessDwellings += HDB_JSON.properties.DwellingUnits;
+                reqObject.countSuccessDwellings += HDB_JSON.properties.DwellingUnits;
             });
         }
-        if (countFailedHDB > 0) {
+        if (reqObject.countFailedHDB > 0) {
             reqObject.failed_HDB_JSONs.forEach(function(HDB_JSON, index) {
-                countFailedDwellings += HDB_JSON.properties.DwellingUnits;
+                reqObject.countFailedDwellings += HDB_JSON.properties.DwellingUnits;
             });
-        }
-        reqObject.countSuccessDwellings = countSuccessDwellings;
-        reqObject.countFailedDwellings = countFailedDwellings;
-        reqObject.countSuccessHDB = countSuccessHDB;
-        reqObject.countFailedHDB = countFailedHDB;
-        reqObject.countAllHDB = countSuccessHDB + countFailedHDB;
-        reqObject.percentPopulation = (countSuccessHDB / countAllHDB) * 100;
+        }        
+        reqObject.countAllDwellings = reqObject.countSuccessDwellings + reqObject.countFailedDwellings;
+        reqObject.percentPopulation = (reqObject.countSuccessDwellings / reqObject.countAllDwellings) * 100;
+        reqObject.percentPopulation = +reqObject.percentPopulation.toFixed(2);
     });
     return requirements;
 }
@@ -181,7 +179,7 @@ function addRow(table, rowCount, addType) {
         // e.preventDefault();
         var emptyArr = [];
         table.row.add([
-            "<input type='checkbox' name='test' value='test' class='form-control'>",
+            "<input type='checkbox' name='test' value='test' class='AND_checkbox form-control' id='AND_checkbox_" + rowCount + "' checked>",
             "<span class='filterCondition' id='filterCondition_" + rowCount + "'></span>",
             "<span class='hdbCount' id='hdbCount_" + rowCount + "'</span>",
             "<span class='dwellingUnits' id='dwellingUnits_" + rowCount + "'></span>",

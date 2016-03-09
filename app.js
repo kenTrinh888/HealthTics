@@ -677,6 +677,56 @@ app.get('/getAllLayerColumnValues/:nameOfFile/:columnName', function(req, res) {
     var result = _.uniq(propertiesArray);
     res.send(result);
 });
+
+app.get("/getNumberofHDB2/:fileDirectories", function(req, res) {
+    var fileDirectoriesStr = req.params.fileDirectories;
+    var fileDirectories = [];
+    if(fileDirectoriesStr.indexOf(';')!=-1){
+        fileDirectories = fileDirectoriesStr.split(';');
+    }else{
+        fileDirectories.push(fileDirectoriesStr);
+    }
+    console.log(fileDirectories);
+    var path = __dirname + '/app' + '/ORResults';
+    var name = fs.readdirSync(path);
+    var directories = [];
+    var results = [];
+    for (var i = 0; i < name.length; i++) {
+        aName = name[i];
+        if (aName != ".DS_Store") {
+            url = __dirname + "/app/ORResults/" + aName;
+            url = url.replace("\\", "/");
+            directories.push(url);
+            // console.log(url);
+            var fileData = fs.readFileSync(url, "utf8");
+            data = JSON.parse(fileData);
+            // data.forEach(function(element,index){
+            //     console.log(JSON.stringify(element));
+            // })
+            var tempArray = [];
+            for (index in data) {
+                // console.log(index);
+                delete data[index].HDB_details
+                tempArray.push(data[index]);
+            }
+            // console.log(tempArray);
+            results.push(tempArray);
+        }
+    }
+
+    for (index in results) {
+        var elementCopy = results[index];
+        delete results[index];
+        var reqObject = {
+            "bigORs": elementCopy,
+            "directory": directories[index]
+        };
+        results[index] = reqObject;
+    }
+
+    res.send(results);
+});
+
 app.get("/getNumberofHDB", function(req, res) {
     var path = __dirname + '/app' + '/ORResults';
     var name = fs.readdirSync(path);
@@ -700,7 +750,6 @@ app.get("/getNumberofHDB", function(req, res) {
                 delete data[index].HDB_details
                 tempArray.push(data[index]);
             }
-
             // console.log(tempArray);
             results.push(tempArray);
         }
@@ -771,7 +820,7 @@ app.get("/getVisualisationData", function(req, res) {
                 }
 
 
-            }
+            });
         })
 
         // var planingArea = fs.readFile(urlPlaningAreas, "utf8", function(err, PlaningArea) {
