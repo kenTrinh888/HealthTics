@@ -208,32 +208,193 @@ app.post('/sendFinalRequirements', function(req, res) {
 
 app.post('/submitFilter', function(req, res) {
     objectReceived = setFilterTableData(req.body); //transform data to the preferred geojson format
-    var url = globalurl + "/HDB/HDB.json";
-    try {
-        fs.readFile(url, "utf8", function(err, data) {
-            var HDB = JSON.parse(data);
-            for (var m = 0; m < HDB.length; m++) {
-                var aHDB = HDB[m];
-                for (var i = 0; i < objectReceived.length; i++) {
-                    var lengthOfRequirements = objectReceived.length;
-                    ORrequirement = objectReceived[i];
+    // var url = globalurl + "/HDB/HDB.json";
+    // try {
+    //     fs.readFile(url, "utf8", function(err, data) {
+    //         var HDB = JSON.parse(data);
+    //         for (var m = 0; m < HDB.length; m++) {
+    //             var aHDB = HDB[m];
+    //             for (var i = 0; i < objectReceived.length; i++) {
+    //                 var lengthOfRequirements = objectReceived.length;
+    //                 ORrequirement = objectReceived[i];
 
-                    calculateBuffer(aHDB, ORrequirement, lengthOfRequirements, HDB.length);
-                }
-            }
-            if (err) {
-                console.log(err);
-            }
-        })
-    } catch (err) {
-        // console.log(err);
-    }
+    //                 calculateBuffer(aHDB, ORrequirement, lengthOfRequirements, HDB.length);
+    //             }
+    //         }
+    //         if (err) {
+    //             console.log(err);
+    //         }
+    //     })
+    // } catch (err) {
+    //     // console.log(err);
+    // }
 
-    res.redirect("/");
+    // res.redirect("/");
     //ken do from here
+    var url = globalurl + "/HDB/HDB.json";
+    var HDB = JSON.parse(fs.readFileSync(url, "utf8"));
+    // console.log(JSON.stringify(HDB));
+    var HDBArray = [];
+
+    var HDBObject = {};
+    for (var i = 0; i < objectReceived.length; i++) {
+
+        var ORrequirementSend = objectReceived[i];
+        // console.log(ORrequirement);
+        var urlLayerRetrieved = globalurl + "/geojson/" + ORrequirementSend.parentLayer + ".geojson";
+        var layerRequest = JSON.parse(fs.readFileSync(urlLayerRetrieved));
+
+        for (var m = 0; m < HDB.length; m++) {
+
+            var aHDB = HDB[m];
+            var requirementReturns = calculateBuffer(aHDB, layerRequest, ORrequirementSend);
+            HDBObject = {  "ORREquirement": [], "HDB_JSON": aHDB}
+                // HDBObject
+            if (HDBArray[m] == null) {
+                HDBObject.ORREquirement.push(requirementReturns);
+                HDBArray[m] = HDBObject;
+            } else {
+                HDBArray[m].ORREquirement.push(requirementReturns);
+            }
+            // HDBArray[m].push(requirementReturns);
+            // HDBObject.ORrequirement.push(requirementReturns);
+            // console.log(requirementReturns);
+            // if(!HDBObject.hasOwnProperty(m)){
+            //     console.log("no index")
+            //     var HDB_JSON = {"HDB_JSON":aHDB}
+            //     HDBObject[m] = HDB_JSON;
+            //     HDBObject.m = {"ORrequirement" : []};
+            //     HDBObject.m.ORrequirement.push(requirementReturns);
+            // }else{
+            //     console.log("has index")
+            //     HDBObject.m.ORrequirement.push(requirementReturns);
+
+            // }
+
+
+
+            // var requirementReturns = calculateBuffer(aHDB, layerRequest, ORrequirement);
+            // HDBObject.ORrequirement.push(requirementReturns);
+            // console.log(requirementReturns);
+            // HDBArray.push(HDBReturn);
+        }
+        // HDBArray.push(HDBObject);
+
+    }
+    // console.log(JSON.stringify(HDBArray));
+    res.redirect("/");
+
+    var path = globalurl + "/ORResults/";
+    var name = fs.readdirSync(path);
+    var rowCount = name.length;
+    var ANDREquirementNameFile = "ORresult" + rowCount;
+    var urlDestination = globalurl + "/ORResults/" + ANDREquirementNameFile + ".json";
+    for (var i = 0; i < HDBArray.length; i++) {
+
+        var oneHDB = HDBArray[i];
+        // console.log(oneHDB);
+        var ORREquirementArray = oneHDB.ORREquirement;
+        var evaluationArray = [];
+        for (var m = 0; m < ORREquirementArray.length; m++) {
+            var evaluation = ORREquirementArray[m].requirement_result;
+            evaluationArray.push(evaluation);
+        }
+
+        var totalEvaluation = _.uniq(evaluationArray);
+        // console.log(evaluationArray);
+
+        if (totalEvaluation.length > 1) {
+            HDBArray[i]["totalRequirement"] = true;
+        } else {
+            if (totalEvaluation[0] === true) {
+                HDBArray[i]["totalRequirement"] = true;
+            } else {
+                HDBArray[i]["totalRequirement"] = false;
+            }
+        }
+
+    }
+    fs.writeFile(urlDestination, JSON.stringify(HDBArray), function(err) {
+        if (err) {
+            return console.log(err);
+        }
+    });
+
 });
 
-function calculateBuffer(aHDB, ORrequirement, lengthOfRequirements, lengthofHDBfile) {
+function calculateBuffer(aHDB, layerRequest, ORrequirement) {
+    var typeofGEOJSOB = aHDB.type;
+    if (typeofGEOJSOB === "Feature") {
+        var currentPoint = aHDB;
+    } else {
+        var currentPoint = {
+            "type": "Feature",
+            "properties": {},
+            "geometry": {}
+        };
+        currentPoint["properties"] = aHDB.properties;
+        currentPoint["geometry"]["coordinates"] = aHDB.coordinates;
+        currentPoint["geometry"]["type"] = aHDB.type;
+    }
+    var unit = "kilometers";
+    var distance = parseInt(ORrequirement.within_range);
+    var distanceTranslated = distance / 1000;
+    var HDBbuffered = turf.buffer(currentPoint, distanceTranslated, unit);
+    HDBbuffered.features[0].properties = {
+        "fill": "#6BC65F",
+        "stroke": "#25561F",
+        "stroke-width": 2
+    };
+    HDBbuffered.csr = { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::3414" } },
+        urlLayerRetrieved = globalurl + "/geojson/" + ORrequirement.parentLayer + ".geojson";
+    var filtered = {}
+    var key = ORrequirement.sublayer_column;
+    if (key != 'N/A') {
+        var value = ORrequirement.subLayer;
+        filtered = turf.filter(layerRequest, key, value);
+        // console.log(value);
+        // Check Buffer Point Within
+    } else {
+        filtered = layerRequest;
+    }
+    var ptsWithin = turf.within(filtered, HDBbuffered);
+
+    ptsWithin.csr = { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::3414" } },
+        HDBbuffered.features.push(currentPoint)
+        // objectSend.buffer = HDBbuffered;
+        // objectSend.points = ptsWithin;
+    var requirement = {};
+    requirement["requirement_description"] = ORrequirement;
+    requirement["requirement_points"] = ptsWithin;
+    var numberofPoints = ptsWithin.features.length;
+    var operator = ORrequirement.operator;
+    var operator_amt = ORrequirement.operator_amt;
+
+    if (operator === "≥") {
+        if (numberofPoints >= operator_amt) {
+            requirement["requirement_result"] = true;
+        } else {
+            requirement["requirement_result"] = false;
+        }
+    } else if (operator === "≤") {
+        if (numberofPoints <= operator_amt) {
+            requirement["requirement_result"] = true;
+        } else {
+            requirement["requirement_result"] = false;
+        }
+    } else {
+        if (numberofPoints === operator_amt) {
+            requirement["requirement_result"] = true;
+        } else {
+            requirement["requirement_result"] = false;
+        }
+    }
+    // currentPoint["requirements"] = requirement
+    return requirement;
+
+}
+
+function calculateBufferBackup(aHDB, ORrequirement, lengthOfRequirements, lengthofHDBfile) {
     // var url = globalurl + "/HDB/HDB.json";
     // fs.readFile(url, "utf8", function(err, data) {
     //     var HDB = JSON.parse(data);
@@ -472,113 +633,85 @@ app.post('/findHDBPolygon', function(req, res) {
     })
     // ======================
 app.post('/findPostalCode', function(req, res) {
-        var objectReceivedArray = req.body;
-        // console.log(JSON.stringify(objectReceived));
-        console.log(objectReceivedArray.length);
+    var objectReceivedArray = req.body;
 
-        for (var m = 0; m < objectReceivedArray.length; m++) {
-            var objectReceived = objectReceivedArray[m];
-            var postcode = String(objectReceived.POSTCODE);
-            // console.log("id " + postcode);
-            if (postcode.length < 6) {
-                postcode = "0" + postcode;
-            }
-            var urlString = "http://www.onemap.sg/APIV2/services.svc/basicSearchV2?token=qo/s2TnSUmfLz+32CvLC4RMVkzEFYjxqyti1KhByvEacEdMWBpCuSSQ+IFRT84QjGPBCuz/cBom8PfSm3GjEsGc8PkdEEOEr&searchVal=" + postcode + "&otptFlds=SEARCHVAL,CATEGORY&returnGeom=1&rset=1&projSys=WGS84";
-            leafletFeatures = [];
-            request(urlString, function(error, response, geocodedData) {
-                if (!error && response.statusCode == 200) {
-                    var geocodedDataJson = JSON.parse(geocodedData);
-                    searchResults = geocodedDataJson["SearchResults"]; //array containing response of geocoding API
-                    var leafletFeature = new Object(); //single leaflet object
-                    leafletFeature["type"] = "Feature";
-                    leafletFeature["properties"] = objectReceived;
-                    if (searchResults[0].hasOwnProperty("ErrorMessage") === false) {
-                        if (searchResults.length > 1) {
-                            var longitude = searchResults[1]["X"];
-                            var latitude = searchResults[1]["Y"];
-                            var geoObj = {};
-                            geoObj["type"] = "Point";
-                            geoObj["coordinates"] = [];
-                            geoObj["coordinates"].push(parseFloat(longitude)); //long
-                            geoObj["coordinates"].push(parseFloat(latitude)); //lat
-                            leafletFeature["geometry"] = geoObj;
-                            leafletFeatures.push(leafletFeature);
-                            var lengthOfHDB = leafletFeatures.length;
-                            console.log(lengthOfHDB);
-                            lengthOfRequest = objectReceivedArray.length;
-                            if (lengthOfHDB === lengthOfRequest) {
-                                var urlDestination = globalurl + "/HDB/HDB.json";
-                                // console.log(JSON.stringify(leafletFeatures));
+    // console.log(JSON.stringify(objectReceived));
+    // console.log(objectReceivedArray.length);
+    // console.log(objectReceivedArray.length);
 
-                                fs.writeFile(urlDestination, JSON.stringify(leafletFeatures), function(err) {
-                                    if (err) {
-                                        return console.log(err);
-                                    }
-                                });
+    for (var m = 0; m < objectReceivedArray.length; m++) {
+        var objectReceived = objectReceivedArray[m];
+        geoHDBPoint(objectReceived,objectReceivedArray.length);
+    }
+
+
+    res.redirect("/");
+
+
+})
+
+function geoHDBPoint(objectReceived,lengthOfRequest) {
+
+    // console.log(JSON.stringify(objectReceived));
+    // var lengthOfRequest = objectReceived.length;
+   
+    var postcode = String(objectReceived.POSTCODE);
+
+    // console.log("id " + postcode);
+    if (postcode.length < 6) {
+        postcode = "0" + postcode;
+    }
+    var urlString = "http://www.onemap.sg/APIV2/services.svc/basicSearchV2?token=qo/s2TnSUmfLz+32CvLC4RMVkzEFYjxqyti1KhByvEacEdMWBpCuSSQ+IFRT84QjGPBCuz/cBom8PfSm3GjEsGc8PkdEEOEr&searchVal=" + postcode + "&otptFlds=SEARCHVAL,CATEGORY&returnGeom=1&rset=1&projSys=WGS84";
+    leafletFeatures = [];
+    request(urlString, function(error, response, geocodedData) {
+        if (!error && response.statusCode == 200) {
+            var geocodedDataJson = JSON.parse(geocodedData);
+            searchResults = geocodedDataJson["SearchResults"]; //array containing response of geocoding API
+
+            var leafletFeature = new Object(); //single leaflet object
+            leafletFeature["type"] = "Feature";
+            leafletFeature["properties"] = objectReceived;
+            if (searchResults[0].hasOwnProperty("ErrorMessage") === false) {
+                if (searchResults.length > 1) {
+                    var longitude = searchResults[1]["X"];
+                    var latitude = searchResults[1]["Y"];
+
+                    var geoObj = {};
+                    geoObj["type"] = "Point";
+                    geoObj["coordinates"] = [];
+                    geoObj["coordinates"].push(parseFloat(longitude)); //long
+                    geoObj["coordinates"].push(parseFloat(latitude)); //lat
+                    leafletFeature["geometry"] = geoObj;
+                    leafletFeatures.push(leafletFeature);
+                    var lengthOfHDB = leafletFeatures.length;
+
+                    if (lengthOfHDB === lengthOfRequest) {
+                        var urlDestination = globalurl + "/HDB/HDB.json";
+                        fs.writeFile(urlDestination, JSON.stringify(leafletFeatures), function(err) {
+                            if (err) {
+                                return console.log(err);
                             }
-                        }
+                        });
+
                     }
                 }
-            })
+            }
+
+
+
+
         }
-        console.log(leafletFeatures);
-        // var lengthOfRequest = objectReceived.length;
-        // var postcode = String(objectReceived.POSTCODE);
-        // // console.log("id " + postcode);
-        // if (postcode.length < 6) {
-        //     postcode = "0" + postcode;
-        // }
-        // var urlString = "http://www.onemap.sg/APIV2/services.svc/basicSearchV2?token=qo/s2TnSUmfLz+32CvLC4RMVkzEFYjxqyti1KhByvEacEdMWBpCuSSQ+IFRT84QjGPBCuz/cBom8PfSm3GjEsGc8PkdEEOEr&searchVal=" + postcode + "&otptFlds=SEARCHVAL,CATEGORY&returnGeom=1&rset=1&projSys=WGS84";
-        // request(urlString, function(error, response, geocodedData) {
-        //     if (!error && response.statusCode == 200) {
-        //         var geocodedDataJson = JSON.parse(geocodedData);
-        //         searchResults = geocodedDataJson["SearchResults"]; //array containing response of geocoding API
-        //         var leafletFeature = new Object(); //single leaflet object
-        //         leafletFeature["type"] = "Feature";
-        //         leafletFeature["properties"] = objectReceived;
-        //         if (searchResults[0].hasOwnProperty("ErrorMessage") === false) {
-        //             if (searchResults.length > 1) {
-        //                 var longitude = searchResults[1]["X"];
-        //                 var latitude = searchResults[1]["Y"];
-        //                 var geoObj = {};
-        //                 geoObj["type"] = "Point";
-        //                 geoObj["coordinates"] = [];
-        //                 geoObj["coordinates"].push(parseFloat(longitude)); //long
-        //                 geoObj["coordinates"].push(parseFloat(latitude)); //lat
-        //                 leafletFeature["geometry"] = geoObj;
-        //                 leafletFeatures.push(leafletFeature);
-        //                 var lengthOfHDB = leafletFeatures.length;
-        //                 console.log(lengthOfHDB);
-        //                 console.log(lengthOfRequest);
-        //                 if (lengthOfHDB === lengthOfRequest) {
-        //                     var urlDestination = globalurl + "/HDB/HDB.json";
-        //                     console.log(JSON.stringify(leafletFeatures));
-
-        //                     fs.writeFile(urlDestination, JSON.stringify(leafletFeatures), function(err) {
-        //                         if (err) {
-        //                             return console.log(err);
-        //                         }
-        //                     });
-        //                 }
-        //             }
-        //         }
-        //     }
-        // });
-
-
-        res.redirect("/");
-
-
-    })
-    //     // convert shapefile to geojson
-    // function convert(file, name) {
-    //     var shapefile = ogr2ogr(file)
-    //         .format('GeoJSON')
-    //         .skipfailures()
-    //         // .project("EPSG:3414")
-    //         .stream();
-    //     shapefile.pipe(fs.createWriteStream(globalurl + '/geojson/' + name + '.geojson'))
-    // }
+    });
+}
+//     // convert shapefile to geojson
+// function convert(file, name) {
+//     var shapefile = ogr2ogr(file)
+//         .format('GeoJSON')
+//         .skipfailures()
+//         // .project("EPSG:3414")
+//         .stream();
+//     shapefile.pipe(fs.createWriteStream(globalurl + '/geojson/' + name + '.geojson'))
+// }
 process.on('uncaughtException', function(err) {
     console.log('Caught exception: ' + err);
 });
@@ -711,99 +844,44 @@ app.get("/getNumberofHDB", function(req, res) {
     res.send(results);
 });
 
-app.get("/getVisualisationData", function(req, res) {
-    var url = globalurl + "/HDB/HDB.json";
-    var urlPlaningAreas = globalurl + "/PlanningArea/SingaporeZoneV1.geojson";
-    var HDBpolygons = {
-        "type": "FeatureCollection",
-        "features": []
-    }
-    fs.readFile(url, "utf8", function(err, data) {
-        var HDB = JSON.parse(data);
-// <<<<<<< HEAD
 
-//         // var centroidPt = turf.centroid(aHDB);
-//         // HDBpolygons.features.push(centroidPt);
-//         var planingArea = fs.readFile(urlPlaningAreas, "utf8", function(err, PlaningArea) {
-//             for (var m = 0; m < HDB.length; m++) {
-//                 var aHDB = HDB[m];
-//                 var PlaningAreaJSON = JSON.parse(PlaningArea);
+// var planingArea = fs.readFile(urlPlaningAreas, "utf8", function(err, PlaningArea) {
+// var testPark = {"type":"FeatureCollection","crs":{"type":"name","properties":{"name":"urn:ogc:def:crs:EPSG::3414"}},"features":[{"type":"Feature","properties":{"Feb-16":"Jurong West Park","x-coordinates":"12492.80991","y-coordinates":"36410.64494"},"geometry":{"type":"Point","coordinates":[103.69397709273666,1.3455554561200045]}},{"type":"Feature","properties":{"Feb-16":"Chinese Garden Park","x-coordinates":"16600.20708","y-coordinates":"35684.29778"},"geometry":{"type":"Point","coordinates":[103.73088476827687,1.3389884814852058]}},{"type":"Feature","properties":{"Feb-16":"Yunnan Park","x-coordinates":"12349.96762","y-coordinates":"35512.79393"},"geometry":{"type":"Point","coordinates":[103.69269403453349,1.3374355608317607]}},{"type":"Feature","properties":{"Feb-16":"Jalan Bahar Mini Park","x-coordinates":"13709.2759","y-coordinates":"36934.22045"},"geometry":{"type":"Point","coordinates":[103.70490750844554,1.3502910786217523]}},{"type":"Feature","properties":{"Feb-16":"Taman Jurong Greens","x-coordinates":"15230.37874","y-coordinates":"35463.38927"},"geometry":{"type":"Point","coordinates":[103.71857616752038,1.336990118610859]}},{"type":"Feature","properties":{"Feb-16":"Firefly Park @ Clementi","x-coordinates":"20390.13986","y-coordinates":"33604.19211"},"geometry":{"type":"Point","coordinates":[103.76494002958339,1.32017794999254]}},{"type":"Feature","properties":{"Feb-16":"Clementi Woods Park","x-coordinates":"20711.35687","y-coordinates":"31395.50302"},"geometry":{"type":"Point","coordinates":[103.76782684893212,1.3002034362358188]}},{"type":"Feature","properties":{"Feb-16":"West Coast Park","x-coordinates":"20135.3512","y-coordinates":"31100.7682"},"geometry":{"type":"Point","coordinates":[103.76265125603057,1.297537819801672]}},{"type":"Feature","properties":{"Feb-16":"Our Park @ 618 Ang Mo Kio","x-coordinates":"28469.4804","y-coordinates":"39998.12307"},"geometry":{"type":"Point","coordinates":[103.8375372048229,1.3780033308888866]}},{"type":"Feature","properties":{"Feb-16":"Bishan Ang Mo Kio Park","x-coordinates":"29338.79883","y-coordinates":"38343.43232"},"geometry":{"type":"Point","coordinates":[103.84534859447591,1.3630388723407072]}},{"type":"Feature","properties":{"Feb-16":"Leban Park","x-coordinates":"27570.99088","y-coordinates":"39374.08927"},"geometry":{"type":"Point","coordinates":[103.82946362594411,1.3723597928977918]}},{"type":"Feature","properties":{"Feb-16":"Ang Mo Kio Town Garden West","x-coordinates":"29249.40681","y-coordinates":"39644.01981"},"geometry":{"type":"Point","coordinates":[103.84454540118476,1.374800924884806]}},{"type":"Feature","properties":{"Feb-16":"Tavistock Avenue Park","x-coordinates":"31562.97794","y-coordinates":"39116.88644"},"geometry":{"type":"Point","coordinates":[103.86533444362597,1.3700335304858187]}},{"type":"Feature","properties":{"Feb-16":"Jalan Pintau Playground Park","x-coordinates":"28742.4759","y-coordinates":"37328.49211"},"geometry":{"type":"Point","coordinates":[103.83999020336404,1.3538601356390618]}},{"type":"Feature","properties":{"Feb-16":"Teck Ghee N4 Park","x-coordinates":"30921.19938","y-coordinates":"38915.87221"},"geometry":{"type":"Point","coordinates":[103.85956759219768,1.3682157002814592]}},{"type":"Feature","properties":{"Feb-16":"Yishun Neighbourhood Park","x-coordinates":"28269.94532","y-coordinates":"46572.34879"},"geometry":{"type":"Point","coordinates":[103.83574429670982,1.4374582637230267]}},{"type":"Feature","properties":{"Feb-16":"Lower Seletar Reservoir Park","x-coordinates":"27876.08157","y-coordinates":"43508.46762"},"geometry":{"type":"Point","coordinates":[103.83220506557852,1.4097496303561263]}},{"type":"Feature","properties":{"Feb-16":"Sembawang Park","x-coordinates":"28351.81","y-coordinates":"49195.37"},"geometry":{"type":"Point","coordinates":[103.83647996233445,1.4611799135987107]}},{"type":"Feature","properties":{"Feb-16":"Yishun Park","x-coordinates":"28965.87962","y-coordinates":"45064.86637"},"geometry":{"type":"Point","coordinates":[103.84199788454895,1.4238251230770615]}},{"type":"Feature","properties":{"Feb-16":"Bukit Purmei Hillock Park","x-coordinates":"26967.65323","y-coordinates":"28494.23521"},"geometry":{"type":"Point","coordinates":[103.82404257304594,1.2739662270030678]}},{"type":"Feature","properties":{"Feb-16":"Telok Blangah Hill Park","x-coordinates":"25674.64021","y-coordinates":"29046.56685"},"geometry":{"type":"Point","coordinates":[103.81242434691549,1.2789612520244928]}},{"type":"Feature","properties":{"Feb-16":"Tiong Bahru Park","x-coordinates":"27037.61275","y-coordinates":"30003.87671"},"geometry":{"type":"Point","coordinates":[103.82467113860378,1.287618897492641]}},{"type":"Feature","properties":{"Feb-16":"Green Oval Park @ Pasir Ris","x-coordinates":"39581.75104","y-coordinates":"40372.42548"},"geometry":{"type":"Point","coordinates":[103.93738920419504,1.381386099103072]}},{"type":"Feature","properties":{"Feb-16":"Pasir Ris Park","x-coordinates":"40694.13589","y-coordinates":"40489.16977"},"geometry":{"type":"Point","coordinates":[103.94738484498052,1.3824414289557245]}},{"type":"Feature","properties":{"Feb-16":"Aljunied Park","x-coordinates":"33269.75179","y-coordinates":"34611.78927"},"geometry":{"type":"Point","coordinates":[103.88067021738051,1.3292907922421822]}},{"type":"Feature","properties":{"Feb-16":"East Coast Park ","x-coordinates":"36032.98191","y-coordinates":"31254.53902"},"geometry":{"type":"Point","coordinates":[103.90549848801714,1.2989284257493996]}},{"type":"Feature","properties":{"Feb-16":"Telok Kurau Park","x-coordinates":"37011.95141","y-coordinates":"33053.63927"},"geometry":{"type":"Point","coordinates":[103.9142954790845,1.3151985697204247]}},{"type":"Feature","properties":{"Feb-16":"Compassvale Ancilla Park","x-coordinates":"34580.85564","y-coordinates":"40687.54211"},"geometry":{"type":"Point","coordinates":[103.8924525416005,1.38423745206866]}},{"type":"Feature","properties":{"Feb-16":"Sengkang Riverside Park","x-coordinates":"34065.61718","y-coordinates":"42377.87737"},"geometry":{"type":"Point","coordinates":[103.88782308687469,1.3995243422853743]}},{"type":"Feature","properties":{"Feb-16":"Serangoon Community Park","x-coordinates":"32314.8504","y-coordinates":"37594.01762"},"geometry":{"type":"Point","coordinates":[103.8720903257826,1.3562611507526174]}},{"type":"Feature","properties":{"Feb-16":"Surin Avenue Neighbourhood Park ","x-coordinates":"33652.20141","y-coordinates":"37489.67045"},"geometry":{"type":"Point","coordinates":[103.88410727496378,1.3553172488144036]}},{"type":"Feature","properties":{"Feb-16":"Tai Keng Gardens Playground Park","x-coordinates":"33764.63804","y-coordinates":"36509.58521"},"geometry":{"type":"Point","coordinates":[103.88511740309649,1.3464536886420813]}},{"type":"Feature","properties":{"Feb-16":"Kampong Park @ Serangoon","x-coordinates":"31858.82692","y-coordinates":"37162.58644"},"geometry":{"type":"Point","coordinates":[103.8679926023026,1.3523595039900236]}},{"type":"Feature","properties":{"Feb-16":"Serangoon Sunshine Park","x-coordinates":"32465.00708","y-coordinates":"36579.08644"},"geometry":{"type":"Point","coordinates":[103.8734394307473,1.3470824543776054]}},{"type":"Feature","properties":{"Feb-16":"Mandai Tekong Park","x-coordinates":"23606.12874","y-coordinates":"46293.58644"},"geometry":{"type":"Point","coordinates":[103.79383546563612,1.4349368961854605]}},{"type":"Feature","properties":{"Feb-16":"Circle Green Park","x-coordinates":"24052.08441","y-coordinates":"47213.23644"},"geometry":{"type":"Point","coordinates":[103.79784267242503,1.443253941889533]}},{"type":"Feature","properties":{"Feb-16":"Woodlands Crescent Park","x-coordinates":"24732.64264","y-coordinates":"47391.4859"},"geometry":{"type":"Point","coordinates":[103.8039581364304,1.4448660528548893]}},{"type":"Feature","properties":{"Feb-16":"Woodlands Waterfront Park","x-coordinates":"22131.37628","y-coordinates":"48272.27954"},"geometry":{"type":"Point","coordinates":[103.78058300279623,1.452831202035946]}},{"type":"Feature","properties":{"Feb-16":"Bukit Batok Nature Park","x-coordinates":"20320.29246","y-coordinates":"36881.02527"},"geometry":{"type":"Point","coordinates":[103.76431158830921,1.3498124282754906]}},{"type":"Feature","properties":{"Feb-16":"Beauty Garden Park","x-coordinates":"18579.20649","y-coordinates":"38233.18398"},"geometry":{"type":"Point","coordinates":[103.74866642403869,1.3620403592663366]}},{"type":"Feature","properties":{"Feb-16":"Punggol Park","x-coordinates":"35181.52336","y-coordinates":"39707.6287"},"geometry":{"type":"Point","coordinates":[103.89784975420181,1.3753753299581015]}},{"type":"Feature","properties":{"Feb-16":"Holland Village Park","x-coordinates":"23820.27311","y-coordinates":"32623.63817"},"geometry":{"type":"Point","coordinates":[103.79576168646363,1.3113108292240072]}},{"type":"Feature","properties":{"Feb-16":"Jalan Pari Burong Playground Park","x-coordinates":"40671.62387","y-coordinates":"35138.28237"},"geometry":{"type":"Point","coordinates":[103.94718029336944,1.334050015556146]}},{"type":"Feature","properties":{"Feb-16":"Tampines Tree Park","x-coordinates":"41946.30628","y-coordinates":"37066.93296"},"geometry":{"type":"Point","coordinates":[103.95863490703655,1.3514914445366264]}},{"type":"Feature","properties":{"Feb-16":"Tampines Central Park","x-coordinates":"39554.49858","y-coordinates":"37347.13521"},"geometry":{"type":"Point","coordinates":[103.93714314527725,1.354026509822595]}},{"type":"Feature","properties":{"Feb-16":"Bedok Resevoir Park","x-coordinates":"39176.53947","y-coordinates":"35697.54847"},"geometry":{"type":"Point","coordinates":[103.93374633382489,1.3391084005897191]}},{"type":"Feature","properties":{"Feb-16":"Sun Plaza Park (Tampines)","x-coordinates":"40291.96","y-coordinates":"37902.64"},"geometry":{"type":"Point","coordinates":[103.94376992797422,1.3590499932684552]}},{"type":"Feature","properties":{"Feb-16":"Bougainvillea Park","x-coordinates":"25134.28259","y-coordinates":"34310.73644"},"geometry":{"type":"Point","coordinates":[103.80756854714663,1.3265684986077761]}},{"type":"Feature","properties":{"Feb-16":"Choa Chu Kang Park","x-coordinates":"18415.16807","y-coordinates":"41074.62598"},"geometry":{"type":"Point","coordinates":[103.74719150875676,1.3877372630616642]}},{"type":"Feature","properties":{"Feb-16":"Toa Payoh Town Park","x-coordinates":"29643.00072","y-coordinates":"34731.64644"},"geometry":{"type":"Point","coordinates":[103.84808185840946,1.3303751502512366]}}]}
+// var PlaningAreaJSON = JSON.parse(PlaningArea);
+// var ptsWithin = turf.within(HDBpolygons, PlaningAreaJSON);
+// var resultFeatures = PlaningAreaJSON.features.concat(HDBpolygons.features);
+// var result = {
+//     "type": "FeatureCollection",
+//     "features": resultFeatures
+// };
+// // console.log(JSON.stringify(result));
+// urlDestination = globalurl + "/PlanningArea/Result.geojson"
+// fs.writeFile(urlDestination, JSON.stringify(result), function(err) {
+//     if (err) {
+//         return console.log(err);
 
-//                 // console.log(PlaningAreaJSON.features);
-//                 for (var n = 0; n < PlaningAreaJSON.features.length; n++) {
-//                     var anArea = PlaningAreaJSON.features[n];
-//                     console.log(anArea);
-//                     var intersection = turf.intersect(aHDB, anArea);
-//                     console.log("============")
-//                     console.log(aHDB);
-//                     console.log(intersection);
-//                     console.log("============")
-// =======
-        for (var m = 0; m < HDB.length; m++) {
-            var aHDB = HDB[m];
-            var centroidPt = turf.centroid(aHDB);
-            HDBpolygons.features.push(centroidPt);
-        }
-        var planingArea = fs.readFile(urlPlaningAreas, "utf8", function(err, PlaningArea) {
-            // var testPark = {"type":"FeatureCollection","crs":{"type":"name","properties":{"name":"urn:ogc:def:crs:EPSG::3414"}},"features":[{"type":"Feature","properties":{"Feb-16":"Jurong West Park","x-coordinates":"12492.80991","y-coordinates":"36410.64494"},"geometry":{"type":"Point","coordinates":[103.69397709273666,1.3455554561200045]}},{"type":"Feature","properties":{"Feb-16":"Chinese Garden Park","x-coordinates":"16600.20708","y-coordinates":"35684.29778"},"geometry":{"type":"Point","coordinates":[103.73088476827687,1.3389884814852058]}},{"type":"Feature","properties":{"Feb-16":"Yunnan Park","x-coordinates":"12349.96762","y-coordinates":"35512.79393"},"geometry":{"type":"Point","coordinates":[103.69269403453349,1.3374355608317607]}},{"type":"Feature","properties":{"Feb-16":"Jalan Bahar Mini Park","x-coordinates":"13709.2759","y-coordinates":"36934.22045"},"geometry":{"type":"Point","coordinates":[103.70490750844554,1.3502910786217523]}},{"type":"Feature","properties":{"Feb-16":"Taman Jurong Greens","x-coordinates":"15230.37874","y-coordinates":"35463.38927"},"geometry":{"type":"Point","coordinates":[103.71857616752038,1.336990118610859]}},{"type":"Feature","properties":{"Feb-16":"Firefly Park @ Clementi","x-coordinates":"20390.13986","y-coordinates":"33604.19211"},"geometry":{"type":"Point","coordinates":[103.76494002958339,1.32017794999254]}},{"type":"Feature","properties":{"Feb-16":"Clementi Woods Park","x-coordinates":"20711.35687","y-coordinates":"31395.50302"},"geometry":{"type":"Point","coordinates":[103.76782684893212,1.3002034362358188]}},{"type":"Feature","properties":{"Feb-16":"West Coast Park","x-coordinates":"20135.3512","y-coordinates":"31100.7682"},"geometry":{"type":"Point","coordinates":[103.76265125603057,1.297537819801672]}},{"type":"Feature","properties":{"Feb-16":"Our Park @ 618 Ang Mo Kio","x-coordinates":"28469.4804","y-coordinates":"39998.12307"},"geometry":{"type":"Point","coordinates":[103.8375372048229,1.3780033308888866]}},{"type":"Feature","properties":{"Feb-16":"Bishan Ang Mo Kio Park","x-coordinates":"29338.79883","y-coordinates":"38343.43232"},"geometry":{"type":"Point","coordinates":[103.84534859447591,1.3630388723407072]}},{"type":"Feature","properties":{"Feb-16":"Leban Park","x-coordinates":"27570.99088","y-coordinates":"39374.08927"},"geometry":{"type":"Point","coordinates":[103.82946362594411,1.3723597928977918]}},{"type":"Feature","properties":{"Feb-16":"Ang Mo Kio Town Garden West","x-coordinates":"29249.40681","y-coordinates":"39644.01981"},"geometry":{"type":"Point","coordinates":[103.84454540118476,1.374800924884806]}},{"type":"Feature","properties":{"Feb-16":"Tavistock Avenue Park","x-coordinates":"31562.97794","y-coordinates":"39116.88644"},"geometry":{"type":"Point","coordinates":[103.86533444362597,1.3700335304858187]}},{"type":"Feature","properties":{"Feb-16":"Jalan Pintau Playground Park","x-coordinates":"28742.4759","y-coordinates":"37328.49211"},"geometry":{"type":"Point","coordinates":[103.83999020336404,1.3538601356390618]}},{"type":"Feature","properties":{"Feb-16":"Teck Ghee N4 Park","x-coordinates":"30921.19938","y-coordinates":"38915.87221"},"geometry":{"type":"Point","coordinates":[103.85956759219768,1.3682157002814592]}},{"type":"Feature","properties":{"Feb-16":"Yishun Neighbourhood Park","x-coordinates":"28269.94532","y-coordinates":"46572.34879"},"geometry":{"type":"Point","coordinates":[103.83574429670982,1.4374582637230267]}},{"type":"Feature","properties":{"Feb-16":"Lower Seletar Reservoir Park","x-coordinates":"27876.08157","y-coordinates":"43508.46762"},"geometry":{"type":"Point","coordinates":[103.83220506557852,1.4097496303561263]}},{"type":"Feature","properties":{"Feb-16":"Sembawang Park","x-coordinates":"28351.81","y-coordinates":"49195.37"},"geometry":{"type":"Point","coordinates":[103.83647996233445,1.4611799135987107]}},{"type":"Feature","properties":{"Feb-16":"Yishun Park","x-coordinates":"28965.87962","y-coordinates":"45064.86637"},"geometry":{"type":"Point","coordinates":[103.84199788454895,1.4238251230770615]}},{"type":"Feature","properties":{"Feb-16":"Bukit Purmei Hillock Park","x-coordinates":"26967.65323","y-coordinates":"28494.23521"},"geometry":{"type":"Point","coordinates":[103.82404257304594,1.2739662270030678]}},{"type":"Feature","properties":{"Feb-16":"Telok Blangah Hill Park","x-coordinates":"25674.64021","y-coordinates":"29046.56685"},"geometry":{"type":"Point","coordinates":[103.81242434691549,1.2789612520244928]}},{"type":"Feature","properties":{"Feb-16":"Tiong Bahru Park","x-coordinates":"27037.61275","y-coordinates":"30003.87671"},"geometry":{"type":"Point","coordinates":[103.82467113860378,1.287618897492641]}},{"type":"Feature","properties":{"Feb-16":"Green Oval Park @ Pasir Ris","x-coordinates":"39581.75104","y-coordinates":"40372.42548"},"geometry":{"type":"Point","coordinates":[103.93738920419504,1.381386099103072]}},{"type":"Feature","properties":{"Feb-16":"Pasir Ris Park","x-coordinates":"40694.13589","y-coordinates":"40489.16977"},"geometry":{"type":"Point","coordinates":[103.94738484498052,1.3824414289557245]}},{"type":"Feature","properties":{"Feb-16":"Aljunied Park","x-coordinates":"33269.75179","y-coordinates":"34611.78927"},"geometry":{"type":"Point","coordinates":[103.88067021738051,1.3292907922421822]}},{"type":"Feature","properties":{"Feb-16":"East Coast Park ","x-coordinates":"36032.98191","y-coordinates":"31254.53902"},"geometry":{"type":"Point","coordinates":[103.90549848801714,1.2989284257493996]}},{"type":"Feature","properties":{"Feb-16":"Telok Kurau Park","x-coordinates":"37011.95141","y-coordinates":"33053.63927"},"geometry":{"type":"Point","coordinates":[103.9142954790845,1.3151985697204247]}},{"type":"Feature","properties":{"Feb-16":"Compassvale Ancilla Park","x-coordinates":"34580.85564","y-coordinates":"40687.54211"},"geometry":{"type":"Point","coordinates":[103.8924525416005,1.38423745206866]}},{"type":"Feature","properties":{"Feb-16":"Sengkang Riverside Park","x-coordinates":"34065.61718","y-coordinates":"42377.87737"},"geometry":{"type":"Point","coordinates":[103.88782308687469,1.3995243422853743]}},{"type":"Feature","properties":{"Feb-16":"Serangoon Community Park","x-coordinates":"32314.8504","y-coordinates":"37594.01762"},"geometry":{"type":"Point","coordinates":[103.8720903257826,1.3562611507526174]}},{"type":"Feature","properties":{"Feb-16":"Surin Avenue Neighbourhood Park ","x-coordinates":"33652.20141","y-coordinates":"37489.67045"},"geometry":{"type":"Point","coordinates":[103.88410727496378,1.3553172488144036]}},{"type":"Feature","properties":{"Feb-16":"Tai Keng Gardens Playground Park","x-coordinates":"33764.63804","y-coordinates":"36509.58521"},"geometry":{"type":"Point","coordinates":[103.88511740309649,1.3464536886420813]}},{"type":"Feature","properties":{"Feb-16":"Kampong Park @ Serangoon","x-coordinates":"31858.82692","y-coordinates":"37162.58644"},"geometry":{"type":"Point","coordinates":[103.8679926023026,1.3523595039900236]}},{"type":"Feature","properties":{"Feb-16":"Serangoon Sunshine Park","x-coordinates":"32465.00708","y-coordinates":"36579.08644"},"geometry":{"type":"Point","coordinates":[103.8734394307473,1.3470824543776054]}},{"type":"Feature","properties":{"Feb-16":"Mandai Tekong Park","x-coordinates":"23606.12874","y-coordinates":"46293.58644"},"geometry":{"type":"Point","coordinates":[103.79383546563612,1.4349368961854605]}},{"type":"Feature","properties":{"Feb-16":"Circle Green Park","x-coordinates":"24052.08441","y-coordinates":"47213.23644"},"geometry":{"type":"Point","coordinates":[103.79784267242503,1.443253941889533]}},{"type":"Feature","properties":{"Feb-16":"Woodlands Crescent Park","x-coordinates":"24732.64264","y-coordinates":"47391.4859"},"geometry":{"type":"Point","coordinates":[103.8039581364304,1.4448660528548893]}},{"type":"Feature","properties":{"Feb-16":"Woodlands Waterfront Park","x-coordinates":"22131.37628","y-coordinates":"48272.27954"},"geometry":{"type":"Point","coordinates":[103.78058300279623,1.452831202035946]}},{"type":"Feature","properties":{"Feb-16":"Bukit Batok Nature Park","x-coordinates":"20320.29246","y-coordinates":"36881.02527"},"geometry":{"type":"Point","coordinates":[103.76431158830921,1.3498124282754906]}},{"type":"Feature","properties":{"Feb-16":"Beauty Garden Park","x-coordinates":"18579.20649","y-coordinates":"38233.18398"},"geometry":{"type":"Point","coordinates":[103.74866642403869,1.3620403592663366]}},{"type":"Feature","properties":{"Feb-16":"Punggol Park","x-coordinates":"35181.52336","y-coordinates":"39707.6287"},"geometry":{"type":"Point","coordinates":[103.89784975420181,1.3753753299581015]}},{"type":"Feature","properties":{"Feb-16":"Holland Village Park","x-coordinates":"23820.27311","y-coordinates":"32623.63817"},"geometry":{"type":"Point","coordinates":[103.79576168646363,1.3113108292240072]}},{"type":"Feature","properties":{"Feb-16":"Jalan Pari Burong Playground Park","x-coordinates":"40671.62387","y-coordinates":"35138.28237"},"geometry":{"type":"Point","coordinates":[103.94718029336944,1.334050015556146]}},{"type":"Feature","properties":{"Feb-16":"Tampines Tree Park","x-coordinates":"41946.30628","y-coordinates":"37066.93296"},"geometry":{"type":"Point","coordinates":[103.95863490703655,1.3514914445366264]}},{"type":"Feature","properties":{"Feb-16":"Tampines Central Park","x-coordinates":"39554.49858","y-coordinates":"37347.13521"},"geometry":{"type":"Point","coordinates":[103.93714314527725,1.354026509822595]}},{"type":"Feature","properties":{"Feb-16":"Bedok Resevoir Park","x-coordinates":"39176.53947","y-coordinates":"35697.54847"},"geometry":{"type":"Point","coordinates":[103.93374633382489,1.3391084005897191]}},{"type":"Feature","properties":{"Feb-16":"Sun Plaza Park (Tampines)","x-coordinates":"40291.96","y-coordinates":"37902.64"},"geometry":{"type":"Point","coordinates":[103.94376992797422,1.3590499932684552]}},{"type":"Feature","properties":{"Feb-16":"Bougainvillea Park","x-coordinates":"25134.28259","y-coordinates":"34310.73644"},"geometry":{"type":"Point","coordinates":[103.80756854714663,1.3265684986077761]}},{"type":"Feature","properties":{"Feb-16":"Choa Chu Kang Park","x-coordinates":"18415.16807","y-coordinates":"41074.62598"},"geometry":{"type":"Point","coordinates":[103.74719150875676,1.3877372630616642]}},{"type":"Feature","properties":{"Feb-16":"Toa Payoh Town Park","x-coordinates":"29643.00072","y-coordinates":"34731.64644"},"geometry":{"type":"Point","coordinates":[103.84808185840946,1.3303751502512366]}}]}
-            var PlaningAreaJSON = JSON.parse(PlaningArea);
-            var ptsWithin = turf.within(HDBpolygons, PlaningAreaJSON);
+//     }
+// });
 
-            var resultFeatures = PlaningAreaJSON.features.concat(HDBpolygons.features);
-            var result = {
-                "type": "FeatureCollection",
-                "features": resultFeatures
-            };
-            // console.log(JSON.stringify(result));
-            urlDestination = globalurl + "/PlanningArea/Result.geojson"
-            fs.writeFile(urlDestination, JSON.stringify(result), function(err) {
-                if (err) {
-                    return console.log(err);
-// >>>>>>> ecbbe01693ef696e7e4060ba846697cda95e9f63
-                }
+// console.log(JSON.stringify(withins));
+// var aggregated = turf.sum(PlaningAreaJSON, HDBpolygons, 'DwellingUnits', 'sum');
+// var resultFeatures = HDBpolygons.features.concat(
+//     aggregated.features);
+// var result = {
+//     "type": "FeatureCollection",
+//     "features": resultFeatures
+// };
+// urlDestination = globalurl + "/PlanningArea/Result.geojson"
+
+// fs.writeFile(urlDestination, JSON.stringify(result), function(err) {
+//     if (err) {
+//         return console.log(err);
+
+//     }
+// });
+
+// })
 
 
-            }
-        })
-
-        // var planingArea = fs.readFile(urlPlaningAreas, "utf8", function(err, PlaningArea) {
-        // var testPark = {"type":"FeatureCollection","crs":{"type":"name","properties":{"name":"urn:ogc:def:crs:EPSG::3414"}},"features":[{"type":"Feature","properties":{"Feb-16":"Jurong West Park","x-coordinates":"12492.80991","y-coordinates":"36410.64494"},"geometry":{"type":"Point","coordinates":[103.69397709273666,1.3455554561200045]}},{"type":"Feature","properties":{"Feb-16":"Chinese Garden Park","x-coordinates":"16600.20708","y-coordinates":"35684.29778"},"geometry":{"type":"Point","coordinates":[103.73088476827687,1.3389884814852058]}},{"type":"Feature","properties":{"Feb-16":"Yunnan Park","x-coordinates":"12349.96762","y-coordinates":"35512.79393"},"geometry":{"type":"Point","coordinates":[103.69269403453349,1.3374355608317607]}},{"type":"Feature","properties":{"Feb-16":"Jalan Bahar Mini Park","x-coordinates":"13709.2759","y-coordinates":"36934.22045"},"geometry":{"type":"Point","coordinates":[103.70490750844554,1.3502910786217523]}},{"type":"Feature","properties":{"Feb-16":"Taman Jurong Greens","x-coordinates":"15230.37874","y-coordinates":"35463.38927"},"geometry":{"type":"Point","coordinates":[103.71857616752038,1.336990118610859]}},{"type":"Feature","properties":{"Feb-16":"Firefly Park @ Clementi","x-coordinates":"20390.13986","y-coordinates":"33604.19211"},"geometry":{"type":"Point","coordinates":[103.76494002958339,1.32017794999254]}},{"type":"Feature","properties":{"Feb-16":"Clementi Woods Park","x-coordinates":"20711.35687","y-coordinates":"31395.50302"},"geometry":{"type":"Point","coordinates":[103.76782684893212,1.3002034362358188]}},{"type":"Feature","properties":{"Feb-16":"West Coast Park","x-coordinates":"20135.3512","y-coordinates":"31100.7682"},"geometry":{"type":"Point","coordinates":[103.76265125603057,1.297537819801672]}},{"type":"Feature","properties":{"Feb-16":"Our Park @ 618 Ang Mo Kio","x-coordinates":"28469.4804","y-coordinates":"39998.12307"},"geometry":{"type":"Point","coordinates":[103.8375372048229,1.3780033308888866]}},{"type":"Feature","properties":{"Feb-16":"Bishan Ang Mo Kio Park","x-coordinates":"29338.79883","y-coordinates":"38343.43232"},"geometry":{"type":"Point","coordinates":[103.84534859447591,1.3630388723407072]}},{"type":"Feature","properties":{"Feb-16":"Leban Park","x-coordinates":"27570.99088","y-coordinates":"39374.08927"},"geometry":{"type":"Point","coordinates":[103.82946362594411,1.3723597928977918]}},{"type":"Feature","properties":{"Feb-16":"Ang Mo Kio Town Garden West","x-coordinates":"29249.40681","y-coordinates":"39644.01981"},"geometry":{"type":"Point","coordinates":[103.84454540118476,1.374800924884806]}},{"type":"Feature","properties":{"Feb-16":"Tavistock Avenue Park","x-coordinates":"31562.97794","y-coordinates":"39116.88644"},"geometry":{"type":"Point","coordinates":[103.86533444362597,1.3700335304858187]}},{"type":"Feature","properties":{"Feb-16":"Jalan Pintau Playground Park","x-coordinates":"28742.4759","y-coordinates":"37328.49211"},"geometry":{"type":"Point","coordinates":[103.83999020336404,1.3538601356390618]}},{"type":"Feature","properties":{"Feb-16":"Teck Ghee N4 Park","x-coordinates":"30921.19938","y-coordinates":"38915.87221"},"geometry":{"type":"Point","coordinates":[103.85956759219768,1.3682157002814592]}},{"type":"Feature","properties":{"Feb-16":"Yishun Neighbourhood Park","x-coordinates":"28269.94532","y-coordinates":"46572.34879"},"geometry":{"type":"Point","coordinates":[103.83574429670982,1.4374582637230267]}},{"type":"Feature","properties":{"Feb-16":"Lower Seletar Reservoir Park","x-coordinates":"27876.08157","y-coordinates":"43508.46762"},"geometry":{"type":"Point","coordinates":[103.83220506557852,1.4097496303561263]}},{"type":"Feature","properties":{"Feb-16":"Sembawang Park","x-coordinates":"28351.81","y-coordinates":"49195.37"},"geometry":{"type":"Point","coordinates":[103.83647996233445,1.4611799135987107]}},{"type":"Feature","properties":{"Feb-16":"Yishun Park","x-coordinates":"28965.87962","y-coordinates":"45064.86637"},"geometry":{"type":"Point","coordinates":[103.84199788454895,1.4238251230770615]}},{"type":"Feature","properties":{"Feb-16":"Bukit Purmei Hillock Park","x-coordinates":"26967.65323","y-coordinates":"28494.23521"},"geometry":{"type":"Point","coordinates":[103.82404257304594,1.2739662270030678]}},{"type":"Feature","properties":{"Feb-16":"Telok Blangah Hill Park","x-coordinates":"25674.64021","y-coordinates":"29046.56685"},"geometry":{"type":"Point","coordinates":[103.81242434691549,1.2789612520244928]}},{"type":"Feature","properties":{"Feb-16":"Tiong Bahru Park","x-coordinates":"27037.61275","y-coordinates":"30003.87671"},"geometry":{"type":"Point","coordinates":[103.82467113860378,1.287618897492641]}},{"type":"Feature","properties":{"Feb-16":"Green Oval Park @ Pasir Ris","x-coordinates":"39581.75104","y-coordinates":"40372.42548"},"geometry":{"type":"Point","coordinates":[103.93738920419504,1.381386099103072]}},{"type":"Feature","properties":{"Feb-16":"Pasir Ris Park","x-coordinates":"40694.13589","y-coordinates":"40489.16977"},"geometry":{"type":"Point","coordinates":[103.94738484498052,1.3824414289557245]}},{"type":"Feature","properties":{"Feb-16":"Aljunied Park","x-coordinates":"33269.75179","y-coordinates":"34611.78927"},"geometry":{"type":"Point","coordinates":[103.88067021738051,1.3292907922421822]}},{"type":"Feature","properties":{"Feb-16":"East Coast Park ","x-coordinates":"36032.98191","y-coordinates":"31254.53902"},"geometry":{"type":"Point","coordinates":[103.90549848801714,1.2989284257493996]}},{"type":"Feature","properties":{"Feb-16":"Telok Kurau Park","x-coordinates":"37011.95141","y-coordinates":"33053.63927"},"geometry":{"type":"Point","coordinates":[103.9142954790845,1.3151985697204247]}},{"type":"Feature","properties":{"Feb-16":"Compassvale Ancilla Park","x-coordinates":"34580.85564","y-coordinates":"40687.54211"},"geometry":{"type":"Point","coordinates":[103.8924525416005,1.38423745206866]}},{"type":"Feature","properties":{"Feb-16":"Sengkang Riverside Park","x-coordinates":"34065.61718","y-coordinates":"42377.87737"},"geometry":{"type":"Point","coordinates":[103.88782308687469,1.3995243422853743]}},{"type":"Feature","properties":{"Feb-16":"Serangoon Community Park","x-coordinates":"32314.8504","y-coordinates":"37594.01762"},"geometry":{"type":"Point","coordinates":[103.8720903257826,1.3562611507526174]}},{"type":"Feature","properties":{"Feb-16":"Surin Avenue Neighbourhood Park ","x-coordinates":"33652.20141","y-coordinates":"37489.67045"},"geometry":{"type":"Point","coordinates":[103.88410727496378,1.3553172488144036]}},{"type":"Feature","properties":{"Feb-16":"Tai Keng Gardens Playground Park","x-coordinates":"33764.63804","y-coordinates":"36509.58521"},"geometry":{"type":"Point","coordinates":[103.88511740309649,1.3464536886420813]}},{"type":"Feature","properties":{"Feb-16":"Kampong Park @ Serangoon","x-coordinates":"31858.82692","y-coordinates":"37162.58644"},"geometry":{"type":"Point","coordinates":[103.8679926023026,1.3523595039900236]}},{"type":"Feature","properties":{"Feb-16":"Serangoon Sunshine Park","x-coordinates":"32465.00708","y-coordinates":"36579.08644"},"geometry":{"type":"Point","coordinates":[103.8734394307473,1.3470824543776054]}},{"type":"Feature","properties":{"Feb-16":"Mandai Tekong Park","x-coordinates":"23606.12874","y-coordinates":"46293.58644"},"geometry":{"type":"Point","coordinates":[103.79383546563612,1.4349368961854605]}},{"type":"Feature","properties":{"Feb-16":"Circle Green Park","x-coordinates":"24052.08441","y-coordinates":"47213.23644"},"geometry":{"type":"Point","coordinates":[103.79784267242503,1.443253941889533]}},{"type":"Feature","properties":{"Feb-16":"Woodlands Crescent Park","x-coordinates":"24732.64264","y-coordinates":"47391.4859"},"geometry":{"type":"Point","coordinates":[103.8039581364304,1.4448660528548893]}},{"type":"Feature","properties":{"Feb-16":"Woodlands Waterfront Park","x-coordinates":"22131.37628","y-coordinates":"48272.27954"},"geometry":{"type":"Point","coordinates":[103.78058300279623,1.452831202035946]}},{"type":"Feature","properties":{"Feb-16":"Bukit Batok Nature Park","x-coordinates":"20320.29246","y-coordinates":"36881.02527"},"geometry":{"type":"Point","coordinates":[103.76431158830921,1.3498124282754906]}},{"type":"Feature","properties":{"Feb-16":"Beauty Garden Park","x-coordinates":"18579.20649","y-coordinates":"38233.18398"},"geometry":{"type":"Point","coordinates":[103.74866642403869,1.3620403592663366]}},{"type":"Feature","properties":{"Feb-16":"Punggol Park","x-coordinates":"35181.52336","y-coordinates":"39707.6287"},"geometry":{"type":"Point","coordinates":[103.89784975420181,1.3753753299581015]}},{"type":"Feature","properties":{"Feb-16":"Holland Village Park","x-coordinates":"23820.27311","y-coordinates":"32623.63817"},"geometry":{"type":"Point","coordinates":[103.79576168646363,1.3113108292240072]}},{"type":"Feature","properties":{"Feb-16":"Jalan Pari Burong Playground Park","x-coordinates":"40671.62387","y-coordinates":"35138.28237"},"geometry":{"type":"Point","coordinates":[103.94718029336944,1.334050015556146]}},{"type":"Feature","properties":{"Feb-16":"Tampines Tree Park","x-coordinates":"41946.30628","y-coordinates":"37066.93296"},"geometry":{"type":"Point","coordinates":[103.95863490703655,1.3514914445366264]}},{"type":"Feature","properties":{"Feb-16":"Tampines Central Park","x-coordinates":"39554.49858","y-coordinates":"37347.13521"},"geometry":{"type":"Point","coordinates":[103.93714314527725,1.354026509822595]}},{"type":"Feature","properties":{"Feb-16":"Bedok Resevoir Park","x-coordinates":"39176.53947","y-coordinates":"35697.54847"},"geometry":{"type":"Point","coordinates":[103.93374633382489,1.3391084005897191]}},{"type":"Feature","properties":{"Feb-16":"Sun Plaza Park (Tampines)","x-coordinates":"40291.96","y-coordinates":"37902.64"},"geometry":{"type":"Point","coordinates":[103.94376992797422,1.3590499932684552]}},{"type":"Feature","properties":{"Feb-16":"Bougainvillea Park","x-coordinates":"25134.28259","y-coordinates":"34310.73644"},"geometry":{"type":"Point","coordinates":[103.80756854714663,1.3265684986077761]}},{"type":"Feature","properties":{"Feb-16":"Choa Chu Kang Park","x-coordinates":"18415.16807","y-coordinates":"41074.62598"},"geometry":{"type":"Point","coordinates":[103.74719150875676,1.3877372630616642]}},{"type":"Feature","properties":{"Feb-16":"Toa Payoh Town Park","x-coordinates":"29643.00072","y-coordinates":"34731.64644"},"geometry":{"type":"Point","coordinates":[103.84808185840946,1.3303751502512366]}}]}
-        // var PlaningAreaJSON = JSON.parse(PlaningArea);
-        // var ptsWithin = turf.within(HDBpolygons, PlaningAreaJSON);
-        // var resultFeatures = PlaningAreaJSON.features.concat(HDBpolygons.features);
-        // var result = {
-        //     "type": "FeatureCollection",
-        //     "features": resultFeatures
-        // };
-        // // console.log(JSON.stringify(result));
-        // urlDestination = globalurl + "/PlanningArea/Result.geojson"
-        // fs.writeFile(urlDestination, JSON.stringify(result), function(err) {
-        //     if (err) {
-        //         return console.log(err);
-
-        //     }
-        // });
-
-        // console.log(JSON.stringify(withins));
-        // var aggregated = turf.sum(PlaningAreaJSON, HDBpolygons, 'DwellingUnits', 'sum');
-        // var resultFeatures = HDBpolygons.features.concat(
-        //     aggregated.features);
-        // var result = {
-        //     "type": "FeatureCollection",
-        //     "features": resultFeatures
-        // };
-        // urlDestination = globalurl + "/PlanningArea/Result.geojson"
-
-        // fs.writeFile(urlDestination, JSON.stringify(result), function(err) {
-        //     if (err) {
-        //         return console.log(err);
-
-        //     }
-        // });
-
-        // })
-
-    })
-})
 app.listen(3000);
 console.log("Running at Port 3000");
