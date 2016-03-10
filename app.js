@@ -9,7 +9,7 @@ var multer = require('multer');
 var busboy = require('connect-busboy');
 var turf = require('turf');
 var _ = require('lodash');
-// var path = require('path');
+var path = require('path');
 var mapshaper = require('mapshaper');
 var globalurl = __dirname + '/app';
 var proj4 = require('proj4')
@@ -32,9 +32,14 @@ var upload = multer({
 });
 app.use(busboy());
 //Store all HTML files in view folder.
+
 app.get('/', function(req, res) {
     res.sendFile((path.join(__dirname + '/index.html')));
     //It will find and locate index.html from View or Scripts
+});
+app.get('/reporting', function(req, res) {
+    res.sendFile((path.join(globalurl + '/reporting.html')));
+    //It will find and locate reporting.html from View or Scripts
 });
 app.get('/geojson', function(req, res) {
         fs.readFile(__dirname + "/app/geojson/" + "buildings.json", "utf8", function(err, data) {
