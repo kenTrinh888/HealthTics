@@ -185,11 +185,11 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 
-app.post('/deleteORResult',function(req,res){
+app.post('/deleteORResult', function(req, res) {
     fileToDelete = req.body;
-
     fs.unlinkSync(fileToDelete.directory);
     console.log("deleted:" + fileToDelete.directory);
+    res.redirect('/');
 });
 
 //don't care about this one below
@@ -256,7 +256,7 @@ app.post('/submitFilter', function(req, res) {
 
             var aHDB = HDB[m];
             var requirementReturns = calculateBuffer(aHDB, layerRequest, ORrequirementSend);
-            HDBObject = {  "ORREquirement": [], "HDB_JSON": aHDB}
+            HDBObject = { "ORREquirement": [], "HDB_JSON": aHDB }
                 // HDBObject
             if (HDBArray[m] == null) {
                 HDBObject.ORREquirement.push(requirementReturns);
@@ -294,7 +294,27 @@ app.post('/submitFilter', function(req, res) {
 
     var path = globalurl + "/ORResults/";
     var name = fs.readdirSync(path);
+    console.log(name);
     var rowCount = name.length;
+    console.log("first" + rowCount);
+    for (var i = 0; i < name.length; i++) {
+        if (name[i] === ".DS_Store") {
+            rowCount =rowCount -1;
+        }
+
+    }
+
+    console.log("before" + rowCount);
+    if (rowCount > 0) {
+        var lastName = name[name.length - 1];
+        console.log(lastName);
+        var LastNameExceptJSONextension = lastName.split(".")[0];
+        var lastChar = LastNameExceptJSONextension.substr(LastNameExceptJSONextension.length - 1);
+        console.log(lastChar);
+        rowCount = parseInt(lastChar) + 1;
+    }
+    console.log("after" + rowCount);
+
     var ANDREquirementNameFile = "ORresult" + rowCount;
     var urlDestination = globalurl + "/ORResults/" + ANDREquirementNameFile + ".json";
     for (var i = 0; i < HDBArray.length; i++) {
@@ -649,7 +669,7 @@ app.post('/findPostalCode', function(req, res) {
 
     for (var m = 0; m < objectReceivedArray.length; m++) {
         var objectReceived = objectReceivedArray[m];
-        geoHDBPoint(objectReceived,objectReceivedArray.length);
+        geoHDBPoint(objectReceived, objectReceivedArray.length);
     }
 
 
@@ -658,11 +678,11 @@ app.post('/findPostalCode', function(req, res) {
 
 })
 
-function geoHDBPoint(objectReceived,lengthOfRequest) {
+function geoHDBPoint(objectReceived, lengthOfRequest) {
 
     // console.log(JSON.stringify(objectReceived));
     // var lengthOfRequest = objectReceived.length;
-   
+
     var postcode = String(objectReceived.POSTCODE);
 
     // console.log("id " + postcode);
@@ -814,9 +834,9 @@ app.get('/getAllLayerColumnValues/:nameOfFile/:columnName', function(req, res) {
 app.get("/getNumberofHDB2/:fileDirectories", function(req, res) {
     var fileDirectoriesStr = req.params.fileDirectories;
     var fileDirectories = [];
-    if(fileDirectoriesStr.indexOf(';')!=-1){
+    if (fileDirectoriesStr.indexOf(';') != -1) {
         fileDirectories = fileDirectoriesStr.split(';');
-    }else{
+    } else {
         fileDirectories.push(fileDirectoriesStr);
     }
     console.log(fileDirectories);

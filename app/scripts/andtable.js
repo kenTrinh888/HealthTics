@@ -1,3 +1,10 @@
+// $body = $("body");
+
+// $(document).on({
+//     ajaxStart: function() { $body.addClass("loading");    },
+//      ajaxStop: function() { $body.removeClass("loading"); }    
+// });
+//Loading Page
 //global variables
 var andTable = {};
 var andTableSelector = {};
