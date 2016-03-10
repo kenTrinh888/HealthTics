@@ -10,7 +10,8 @@
     "proj4leaflet": "~0.7.2",
     "datatables.net": "~1.10.10",
     "datatables.net-dt": "~1.10.10",
-    "magicsuggest": "~2.1.4"
+    "magicsuggest": "~2.1.4",
+    "bootstrap-switch": "~3.3.2"
   },
   "resolutions": {
     "jquery": "~2.1.0"

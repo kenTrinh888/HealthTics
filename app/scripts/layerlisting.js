@@ -5,7 +5,7 @@ function setLayersHTML() {
     // $('.tree').treed();  
     $.get(getLayerAPI, function(layers, err) {
         if (layers) {
-            console.log(layers);
+            // console.log(layers);
             var layersTrimmed = []; //fix here
             layers.forEach(function(layer) {
                 layerName = layer.name.split('.')[0]; //remove .geojson extension

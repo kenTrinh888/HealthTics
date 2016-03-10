@@ -21,9 +21,41 @@ var blueMarker = L.AwesomeMarkers.icon({
     markerColor: 'blue',
     prefix: 'fa'
 });
+$body = $("body");
+
+$(document).on({
+    ajaxStart: function() { $body.addClass("loading");    },
+     ajaxStop: function() { $body.removeClass("loading"); }    
+});
+
 // proj4.defs("EPSG:3414","+proj=tmerc +lat_0=1.366666666666667 +lon_0=103.8333333333333 +k=1 +x_0=28001.642 +y_0=38744.572 +ellps=WGS84 +units=m +no_defs");
+$("[name='my-checkbox']").bootstrapSwitch();
+// $('.PostalCodeCheck').on('switchChange.bootstrapSwitch', function(event, state) {
+//   console.log(this); // DOM element
+//   console.log(event); // jQuery event
+//   console.log(state); // true | false
+// });
+var postcodeContain;
+$('.postalCodeCheck').on('switchChange.bootstrapSwitch', function (event, state) {
+postcodeContain = state;
+console.log(postcodeContain);
+
+    
+});
+  // var postcodeContain;
+// var postcodeContain = $("#polygonCheck").is(":checked") ? $("#polygonCheck").val() : null;
+// $("#polygonCheck").change(function(){
+//     console.log(postcodeContain);
+// })
+// console.log(postcodeContain);
+
 $('#convert').submit(function(e) {
-    var postcodeContain = false;
+postcodeContain = $("[name='my-checkbox']").val();
+console.log(postcodeContain);
+    // var postcodeContain = true;
+    // if(postcodeContain === "on"){
+
+    // }
     var file = $("#upload")[0].files[0];
 
     var layerName = file.name;
@@ -33,7 +65,7 @@ $('#convert').submit(function(e) {
     $(this).ajaxSubmit({
         // console.log("submit");
         success: function(data, textStatus, jqXHR) {
-            if (postcodeContain === true) {
+            if (postcodeContain) {
                 var arrayofPoints = data.features;
 
                 for (index in arrayofPoints) {
@@ -98,6 +130,8 @@ function getPostalCodeGeo(layerName, aPoint, postcode, breakPoint) {
     url = "/getPostalCode/" + postcode;
     InvalidPostalCode = []
     coordinateArray = [];
+   
+    
     $.getJSON(url, function(objectReturn) {
         // var breakPoint = parseInt(index) + 1;
         var objectLocation = { "type": "Point", "coordinates": objectReturn }
@@ -140,6 +174,8 @@ function getPostalCodeGeo(layerName, aPoint, postcode, breakPoint) {
                 }
             });
         }
+        
+
     })
 
 }
