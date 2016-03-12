@@ -84,8 +84,7 @@
                     <div id="uploadLayer" class="collapse collapse-part">
                         <form id="convert" action="https://ogre.adc4gis.com/convert" method="post" enctype="multipart/form-data" class="form-horizontal">
                             <div class="control-group">
-                                <input class="postalCodeCheck"type="checkbox" name="my-checkbox" data-size="mini" data-off-text="Coordinates"
-                                data-on-text="PostCode" checked>
+                                <input class="postalCodeCheck" type="checkbox" name="my-checkbox" data-size="mini" data-off-text="Coordinates" data-on-text="PostCode" checked>
                             </div>
                             <!-- <legend>Convert to GeoJSON</legend> -->
                             <div class="control-group">
@@ -197,7 +196,7 @@
                                         <td class="col-lg-2">
                                             <span class='percentPopulation' id='percentPopulation_1'></span>
                                         </td>
-                                        <input type="submit" value="Update" class="andTableSubmit btn btn-primary pull-right" style="display:inline;">
+                                        <button class="btn btn-primary pull-right" style="display:inline;" data-toggle="modal" data-target="#modal-updateAndTable" onClick="return false">Save KPI</button>
                                     </tr>
                                 </tbody>
                             </table>
@@ -238,7 +237,6 @@
                 </div>
                 <!-- /.row -->
             </footer>
-
         </div>
         <script src="/bower_components/jquery/dist/jquery.js"></script>
         <script src="lib/scripts/bootstrap.min.js"></script>
@@ -270,12 +268,36 @@
         <script src="scripts/andTable.js"></script>
         <script src="scripts/layerlisting.js"></script>
         <script src="scripts/main.js"></script>
-        
         <!-- <script>
          $("[name='my-checkbox']").bootstrapSwitch();
         </script> -->
         <!-- endbuild -->
+        <button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#modal-updateAndTable">
+            Save KPI as
+        </button>
+        <div class="modal fade" id="modal-updateAndTable" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title" id="myModalLabel">Save KPI as</h4>
+                    </div>
+                    <div class="modal-body">
+                        KPI Name: <input type="text" class="form-control kpiName"></input>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="andTableSubmit btn btn-primary pull-right" style="display:inline;">Save</button>
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+        <!-- /.modal -->
     </body>
-         <div class="modal"><!-- Place at bottom of page --></div>
+    <div class="loadingModal" id="loadingModal">
+        <!-- Place at bottom of page -->
+    </div>
+    <!-- Modal Login -->
 
 </html>

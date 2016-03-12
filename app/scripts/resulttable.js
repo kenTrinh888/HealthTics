@@ -1,21 +1,21 @@
 //main method
 $(document).ready(function() {
-    
+    triggerSaveButtonInModal();
     loadResultTableData();
     sendFinalRequirements();
 })
 
-function getCheckedFileIndexes(){
+function getCheckedFileIndexes() {
     var fileIndexes = "";
-    $('.AND_checkbox').each(function(){
+    $('.AND_checkbox').each(function() {
         var isChecked = $(this).prop('checked');
-        if(isChecked){
+        if (isChecked) {
             var fileIndex = $(this).attr('id').split('_')[2];
-            if(parseInt(fileIndex)==$('.AND_checkbox').length){
+            if (parseInt(fileIndex) == $('.AND_checkbox').length) {
                 fileIndexes += fileIndex;
-            } else{
-                fileIndexes += fileIndex +";";
-            }   
+            } else {
+                fileIndexes += fileIndex + ";";
+            }
         }
     });
     return fileIndexes;
@@ -24,7 +24,7 @@ function getCheckedFileIndexes(){
 function loadResultTableData() {
     var getDataAPI = '/getNumberofHDB/';
     $.get(getDataAPI, function(HDBData, err) {
-        if(HDBData.length==0){
+        if (HDBData.length == 0) {
             return;
         }
         if (err) {
@@ -32,7 +32,7 @@ function loadResultTableData() {
         }
         var reqStrings = [];
         var requirements = getResultRequirements(HDBData);
-        var finalRequirements = getFinalRequirements(requirements);        
+        var finalRequirements = getFinalRequirements(requirements);
         populateResultTable(finalRequirements);
     })
 }
@@ -44,16 +44,22 @@ function sendFinalRequirements() {
     });
 }
 
-function loadResultTableDataWithIndexes(){
+function loadResultTableDataWithIndexes() {
     var fileIndexes = getCheckedFileIndexes();
-    if(fileIndexes.length==0){
+    var kpiName = $('.kpiName').prop('value');
+    if (fileIndexes.length == 0) {
         alert('error: please tick at least one checkbox');
         return;
     }
+    if (kpiName.length == 0) {
+        alert('error: please input KPI name');
+        return;
+    }
     var getDataAPI = '/getNumberofHDB2/' + fileIndexes;
+
     $.get(getDataAPI, function(HDBData, err) {
         console.log(HDBData);
-        if(HDBData.length==0){
+        if (HDBData.length == 0) {
             return;
         }
         if (err) {
@@ -62,33 +68,49 @@ function loadResultTableDataWithIndexes(){
         var reqStrings = [];
         var requirements = getResultRequirements(HDBData);
         var finalRequirements = getFinalRequirements(requirements);
-        finalRequirements = addAndTableToFinalRequirements(finalRequirements,fileIndexes);
-        $.ajax({
-            type: 'POST',
-            data: JSON.stringify(finalRequirements),
-            contentType: 'application/json',
-            url: 'http://localhost:3000/sendFinalRequirements',
-            success: function(data) {
-                // console.log('success');
-                // console.log(data);
+        finalRequirements = addAndTableToFinalRequirements(finalRequirements, fileIndexes);
+        finalRequirements.kpiName = kpiName;
+        $.ajaxSetup({ async: false });
+        var fileExists = $.get('checkFileExists/' + kpiName).responseText;
+        $.ajaxSetup({ async: false });
+        if (fileExists) {
+            var confirmed = confirm("File already exists. Overwrite file?");
+            console.log(confirmed);
+            if (confirmed) {
+                $.ajax({
+                    type: 'POST',
+                    data: JSON.stringify(finalRequirements),
+                    contentType: 'application/json',
+                    url: 'http://localhost:3000/sendFinalRequirements'
+                });
             }
-        });
+        } else {
+            $.ajax({
+                type: 'POST',
+                data: JSON.stringify(finalRequirements),
+                contentType: 'application/json',
+                url: 'http://localhost:3000/sendFinalRequirements'
+            });
+        }
         console.log(finalRequirements);
         populateResultTable(finalRequirements);
+        $('#modal-updateAndTable').modal('hide');
+        $('.kpiName').prop('value', '');
     })
 }
 
-function addAndTableToFinalRequirements(requirements,fileIndexes){
+function addAndTableToFinalRequirements(requirements, fileIndexes) {
     var finalRequirements = requirements;
     finalRequirements.andTable = [];
     var andTable = JSON.parse($('.modifiedRequirements').text());
-    andTable.forEach(function(element,index){
-        if(fileIndexes.indexOf(String(index+1))!=-1){
+    andTable.forEach(function(element, index) {
+        if (fileIndexes.indexOf(String(index + 1)) != -1) {
             finalRequirements.andTable.push(element);
         }
     })
     return finalRequirements;
 }
+
 function getResultRequirements(HDBData) {
     console.log(HDBData);
     var requirements = {};
@@ -138,14 +160,14 @@ function getFinalRequirements(requirements) {
 
 function countAllDwellings(HDBData) {
     var countAllDwellings = 0;
-    if(HDBData.length==0){
+    if (HDBData.length == 0) {
         return 0;
-    } 
-    
+    }
+
     HDBData[0].bigORs.forEach(function(bigOR, index) {
         countAllDwellings += bigOR.HDB_JSON.properties.DwellingUnits
     });
-    return countAllDwellings;    
+    return countAllDwellings;
 }
 
 function getResultReqString(ORRequirements) {
@@ -173,4 +195,12 @@ function populateResultTable(finalRequirements) {
 
     $('.countSuccessDwellings').html(finalRequirements.reqFinal.countSuccessDwellings);
     $('.percentPopulation').html(finalRequirements.reqFinal.percentPopulation + "%");
+}
+
+function triggerSaveButtonInModal() {
+    $('.kpiName').keypress(function(e) {
+        if (e.keyCode == 13) {
+            $('.andTableSubmit').click();
+        }
+    });
 }

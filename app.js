@@ -12,6 +12,11 @@ var _ = require('lodash');
 var path = require('path');
 var mapshaper = require('mapshaper');
 var globalurl = __dirname + '/app';
+const readline = require('readline');
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
 var proj4 = require('proj4')
 proj4.defs("EPSG:3414", "+proj=tmerc +lat_0=1.366666666666667 +lon_0=103.8333333333333 +k=1 +x_0=28001.642 +y_0=38744.572 +ellps=WGS84 +units=m +no_defs");
 app.use(express.static(__dirname + '/app'));
@@ -204,6 +209,7 @@ app.post('/sendModifiedRequirements', function(req, res) {
     //ken modify from here
     var requirements = req.body;
     console.log(requirements);
+    console.log("sendModifiedRequirements");
     // requirements.forEach(function(req, index) {
     //     req.failed_HDB_JSONs.forEach(function(hdb, index) {
     //         console.log(hdb.properties);
@@ -215,17 +221,28 @@ app.post('/sendModifiedRequirements', function(req, res) {
     // res.redirect('/');
 })
 
+app.get('/checkFileExists/:kpiName',function(req,res){
+    console.log(req.params.kpiName);
+    var nameOfFinalResult = req.params.kpiName + ".geojson";
+    var folderDestination = globalurl + "/FinalResult/";
+    folderDestination = folderDestination.replace('\\','/');
+    var existingFiles = fs.readdirSync(folderDestination);
+    var doesFileExist = existingFiles.indexOf(nameOfFinalResult)!=-1;
+    res.send(doesFileExist);
+})
 app.post('/sendFinalRequirements', function(req, res) {
-    //ken modify from here
     var requirements = req.body;
-    // console.log(requirements);
-    var nameOfFinalResult = "FinalResult";
-    var urlDestination = globalurl + "/FinalResult/" + nameOfFinalResult + ".geojson";
+    var nameOfFinalResult = requirements.kpiName + ".geojson";;
+    var folderDestination = globalurl + "/FinalResult/";
+    folderDestination = folderDestination.replace('\\','/');
+    var urlDestination =  folderDestination + nameOfFinalResult; 
+
     fs.writeFile(urlDestination, JSON.stringify(requirements), function(err) {
         if (err) {
             return console.log(err);
         }
     });
+    
     res.redirect('/');
 })
 
