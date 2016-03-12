@@ -37,6 +37,7 @@
     <body>
         <!-- Navigation -->
         <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+            <div class="modifiedRequirements" style="display:none"></div>
             <div class="container">
                 <!-- Brand and toggle get grouped for better mobile display -->
                 <div class="navbar-header">
@@ -83,8 +84,7 @@
                     <div id="uploadLayer" class="collapse collapse-part">
                         <form id="convert" action="https://ogre.adc4gis.com/convert" method="post" enctype="multipart/form-data" class="form-horizontal">
                             <div class="control-group">
-                                <input class="postalCodeCheck"type="checkbox" name="my-checkbox" data-size="mini" data-off-text="Coordinates"
-                                data-on-text="PostCode" checked>
+                                <input class="postalCodeCheck" type="checkbox" name="my-checkbox" data-size="mini" data-off-text="Coordinates" data-on-text="PostCode" checked>
                             </div>
                             <!-- <legend>Convert to GeoJSON</legend> -->
                             <div class="control-group">
@@ -175,14 +175,14 @@
                                         <th class="col-md-1">Show Layer</th>
                                         <th class="col-md-3">Filter Condition</th>
                                         <th class="col-md-2">Number of HDB</th>
-                                        <th class="col-md-2">Total Dwelling Units</th>
+                                        <th class="col-md-2">Number of Households With Access</th>
                                         <th class="col-md-2">% household with access</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr class="tblRow" id="tblRow1">
                                         <td class="col-lg-1">
-                                            <input type="checkbox" name="test" value="test" class="AND_checkbox form-control" checked="checked" id="AND_checkbox_1">
+                                            <input type="checkbox" name="test" value="test" class="AND_checkbox form-control" checked="true" id="AND_checkbox_1">
                                         </td>
                                         <td class="col-lg-5">
                                             <span class='filterCondition' id='filterCondition_1'></span>
@@ -196,7 +196,7 @@
                                         <td class="col-lg-2">
                                             <span class='percentPopulation' id='percentPopulation_1'></span>
                                         </td>
-                                        <input type="submit" value="Submit" class="andTableSubmit btn btn-primary pull-right" style="display:inline;">
+                                        <button class="btn btn-primary pull-right" style="display:inline;" data-toggle="modal" data-target="#modal-updateAndTable" onClick="return false">Save KPI</button>
                                     </tr>
                                 </tbody>
                             </table>
@@ -237,7 +237,6 @@
                 </div>
                 <!-- /.row -->
             </footer>
-
         </div>
         <script src="/bower_components/jquery/dist/jquery.js"></script>
         <script src="lib/scripts/bootstrap.min.js"></script>
@@ -269,12 +268,36 @@
         <script src="scripts/andTable.js"></script>
         <script src="scripts/layerlisting.js"></script>
         <script src="scripts/main.js"></script>
-        
         <!-- <script>
          $("[name='my-checkbox']").bootstrapSwitch();
         </script> -->
         <!-- endbuild -->
+        <button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#modal-updateAndTable">
+            Save KPI as
+        </button>
+        <div class="modal fade" id="modal-updateAndTable" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title" id="myModalLabel">Save KPI as</h4>
+                    </div>
+                    <div class="modal-body">
+                        KPI Name: <input type="text" class="form-control kpiName"></input>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="andTableSubmit btn btn-primary pull-right" style="display:inline;">Save</button>
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+        <!-- /.modal -->
     </body>
-         <div class="modal"><!-- Place at bottom of page --></div>
+    <div class="loadingModal" id="loadingModal">
+        <!-- Place at bottom of page -->
+    </div>
+    <!-- Modal Login -->
 
 </html>

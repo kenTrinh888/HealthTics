@@ -1,9 +1,9 @@
 $body = $("body");
 
-$(document).on({
-    ajaxStart: function() { $body.addClass("loading");    },
-     ajaxStop: function() { $body.removeClass("loading"); }    
-});
+// $(document).on({
+//     ajaxStart: function() { $body.addClass("loading"); },
+//     ajaxStop: function() { $body.removeClass("loading"); }
+// });
 //Loading Page
 //global variables
 var andTable = {};
@@ -14,8 +14,9 @@ $(document).ready(function() {
     loadAndTableData();
 })
 
-function sendModifiedRequirements(modifiedRequirements){
-    $('.andTableSubmit').click(function(e){
+function sendModifiedRequirements(modifiedRequirements) {
+    $('.andTableSubmit').click(function(e) {
+
         e.preventDefault();
         $.ajax({
             type: 'POST',
@@ -27,8 +28,8 @@ function sendModifiedRequirements(modifiedRequirements){
                 // console.log(data);
             }
         });
-        location.reload();
-    });   
+        // location.reload();
+    });
 }
 
 function setAndTable() {
@@ -40,13 +41,13 @@ function setAndTable() {
         "searching": false
     });
     var andTableRowCount = 2;
-    
+
     addRow(andTable, andTableRowCount, '#addResultRow');
 }
 
 function loadAndTableData() {
     var getDataAPI = '/getNumberofHDB';
-    $.get(getDataAPI,function(HDBData,err){
+    $.get(getDataAPI, function(HDBData, err) {
         var reqStrings = [];
         var requirements = getRequirements(HDBData);
         var modifiedRequirements = modifyRequirements(requirements);
@@ -72,7 +73,7 @@ function modifyRequirements(requirements) {
             reqObject.failed_HDB_JSONs.forEach(function(HDB_JSON, index) {
                 reqObject.countFailedDwellings += HDB_JSON.properties.DwellingUnits;
             });
-        }        
+        }
         reqObject.countAllDwellings = reqObject.countSuccessDwellings + reqObject.countFailedDwellings;
         reqObject.percentPopulation = (reqObject.countSuccessDwellings / reqObject.countAllDwellings) * 100;
         reqObject.percentPopulation = +reqObject.percentPopulation.toFixed(2);
@@ -126,7 +127,7 @@ function getReqString(ORRequirements) {
 }
 
 function populateAndTable(modifiedRequirements) {
-    // console.log(modifiedRequirements);
+    $('.modifiedRequirements').text(JSON.stringify(modifiedRequirements));
     modifiedRequirements.forEach(function(reqObject, index) {
         var lastRow = $('.andTbl tbody tr').length;
         $('#filterCondition_' + lastRow).html(reqObject.reqString);
@@ -157,7 +158,7 @@ function deleteRow(table, tableSelector, deleteType, modifiedRequirements) {
         }
         var selectedRow = table.row('.selected');
         var selectedRowIndex = selectedRow.index();
-        if(selectedRowIndex === undefined || selectedRowIndex === null){
+        if (selectedRowIndex === undefined || selectedRowIndex === null) {
             alert('ERROR: please click on a row before deleting it');
             return;
         }
@@ -166,8 +167,8 @@ function deleteRow(table, tableSelector, deleteType, modifiedRequirements) {
     });
 }
 
-function deleteORResult(selectedRowIndex,modifiedRequirements){
-    
+function deleteORResult(selectedRowIndex, modifiedRequirements) {
+
     var fileToDelete = {};
     fileToDelete.directory = modifiedRequirements[selectedRowIndex].directory;
     $.ajax({
@@ -175,18 +176,19 @@ function deleteORResult(selectedRowIndex,modifiedRequirements){
         data: JSON.stringify(fileToDelete),
         contentType: 'application/json',
         url: 'http://localhost:3000/deleteORResult',
-        success:function(data){
+        success: function(data) {
             console.log(data);
         }
     });
     // location.reload();
 }
+
 function addRow(table, rowCount, addType) {
     $(addType).on('click', function(e) {
         // e.preventDefault();
         var emptyArr = [];
         table.row.add([
-            "<input type='checkbox' name='test' value='test' class='AND_checkbox form-control' id='AND_checkbox_" + rowCount + "' checked>",
+            "<input type='checkbox' name='test' value='test' class='AND_checkbox form-control' id='AND_checkbox_" + rowCount + "' checked='true'>",
             "<span class='filterCondition' id='filterCondition_" + rowCount + "'></span>",
             "<span class='hdbCount' id='hdbCount_" + rowCount + "'</span>",
             "<span class='dwellingUnits' id='dwellingUnits_" + rowCount + "'></span>",

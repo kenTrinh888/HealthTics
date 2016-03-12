@@ -1,16 +1,30 @@
 //main method
 $(document).ready(function() {
+    triggerSaveButtonInModal();
     loadResultTableData();
+    sendFinalRequirements();
 })
 
-function getCheckedFileDirectories(){
-    $('#')
+function getCheckedFileIndexes() {
+    var fileIndexes = "";
+    $('.AND_checkbox').each(function() {
+        var isChecked = $(this).prop('checked');
+        if (isChecked) {
+            var fileIndex = $(this).attr('id').split('_')[2];
+            if (parseInt(fileIndex) == $('.AND_checkbox').length) {
+                fileIndexes += fileIndex;
+            } else {
+                fileIndexes += fileIndex + ";";
+            }
+        }
+    });
+    return fileIndexes;
 }
 
 function loadResultTableData() {
-    var getDataAPI = '/getNumberofHDB';
+    var getDataAPI = '/getNumberofHDB/';
     $.get(getDataAPI, function(HDBData, err) {
-        if(HDBData.length==0){
+        if (HDBData.length == 0) {
             return;
         }
         if (err) {
@@ -19,12 +33,86 @@ function loadResultTableData() {
         var reqStrings = [];
         var requirements = getResultRequirements(HDBData);
         var finalRequirements = getFinalRequirements(requirements);
-        sendFinalRequirements(finalRequirements);
         populateResultTable(finalRequirements);
     })
 }
 
+function sendFinalRequirements() {
+    $('.andTableSubmit').click(function(e) {
+        e.preventDefault();
+        loadResultTableDataWithIndexes();
+    });
+}
+
+function loadResultTableDataWithIndexes() {
+    var fileIndexes = getCheckedFileIndexes();
+    var kpiName = $('.kpiName').prop('value');
+    if (fileIndexes.length == 0) {
+        alert('error: please tick at least one checkbox');
+        return;
+    }
+    if (kpiName.length == 0) {
+        alert('error: please input KPI name');
+        return;
+    }
+    var getDataAPI = '/getNumberofHDB2/' + fileIndexes;
+
+    $.get(getDataAPI, function(HDBData, err) {
+        console.log(HDBData);
+        if (HDBData.length == 0) {
+            return;
+        }
+        if (err) {
+            console.log(err);
+        }
+        var reqStrings = [];
+        var requirements = getResultRequirements(HDBData);
+        var finalRequirements = getFinalRequirements(requirements);
+        finalRequirements = addAndTableToFinalRequirements(finalRequirements, fileIndexes);
+        finalRequirements.kpiName = kpiName;
+        $.ajaxSetup({ async: false });
+        var fileExists = $.get('checkFileExists/' + kpiName).responseText;
+        $.ajaxSetup({ async: false });
+        if (fileExists) {
+            var confirmed = confirm("File already exists. Overwrite file?");
+            console.log(confirmed);
+            if (confirmed) {
+                $.ajax({
+                    type: 'POST',
+                    data: JSON.stringify(finalRequirements),
+                    contentType: 'application/json',
+                    url: 'http://localhost:3000/sendFinalRequirements'
+                });
+            }
+        } else {
+            $.ajax({
+                type: 'POST',
+                data: JSON.stringify(finalRequirements),
+                contentType: 'application/json',
+                url: 'http://localhost:3000/sendFinalRequirements'
+            });
+        }
+        console.log(finalRequirements);
+        populateResultTable(finalRequirements);
+        $('#modal-updateAndTable').modal('hide');
+        $('.kpiName').prop('value', '');
+    })
+}
+
+function addAndTableToFinalRequirements(requirements, fileIndexes) {
+    var finalRequirements = requirements;
+    finalRequirements.andTable = [];
+    var andTable = JSON.parse($('.modifiedRequirements').text());
+    andTable.forEach(function(element, index) {
+        if (fileIndexes.indexOf(String(index + 1)) != -1) {
+            finalRequirements.andTable.push(element);
+        }
+    })
+    return finalRequirements;
+}
+
 function getResultRequirements(HDBData) {
+    console.log(HDBData);
     var requirements = {};
     var success_HDB_JSONs = [];
     var failedArr = [];
@@ -56,8 +144,6 @@ function getResultRequirements(HDBData) {
         requirements.reqData.push(reqObject);
     });
     requirements.reqFinal.success_HDB_JSONs = success_HDB_JSONs;
-
-    // console.log(requirements);
     return requirements;
 }
 
@@ -69,20 +155,19 @@ function getFinalRequirements(requirements) {
     });
     requirements.reqFinal.percentPopulation = requirements.reqFinal.countSuccessDwellings / requirements.reqFinal.countAllDwellings * 100
     requirements.reqFinal.percentPopulation = +requirements.reqFinal.percentPopulation.toFixed(2);
-    // console.log(requirements);
     return requirements;
 }
 
 function countAllDwellings(HDBData) {
     var countAllDwellings = 0;
-    if(HDBData.length==0){
+    if (HDBData.length == 0) {
         return 0;
-    } 
-    
+    }
+
     HDBData[0].bigORs.forEach(function(bigOR, index) {
         countAllDwellings += bigOR.HDB_JSON.properties.DwellingUnits
     });
-    return countAllDwellings;    
+    return countAllDwellings;
 }
 
 function getResultReqString(ORRequirements) {
@@ -105,28 +190,17 @@ function getResultReqString(ORRequirements) {
     return reqString;
 }
 
-function sendFinalRequirements(finalRequirements) {
-    $('.andTableSubmit').click(function(e) {
-        e.preventDefault();
-        // console.log(finalRequirements);
-        $.ajax({
-            type: 'POST',
-            data: JSON.stringify(finalRequirements),
-            contentType: 'application/json',
-            url: 'http://localhost:3000/sendFinalRequirements',
-            success: function(data) {
-                // console.log('success');
-                // console.log(data);
-            }
-        });
-        location.reload();
-    });
-}
-
-
 function populateResultTable(finalRequirements) {
     // console.log(finalRequirements);
 
     $('.countSuccessDwellings').html(finalRequirements.reqFinal.countSuccessDwellings);
     $('.percentPopulation').html(finalRequirements.reqFinal.percentPopulation + "%");
+}
+
+function triggerSaveButtonInModal() {
+    $('.kpiName').keypress(function(e) {
+        if (e.keyCode == 13) {
+            $('.andTableSubmit').click();
+        }
+    });
 }

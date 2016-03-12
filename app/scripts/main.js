@@ -1,3 +1,7 @@
+$('#modal-switch').click(function(){
+    $('#modal-updateAndTable').show();
+})
+
 L.Icon.Default.imagePath = '/images';
 L.AwesomeMarkers.Icon.prototype.options.prefix = 'ion';
 /* create leaflet map */
