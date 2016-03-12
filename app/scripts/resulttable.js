@@ -47,6 +47,7 @@ function sendFinalRequirements() {
 function loadResultTableDataWithIndexes() {
     var fileIndexes = getCheckedFileIndexes();
     var kpiName = $('.kpiName').prop('value');
+
     if (fileIndexes.length == 0) {
         alert('error: please tick at least one checkbox');
         return;
@@ -58,7 +59,6 @@ function loadResultTableDataWithIndexes() {
     var getDataAPI = '/getNumberofHDB2/' + fileIndexes;
 
     $.get(getDataAPI, function(HDBData, err) {
-        console.log(HDBData);
         if (HDBData.length == 0) {
             return;
         }
@@ -75,7 +75,6 @@ function loadResultTableDataWithIndexes() {
         $.ajaxSetup({ async: false });
         if (fileExists == 'true') {
             var confirmed = confirm("File already exists. Overwrite file?");
-            console.log(confirmed);
             if (confirmed) {
                 $.ajax({
                     type: 'POST',
@@ -92,7 +91,6 @@ function loadResultTableDataWithIndexes() {
                 url: 'http://localhost:3000/sendFinalRequirements'
             });
         }
-        console.log(finalRequirements);
         populateResultTable(finalRequirements);
         $('#modal-updateAndTable').modal('hide');
         $('.kpiName').prop('value', '');
@@ -112,7 +110,6 @@ function addAndTableToFinalRequirements(requirements, fileIndexes) {
 }
 
 function getResultRequirements(HDBData) {
-    console.log(HDBData);
     var requirements = {};
     var success_HDB_JSONs = [];
     var failedArr = [];

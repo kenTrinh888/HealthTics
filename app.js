@@ -14,8 +14,8 @@ var mapshaper = require('mapshaper');
 var globalurl = __dirname + '/app';
 const readline = require('readline');
 const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout
+    input: process.stdin,
+    output: process.stdout
 });
 var proj4 = require('proj4')
 proj4.defs("EPSG:3414", "+proj=tmerc +lat_0=1.366666666666667 +lon_0=103.8333333333333 +k=1 +x_0=28001.642 +y_0=38744.572 +ellps=WGS84 +units=m +no_defs");
@@ -221,14 +221,14 @@ app.post('/sendModifiedRequirements', function(req, res) {
     // res.redirect('/');
 })
 
-app.get('/checkFileExists/:kpiName',function(req,res){
+app.get('/checkFileExists/:kpiName', function(req, res) {
     console.log(req.params.kpiName);
     var nameOfFinalResult = req.params.kpiName + ".geojson";
     var folderDestination = globalurl + "/FinalResult/";
-    folderDestination = folderDestination.replace('\\','/');
+    folderDestination = folderDestination.replace('\\', '/');
     var existingFiles = fs.readdirSync(folderDestination);
-    var doesFileExist = existingFiles.indexOf(nameOfFinalResult)!=-1;
-    console.log(existingFiles.toString());
+    var doesFileExist = existingFiles.indexOf(nameOfFinalResult) != -1;
+    console.log("existed file name: " + existingFiles.toString());
     console.log(nameOfFinalResult);
     console.log(doesFileExist);
     res.send(doesFileExist);
@@ -237,15 +237,15 @@ app.post('/sendFinalRequirements', function(req, res) {
     var requirements = req.body;
     var nameOfFinalResult = requirements.kpiName + ".geojson";;
     var folderDestination = globalurl + "/FinalResult/";
-    folderDestination = folderDestination.replace('\\','/');
-    var urlDestination =  folderDestination + nameOfFinalResult; 
+    folderDestination = folderDestination.replace('\\', '/');
+    var urlDestination = folderDestination + nameOfFinalResult;
 
     fs.writeFile(urlDestination, JSON.stringify(requirements), function(err) {
         if (err) {
             return console.log(err);
         }
     });
-    
+
     res.redirect('/');
 })
 
@@ -861,15 +861,19 @@ app.get("/getNumberofHDB2/:fileIndexes", function(req, res) {
     } else {
         fileIndexes.push(fileIndexesStr);
     }
-    console.log(fileIndexes);
     var path = __dirname + '/app' + '/ORResults';
     var name = fs.readdirSync(path);
+    if(name[0]==='.DS_Store'){
+        name.splice(0,1);
+    }
     var directories = [];
     var results = [];
     for (var i = 0; i < name.length; i++) {
-        if(fileIndexes.indexOf(String(i+1))!=-1){
-            aName = name[i];
-            if (aName != ".DS_Store") {
+        aName = name[i];
+
+        if (aName != ".DS_Store") {
+           
+            if (fileIndexes.indexOf(String(i + 1)) != -1) {
                 url = __dirname + "/app/ORResults/" + aName;
                 url = url.replace("\\", "/");
                 directories.push(url);
@@ -882,7 +886,7 @@ app.get("/getNumberofHDB2/:fileIndexes", function(req, res) {
                 }
                 results.push(tempArray);
             }
-        }       
+        }
     }
     for (index in results) {
         var elementCopy = results[index];
