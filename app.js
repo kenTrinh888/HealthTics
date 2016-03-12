@@ -197,19 +197,22 @@ app.post('/deleteORResult', function(req, res) {
     res.redirect('/');
 });
 
+
+
 //don't care about this one below
 app.post('/sendModifiedRequirements', function(req, res) {
     //ken modify from here
     var requirements = req.body;
-    requirements.forEach(function(req, index) {
-        req.failed_HDB_JSONs.forEach(function(hdb, index) {
-            console.log(hdb.properties);
-        })
-        req.success_HDB_JSONs.forEach(function(hdb, index) {
-            console.log(hdb.properties);
-        })
-    });
-    res.redirect('/');
+    console.log(requirements);
+    // requirements.forEach(function(req, index) {
+    //     req.failed_HDB_JSONs.forEach(function(hdb, index) {
+    //         console.log(hdb.properties);
+    //     })
+    //     req.success_HDB_JSONs.forEach(function(hdb, index) {
+    //         console.log(hdb.properties);
+    //     })
+    // });
+    // res.redirect('/');
 })
 
 app.post('/sendFinalRequirements', function(req, res) {
@@ -736,10 +739,6 @@ function geoHDBPoint(objectReceived, lengthOfRequest) {
                     }
                 }
             }
-
-
-
-
         }
     });
 }
@@ -755,15 +754,6 @@ function geoHDBPoint(objectReceived, lengthOfRequest) {
 process.on('uncaughtException', function(err) {
     console.log('Caught exception: ' + err);
 });
-
-// app.get("/getNumberofHDB",function(req,res){
-
-//     var directory = path.join(__dirname, 'app/ORResults');
-//     var name = fs.readdirSync(directory);
-
-//     res.send(name);
-
-// });
 
 // API get all Layer Columns Name
 app.get('/getAllLayerColumnName', function(req, res) {
@@ -843,42 +833,37 @@ app.get('/getAllLayerColumnValues/:nameOfFile/:columnName', function(req, res) {
     res.send(result);
 });
 
-app.get("/getNumberofHDB2/:fileDirectories", function(req, res) {
-    var fileDirectoriesStr = req.params.fileDirectories;
-    var fileDirectories = [];
-    if (fileDirectoriesStr.indexOf(';') != -1) {
-        fileDirectories = fileDirectoriesStr.split(';');
+app.get("/getNumberofHDB2/:fileIndexes", function(req, res) {
+    var fileIndexesStr = req.params.fileIndexes;
+    var fileIndexes = [];
+    if (fileIndexesStr.indexOf(';') != -1) {
+        fileIndexes = fileIndexesStr.split(';');
     } else {
-        fileDirectories.push(fileDirectoriesStr);
+        fileIndexes.push(fileIndexesStr);
     }
-    console.log(fileDirectories);
+    console.log(fileIndexes);
     var path = __dirname + '/app' + '/ORResults';
     var name = fs.readdirSync(path);
     var directories = [];
     var results = [];
     for (var i = 0; i < name.length; i++) {
-        aName = name[i];
-        if (aName != ".DS_Store") {
-            url = __dirname + "/app/ORResults/" + aName;
-            url = url.replace("\\", "/");
-            directories.push(url);
-            // console.log(url);
-            var fileData = fs.readFileSync(url, "utf8");
-            data = JSON.parse(fileData);
-            // data.forEach(function(element,index){
-            //     console.log(JSON.stringify(element));
-            // })
-            var tempArray = [];
-            for (index in data) {
-                // console.log(index);
-                delete data[index].HDB_details
-                tempArray.push(data[index]);
+        if(fileIndexes.indexOf(String(i+1))!=-1){
+            aName = name[i];
+            if (aName != ".DS_Store") {
+                url = __dirname + "/app/ORResults/" + aName;
+                url = url.replace("\\", "/");
+                directories.push(url);
+                var fileData = fs.readFileSync(url, "utf8");
+                data = JSON.parse(fileData);
+                var tempArray = [];
+                for (index in data) {
+                    delete data[index].HDB_details
+                    tempArray.push(data[index]);
+                }
+                results.push(tempArray);
             }
-            // console.log(tempArray);
-            results.push(tempArray);
-        }
+        }       
     }
-
     for (index in results) {
         var elementCopy = results[index];
         delete results[index];
@@ -888,7 +873,6 @@ app.get("/getNumberofHDB2/:fileDirectories", function(req, res) {
         };
         results[index] = reqObject;
     }
-
     res.send(results);
 });
 

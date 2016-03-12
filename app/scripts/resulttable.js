@@ -1,14 +1,28 @@
 //main method
 $(document).ready(function() {
+    
     loadResultTableData();
+    sendFinalRequirements();
 })
 
-function getCheckedFileDirectories(){
-    $('#')
+function getCheckedFileIndexes(){
+    var fileIndexes = "";
+    $('.AND_checkbox').each(function(){
+        var isChecked = $(this).prop('checked');
+        if(isChecked){
+            var fileIndex = $(this).attr('id').split('_')[2];
+            if(parseInt(fileIndex)==$('.AND_checkbox').length){
+                fileIndexes += fileIndex;
+            } else{
+                fileIndexes += fileIndex +";";
+            }   
+        }
+    });
+    return fileIndexes;
 }
 
 function loadResultTableData() {
-    var getDataAPI = '/getNumberofHDB';
+    var getDataAPI = '/getNumberofHDB/';
     $.get(getDataAPI, function(HDBData, err) {
         if(HDBData.length==0){
             return;
@@ -18,13 +32,65 @@ function loadResultTableData() {
         }
         var reqStrings = [];
         var requirements = getResultRequirements(HDBData);
-        var finalRequirements = getFinalRequirements(requirements);
-        sendFinalRequirements(finalRequirements);
+        var finalRequirements = getFinalRequirements(requirements);        
         populateResultTable(finalRequirements);
     })
 }
 
+function sendFinalRequirements() {
+    $('.andTableSubmit').click(function(e) {
+        e.preventDefault();
+        loadResultTableDataWithIndexes();
+    });
+}
+
+function loadResultTableDataWithIndexes(){
+    var fileIndexes = getCheckedFileIndexes();
+    if(fileIndexes.length==0){
+        alert('error: please tick at least one checkbox');
+        return;
+    }
+    var getDataAPI = '/getNumberofHDB2/' + fileIndexes;
+    $.get(getDataAPI, function(HDBData, err) {
+        console.log(HDBData);
+        if(HDBData.length==0){
+            return;
+        }
+        if (err) {
+            console.log(err);
+        }
+        var reqStrings = [];
+        var requirements = getResultRequirements(HDBData);
+        var finalRequirements = getFinalRequirements(requirements);
+        finalRequirements = addAndTableToFinalRequirements(finalRequirements,fileIndexes);
+        $.ajax({
+            type: 'POST',
+            data: JSON.stringify(finalRequirements),
+            contentType: 'application/json',
+            url: 'http://localhost:3000/sendFinalRequirements',
+            success: function(data) {
+                // console.log('success');
+                // console.log(data);
+            }
+        });
+        console.log(finalRequirements);
+        populateResultTable(finalRequirements);
+    })
+}
+
+function addAndTableToFinalRequirements(requirements,fileIndexes){
+    var finalRequirements = requirements;
+    finalRequirements.andTable = [];
+    var andTable = JSON.parse($('.modifiedRequirements').text());
+    andTable.forEach(function(element,index){
+        if(fileIndexes.indexOf(String(index+1))!=-1){
+            finalRequirements.andTable.push(element);
+        }
+    })
+    return finalRequirements;
+}
 function getResultRequirements(HDBData) {
+    console.log(HDBData);
     var requirements = {};
     var success_HDB_JSONs = [];
     var failedArr = [];
@@ -56,8 +122,6 @@ function getResultRequirements(HDBData) {
         requirements.reqData.push(reqObject);
     });
     requirements.reqFinal.success_HDB_JSONs = success_HDB_JSONs;
-
-    // console.log(requirements);
     return requirements;
 }
 
@@ -69,7 +133,6 @@ function getFinalRequirements(requirements) {
     });
     requirements.reqFinal.percentPopulation = requirements.reqFinal.countSuccessDwellings / requirements.reqFinal.countAllDwellings * 100
     requirements.reqFinal.percentPopulation = +requirements.reqFinal.percentPopulation.toFixed(2);
-    // console.log(requirements);
     return requirements;
 }
 
@@ -104,25 +167,6 @@ function getResultReqString(ORRequirements) {
     });
     return reqString;
 }
-
-function sendFinalRequirements(finalRequirements) {
-    $('.andTableSubmit').click(function(e) {
-        e.preventDefault();
-        // console.log(finalRequirements);
-        $.ajax({
-            type: 'POST',
-            data: JSON.stringify(finalRequirements),
-            contentType: 'application/json',
-            url: 'http://localhost:3000/sendFinalRequirements',
-            success: function(data) {
-                // console.log('success');
-                // console.log(data);
-            }
-        });
-        location.reload();
-    });
-}
-
 
 function populateResultTable(finalRequirements) {
     // console.log(finalRequirements);
