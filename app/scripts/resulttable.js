@@ -73,7 +73,7 @@ function loadResultTableDataWithIndexes() {
         $.ajaxSetup({ async: false });
         var fileExists = $.get('checkFileExists/' + kpiName).responseText;
         $.ajaxSetup({ async: false });
-        if (fileExists) {
+        if (fileExists == 'true') {
             var confirmed = confirm("File already exists. Overwrite file?");
             console.log(confirmed);
             if (confirmed) {
