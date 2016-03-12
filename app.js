@@ -988,7 +988,7 @@ app.get("/getHexbinVisualGeojson", function(req, res) {
         // boundsNE = L.latLng(1.490837, 104.067218),
         // bounds = L.latLngBounds(boundsSW, boundsNE);
         // var bbox = [1.201023, 103.597500, 104.067218, 1.490837];
-         var bbox = [103.597500,1.201023, 104.067218, 1.490837]
+        var bbox = [103.597500, 1.201023, 104.067218, 1.490837]
         var cellWidth = 2;
         var units = 'kilometers';
 
@@ -997,10 +997,62 @@ app.get("/getHexbinVisualGeojson", function(req, res) {
 
         var resultFeatures = HDBpoints.features.concat(counted.features);
         var result = {
-            "type": "FeatureCollection",
-            "features": counted
+            "points": HDBpoints,
+            "counted": counted
         };
-        res.send(counted);
+        res.send(result);
+
+    });
+})
+
+app.post("/getHexbinContainHDBs", function(req, res) {
+    var HexbinReceivedJSON = req.body;
+    // console.log(HexbinReceivedJSON);
+    var searchWithin = {
+        "type": "FeatureCollection",
+        "features": []
+    };
+    searchWithin.features.push(HexbinReceivedJSON);
+    // var HexbinReceivedJSON = JSON.parse(HexbinReceived);
+
+
+    var url = globalurl + "/FinalResult/FinalResult.geojson";
+    fs.readFile(url, "utf8", function(err, data) {
+        var dataJSON = JSON.parse(data);
+        var successfulHDBs = dataJSON.reqFinal.success_HDB_JSONs;
+        var HDBpoints = {
+            "type": "FeatureCollection",
+            "features": []
+        };
+        for (var m = 0; m < successfulHDBs.length; m++) {
+            HDBpoints.features.push(successfulHDBs[m]);
+        }
+        // (west, south, east, north)
+        //     var boundsSW = L.latLng(1.201023, 103.597500),
+        // boundsNE = L.latLng(1.490837, 104.067218),
+        // bounds = L.latLngBounds(boundsSW, boundsNE);
+        // var bbox = [1.201023, 103.597500, 104.067218, 1.490837];
+        //  var bbox = [103.597500,1.201023, 104.067218, 1.490837]
+        // var cellWidth = 2;
+        // var units = 'kilometers';
+
+        // var hexgrid = turf.hexGrid(bbox, cellWidth, units);
+        // var counted = turf.count(hexgrid, HDBpoints, 'pt_count');
+
+        // var resultFeatures = HDBpoints.features.concat(counted.features);
+        // var result = {
+        //     "points": HDBpoints,
+        //     "counted": counted
+        // };
+        // res.send(result);ContaintHDBs
+        var ptsWithin = turf.within(HDBpoints, searchWithin);
+        var resultFeatures = searchWithin.features.concat(ptsWithin.features);
+        var result = {
+            "hexbin": searchWithin,
+            "HDBPoints": ptsWithin
+        };
+
+        res.send(result);
 
     });
 })

@@ -1,140 +1,121 @@
 L.Icon.Default.imagePath = '/images';
 L.AwesomeMarkers.Icon.prototype.options.prefix = 'ion';
+$body = $("body");
+
+$(document).on({
+    ajaxStart: function() { $body.addClass("loading"); },
+    ajaxStop: function() { $body.removeClass("loading"); }
+});
 /* create leaflet map */
+var OpenStreetMap_Mapnik = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+});
+var OpenStreetMap_BlackAndWhite = L.tileLayer('http://{s}.tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png', {
+    maxZoom: 18,
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+});
+var Hydda_Full = L.tileLayer('http://{s}.tile.openstreetmap.se/hydda/full/{z}/{x}/{y}.png', {
+    attribution: 'Tiles courtesy of <a href="http://openstreetmap.se/" target="_blank">OpenStreetMap Sweden</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+});
+var Stamen_Toner = L.tileLayer('http://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}.{ext}', {
+    attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    subdomains: 'abcd',
+    minZoom: 0,
+    maxZoom: 20,
+    ext: 'png'
+});
+var CartoDB_DarkMatter = L.tileLayer('http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
+    subdomains: 'abcd',
+    maxZoom: 19
+});
 var map = L.map('map', {
     center: [1.35, 103.8],
-    zoom: 12
+    zoom: 11,
+    layers: [Stamen_Toner, OpenStreetMap_BlackAndWhite, OpenStreetMap_Mapnik, CartoDB_DarkMatter, Hydda_Full]
 });
-new L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    minZoom: 0,
-    maxZoom: 50,
-    attribution: 'Map data © <a href="http://www.openstreetmap.org">OpenStreetMap contributors</a>'
-}).addTo(map);
+var baseMaps = {
+    "OpenStreetMap_Mapnik": OpenStreetMap_Mapnik,
+    "Stamen_Toner": Stamen_Toner,
+    "OpenStreetMap_BlackAndWhite": OpenStreetMap_BlackAndWhite,
+    "CartoDB_DarkMatter": CartoDB_DarkMatter,
+    "Hydda_Full": Hydda_Full
+};
 var layerGroup = L.layerGroup().addTo(map);
 var layerControl = false;
+L.control.layers(baseMaps).addTo(map);
 $.getJSON("/getHexbinVisualGeojson", function(data) {
-    var grid = data;
+    var grid = data.counted;
     var values = [];
     var brew = new classyBrew();
-
     grid.features.forEach(function(cell) {
-
         var pt_count = cell.properties.pt_count;
         values.push(pt_count);
-
-
-        // var _withCount = cell._withCount = {};
-        // // _withCount.color = '#550000';
-        // _withCount.weight = 0;
-        // // _withCount.fill = '#550000';
-        // _withCount.fillOpacity = 0;
-        // _withCount.fillColor = brew.getColorInRange(pt_count)
-
-        // if (pt_count >= 1) {
-        //     _withCount.fillOpacity = 0.1;
-        // }
-        // if (pt_count >= 5) {
-
-        //     _withCount.fillOpacity = 0.2;
-        //     _withCount.weight = 1;
-        // }
-        // if (pt_count >= 7) {
-        //     _withCount.weight = 2;
-        //     _withCount.fillOpacity = 0.35;
-        // }
-        // if (pt_count >= 75) {
-        //     _withCount.weight = 3;
-        //     _withCount.fillOpacity = 0.55;
-        // }
     });
-
-
-
-
-    // console.log(values);
     brew.setSeries(values);
-
-    // define number of classes
-    brew.setNumClasses(7);
-    // pass array to our classybrew series
+    brew.setNumClasses(6);
     var breaks = brew.getBreaks();
-    console.log(breaks);
-    // set color ramp code
-    brew.setColorCode('YlGnBu'); // set color code
-
+    brew.setColorCode('YlOrRd'); // set color code
     // classify by passing in statistical method
     // i.e. equal_interval, jenks, quantile
     brew.classify("equal_interval");
     var colors = brew.getColors();
-    // var colorinRange = brew.getColorInRange(7.5);
-    // console.log(colorinRange);
-
     grid.features.forEach(function(cell) {
-
         var pt_count = cell.properties.pt_count;
-
         var _withCount = cell._withCount = {};
-        // _withCount.color = '#550000';
-        // _withCount.weight = 0;
-        // _withCount.fill = '#550000';
-        // _withCount.fillOpacity = 0;
-
         _withCount.fillColor = brew.getColorInRange(pt_count)
-        var WO = assignWeightandOpacity(pt_count,breaks);
+        var WO = assignWeightandOpacity(pt_count, breaks);
         var weight = WO.split(",")[0];
         var fillOpacity = WO.split(",")[1];
         _withCount.fillOpacity = fillOpacity;
         _withCount.weight = weight;
-       
     })
-
-
-
-
-
-
-    // console.log(grid);
     layerdata = L.Proj.geoJson(grid, {
         onEachFeature: onEachFeature,
         style: style
     }).addTo(map);
-    if (layerControl === false) {
-        layerControl = L.control.layers().addTo(map);
-    }
-    layerControl.addOverlay(layerdata, "Hexbin");
-
-
-
-
+    // ==============================Creating Legend===========================
+    var legend = L.control({ position: 'bottomright' });
+    legend.onAdd = function(map) {
+        var div = L.DomUtil.create('div', 'info legend'),
+            percents = brew.getBreaks(),
+            labels = [],
+            from, to;
+        for (var i = 0; i < percents.length; i++) {
+            from = percents[i];
+            to = percents[i + 1];
+            if (to) {
+                labels.push(
+                    '<i style="background:' + brew.getColorInRange(from) + '"></i> ' +
+                    from.toFixed(0) + '&ndash; ' + to.toFixed(0));
+            }
+        }
+        div.innerHTML = labels.join('<br>');
+        return div;
+    };
+    legend.addTo(map);
+    // ==============================Creating Legend===========================
 })
 
-function assignWeightandOpacity(pointcount,breaks){
-	var weight = 0;
-	var fillOpacity = 0;
-	for (var m = 0; m < breaks.length;m++){
-		var aBreak = breaks[m];
-		var newWeight = m + 1;
-		var newOpacity = m/10;
-		if(pointcount>aBreak){
-			weight = newWeight;
-			fillOpacity = newOpacity
-		}
-	}
-	return weight + "," + fillOpacity;
-}
-function style(feature) {
-    // console.log(feature._withCount);
-    return feature._withCount
-        // return {
-        //     fillColor: brew.getColorInRange(feature.properties.pt_count),
-        //     weight: 2,
-        //     opacity: 1,
-        //     color: 'white',
-        //     dashArray: '3',
-        //     fillOpacity: 0.7
-        // };
+function assignWeightandOpacity(pointcount, breaks) {
+    var weight = 0;
+    var fillOpacity = 0;
+    for (var m = 0; m < breaks.length; m++) {
+        var aBreak = breaks[m];
+        var newWeight = m + 1;
+        var newOpacity = m / 10;
+        if (pointcount > aBreak) {
+            weight = newWeight;
+            fillOpacity = newOpacity
+        }
+    }
+    return weight + "," + fillOpacity;
 }
 
+function style(feature) {
+    return feature._withCount
+}
 
 function onEachFeature(feature, layer) {
     layer.on({
@@ -143,56 +124,175 @@ function onEachFeature(feature, layer) {
         click: zoomToFeature
     });
 }
-// add interaction
-
+var info = L.control();
+info.onAdd = function(map) {
+    this._div = L.DomUtil.create('div', 'info');
+    this.update();
+    return this._div;
+};
+info.update = function(feature) {
+    if (feature != null) {
+        // console.log(feature);
+        var count = feature.properties.pt_count;
+        this._div.innerHTML = (count ? count + ' HDB(s)' : 'Hover over a grid');
+    } else {
+        this._div.innerHTML = ('Hover over a grid');
+    }
+};
+info.addTo(map);
 
 function resetHighlight(e) {
     layerdata.resetStyle(e.target);
-    info.update();
+    info.update(e.target.feature);
 }
 
 function zoomToFeature(e) {
-    map.fitBounds(e.target.getBounds());
+    var hexbinSend = e.target.feature;
+    FocusHexbin(hexbinSend);
+    // map.fitBounds(e.target.getBounds());
 }
 
 function highlightFeature(e) {
     var layer = e.target;
-   
     var color = layer.feature._withCount.fillColor;
-    console.log(layer.feature.properties.pt_count)
-     // console.log(color);
     layer.setStyle({
         weight: 5,
         color: color,
         dashArray: '',
         fillOpacity: 0.7
     });
-
     if (!L.Browser.ie && !L.Browser.opera) {
         layer.bringToFront();
     }
 }
-var info = L.control();
-
-info.onAdd = function(map) {
-    this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
-    this.update();
-    return this._div;
+// =======================================================Second Map========================================
+var OpenStreetMap_MapnikZoomin = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+});
+var OpenStreetMap_BlackAndWhiteZoomin = L.tileLayer('http://{s}.tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png', {
+    maxZoom: 18,
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+});
+var Hydda_FullZoomin = L.tileLayer('http://{s}.tile.openstreetmap.se/hydda/full/{z}/{x}/{y}.png', {
+    attribution: 'Tiles courtesy of <a href="http://openstreetmap.se/" target="_blank">OpenStreetMap Sweden</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+});
+var Stamen_TonerZoomin = L.tileLayer('http://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}.{ext}', {
+    attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    subdomains: 'abcd',
+    minZoom: 0,
+    maxZoom: 20,
+    ext: 'png'
+});
+var CartoDB_DarkMatterZoomin = L.tileLayer('http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
+    subdomains: 'abcd',
+    maxZoom: 19
+});
+var baseMapsZoomin = {
+    "OpenStreetMap_Mapnik": OpenStreetMap_MapnikZoomin,
+    "OpenStreetMap_BlackAndWhite": OpenStreetMap_BlackAndWhiteZoomin,
+    "Hydda_Full": Hydda_FullZoomin
 };
+var ZoominMap = L.map('ZoominMap', {
+    center: [1.35, 103.8],
+    zoom: 11,
+    layers: [ OpenStreetMap_BlackAndWhiteZoomin, OpenStreetMap_MapnikZoomin, Hydda_FullZoomin]
+});
+L.control.layers(baseMapsZoomin).addTo(ZoominMap);
 
-// method that we will use to update the control based on feature properties passed
-info.update = function(props) {
 
-    var value = props ? props.AveragedWins : null;
-    // console.log(value);
-    if (value === null) {
-        this._div.innerHTML = '<h4>Average Gp1&Gp2 Wins</h4>' + (props ?
-            '<b> Zone:</b>' + props.DGPZ_NAME + '<br />' + '<b> SubZone:</b>' + props.DGPSZ_NAME + '<br />' + "0" + ' win' : 'Hover over a zone');
-    } else {
-        this._div.innerHTML = '<h4>Average Gp1&Gp2 Wins</h4>' + (props ?
-            '<b> Zone:</b>' + props.DGPZ_NAME + '<br />' + '<b> SubZone:</b>' + props.DGPSZ_NAME + '<br />' + props.AveragedWins + ' win' : 'Hover over a zone');
-    }
+function FocusHexbin(hexbinSend) {
 
-};
+    var dataSend = JSON.stringify(hexbinSend);
+    // console.log(dataSend);
+    $.ajax({
+        url: '/getHexbinContainHDBs',
+        type: 'POST',
+        data: dataSend,
+        contentType: 'application/json',
 
-info.addTo(map);
+        success: function(data) {
+            // console.log(data);
+            var HDBPoints = data.HDBPoints;
+            var hexbinPoint = data.hexbin;
+            L.geoJson(HDBPoints, {
+                pointToLayer: function(feature, latlng) {
+                     var propertyObject = feature.properties;
+                var property = "";
+                for (var key in propertyObject) {
+                    if (propertyObject.hasOwnProperty(key)) {
+                        property += "<p><b>" + key + "</b>" + " : " + propertyObject[key] + "</p>";
+                    }
+                }
+                    return L.circleMarker(latlng, {
+                        radius: 5,
+                        fillColor: '#000000',
+                        fillOpacity: 1,
+                        stroke: false
+                    }).bindPopup(property);;
+                }
+            }).addTo(ZoominMap);
+            var Hexbinstyle = {
+                    weight: 2,
+                    color :'#000000',
+                    fillOpacity: 0
+                }
+            var hexbinMap = L.Proj.geoJson(hexbinPoint, {
+                style: Hexbinstyle
+            }).addTo(ZoominMap);
+            ZoominMap.fitBounds(hexbinMap.getBounds());
+
+
+        }
+    });
+
+
+}
+
+// function zoomToFeatureZoomin(e) {
+//     var hexbinSend = e.target.feature;
+//     map.fitBounds(e.target.getBounds());
+// }
+
+// function onEachFeatureZoomin(feature, layer) {
+//     layer.on({
+//         mouseover: highlightFeature,
+//         mouseout: resetHighlight,
+//         click: zoomToFeature
+//     });
+// }
+
+
+
+// var HDBpoints = data.points;
+// console.log(HDBpoints);
+// // L.Proj.geoJson(grid, {
+// //     // onEachFeature: onEachFeature,
+// //     style: styleZoomin
+// // }).addTo(ZoominMap);
+
+// L.geoJson(HDBpoints, {
+//     pointToLayer: function(feature, latlng) {
+//         return L.circleMarker(latlng, {
+//             radius: 0.5,
+//             fillColor: '#ffffff',
+//             fillOpacity: 1,
+//             stroke: false
+//         });
+//     }
+// }).addTo(ZoominMap);
+
+
+function styleZoomin(feature) {
+    return {
+        // fillColor: "blue",
+        weight: 2,
+        opacity: 1,
+        color: 'white',
+        dashArray: '3',
+        fillOpacity: 0.7
+    };
+}
+
+// =======================================================End Second Map========================================
