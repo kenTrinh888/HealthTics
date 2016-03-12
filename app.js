@@ -215,7 +215,14 @@ app.post('/sendModifiedRequirements', function(req, res) {
 app.post('/sendFinalRequirements', function(req, res) {
     //ken modify from here
     var requirements = req.body;
-    console.log(requirements);
+    // console.log(requirements);
+    var nameOfFinalResult = "FinalResult";
+    var urlDestination = globalurl + "/FinalResult/" + nameOfFinalResult + ".geojson";
+    fs.writeFile(urlDestination, JSON.stringify(requirements), function(err) {
+        if (err) {
+            return console.log(err);
+        }
+    });
     res.redirect('/');
 })
 
@@ -304,7 +311,7 @@ app.post('/submitFilter', function(req, res) {
     console.log("first" + rowCount);
     for (var i = 0; i < name.length; i++) {
         if (name[i] === ".DS_Store") {
-            rowCount =rowCount -1;
+            rowCount = rowCount - 1;
         }
 
     }
@@ -964,7 +971,39 @@ app.get("/getNumberofHDB", function(req, res) {
 
 // })
 
+app.get("/getHexbinVisualGeojson", function(req, res) {
+    var url = globalurl + "/FinalResult/FinalResult.geojson";
+    fs.readFile(url, "utf8", function(err, data) {
+        var dataJSON = JSON.parse(data);
+        var successfulHDBs = dataJSON.reqFinal.success_HDB_JSONs;
+        var HDBpoints = {
+            "type": "FeatureCollection",
+            "features": []
+        };
+        for (var m = 0; m < successfulHDBs.length; m++) {
+            HDBpoints.features.push(successfulHDBs[m]);
+        }
+        // (west, south, east, north)
+        //     var boundsSW = L.latLng(1.201023, 103.597500),
+        // boundsNE = L.latLng(1.490837, 104.067218),
+        // bounds = L.latLngBounds(boundsSW, boundsNE);
+        // var bbox = [1.201023, 103.597500, 104.067218, 1.490837];
+         var bbox = [103.597500,1.201023, 104.067218, 1.490837]
+        var cellWidth = 2;
+        var units = 'kilometers';
 
+        var hexgrid = turf.hexGrid(bbox, cellWidth, units);
+        var counted = turf.count(hexgrid, HDBpoints, 'pt_count');
+
+        var resultFeatures = HDBpoints.features.concat(counted.features);
+        var result = {
+            "type": "FeatureCollection",
+            "features": counted
+        };
+        res.send(counted);
+
+    });
+})
 
 app.listen(3000);
 console.log("Running at Port 3000");
