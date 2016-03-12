@@ -5,26 +5,26 @@ $('#modal-switch').click(function(){
 L.Icon.Default.imagePath = '/images';
 L.AwesomeMarkers.Icon.prototype.options.prefix = 'ion';
 /* create leaflet map */
-var map = L.map('map', {
-    center: [1.35, 103.8],
-    zoom: 12
-});
-new L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    minZoom: 0,
-    maxZoom: 50,
-    attribution: 'Map data © <a href="http://www.openstreetmap.org">OpenStreetMap contributors</a>'
-}).addTo(map);
-// omnivore.geojson('/geojson/PLAYSG.json').addTo(map);
-var redMarker = L.AwesomeMarkers.icon({
-    icon: 'sitemap',
-    markerColor: 'red',
-    prefix: 'fa'
-});
-var blueMarker = L.AwesomeMarkers.icon({
-    icon: 'sitemap',
-    markerColor: 'blue',
-    prefix: 'fa'
-});
+// var map = L.map('map', {
+//     center: [1.35, 103.8],
+//     zoom: 12
+// });
+// new L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+//     minZoom: 0,
+//     maxZoom: 50,
+//     attribution: 'Map data © <a href="http://www.openstreetmap.org">OpenStreetMap contributors</a>'
+// }).addTo(map);
+// // omnivore.geojson('/geojson/PLAYSG.json').addTo(map);
+// var redMarker = L.AwesomeMarkers.icon({
+//     icon: 'sitemap',
+//     markerColor: 'red',
+//     prefix: 'fa'
+// });
+// var blueMarker = L.AwesomeMarkers.icon({
+//     icon: 'sitemap',
+//     markerColor: 'blue',
+//     prefix: 'fa'
+// });
 $body = $("body");
 
 $(document).on({
