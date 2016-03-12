@@ -228,6 +228,9 @@ app.get('/checkFileExists/:kpiName',function(req,res){
     folderDestination = folderDestination.replace('\\','/');
     var existingFiles = fs.readdirSync(folderDestination);
     var doesFileExist = existingFiles.indexOf(nameOfFinalResult)!=-1;
+    console.log(existingFiles.toString());
+    console.log(nameOfFinalResult);
+    console.log(doesFileExist);
     res.send(doesFileExist);
 })
 app.post('/sendFinalRequirements', function(req, res) {
