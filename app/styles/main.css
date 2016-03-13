@@ -28,12 +28,7 @@ html {
 	font-family: Arial, sans-serif;
 	height: 100%;
 }
-<<<<<<< HEAD
 .map {
-=======
-
-#map {
->>>>>>> 444e62b31cb740f32069b42021ea91a90194e079
 	/*width: 200px;*/
     padding-left: 0px
 }
@@ -45,20 +40,10 @@ html {
     /*width: 200px;*/
     height: 400px;
 }
-<<<<<<< HEAD
 .dropdown-list{
     margin-bottom: 20px;
 }
-/*#map { position:absolute; top:0; bottom:0; left:0; right:50%; width: 600px;
-	height: 500px;}
-#ZoominMap { position:absolute; top:0; bottom:0; left:52%; right:0; width: 600px;
-	height: 500px;}*/
-/*.map-application {
-	height: 100%;
-	width: 100%;
-}*/
-=======
->>>>>>> 444e62b31cb740f32069b42021ea91a90194e079
+
 
 .kpibulletchart .nvd3-svg{
 	margin-bottom:-7em;

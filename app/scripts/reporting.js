@@ -68,7 +68,7 @@ var baseMaps = {
 var layerGroup = L.layerGroup().addTo(map);
 var layerControl = L.control.layers();
 L.control.layers(baseMaps).addTo(map);
-var KPIname = "p1";
+var KPIname = "NewKPI1";
 GetHexbinVisualisation(KPIname, "OrRd", "equal_interval")
 var legend = L.control({ position: 'bottomright' });
 function GetHexbinVisualisation(KPIname, colors, method) {
@@ -131,6 +131,7 @@ function GetHexbinVisualisation(KPIname, colors, method) {
             var fillOpacity = WO.split(",")[1];
             _withCount.fillOpacity = fillOpacity;
             _withCount.weight = weight;
+            // _withCount.stroke = false;
         });
 
         layerdata = L.Proj.geoJson(grid, {

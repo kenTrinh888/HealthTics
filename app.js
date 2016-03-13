@@ -993,7 +993,7 @@ app.get("/getHexbinVisualGeojson/:name", function(req, res) {
     console.log(url);
     fs.readFile(url, "utf8", function(err, data) {
         var dataJSON = JSON.parse(data);
-        console.log(dataJSON)
+        // console.log(dataJSON)
         var successfulHDBs = dataJSON.reqFinal.success_HDB_JSONs;
         var HDBpoints = {
             "type": "FeatureCollection",
