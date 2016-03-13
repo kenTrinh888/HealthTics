@@ -56,6 +56,10 @@ function loadResultTableDataWithIndexes() {
         alert('error: please input KPI name');
         return;
     }
+    if (targetKPI.length == 0) {
+        alert('error: please input target KPI');
+        return;
+    }
     var getDataAPI = '/getNumberofHDB2/' + fileIndexes;
 
     $.get(getDataAPI, function(HDBData, err) {
