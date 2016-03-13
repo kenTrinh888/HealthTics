@@ -1,15 +1,19 @@
 $(document).ready(function() {
     var allKPIs = JSON.parse(getAllKPIs());
+    
     populateBulletChart(allKPIs);
     visualizeBulletChart(allKPIs);
 })
 
 function visualizeBulletChart(allKPIs) {
+
     $('.visualize').click(function() {
         var bulletChartID = parseInt($(this).attr('id').split('_')[1]) - 1;
         var requirements = allKPIs[bulletChartID];
-        console.log(requirements);
-        // GetHexbinVisualisation(kpiName, "OrRd", "equal_interval");
+        // console.log(requirements);
+        var kpiName = requirements.kpiName ;
+        // GetHexbinVisualisation(requirements)
+        GetHexbinVisualisation(kpiName, "OrRd", "equal_interval");
         // $.ajax({
         //     type: 'POST',
         //     data: JSON.stringify(kpiName),

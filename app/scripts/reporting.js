@@ -68,27 +68,17 @@ var baseMaps = {
 var layerGroup = L.layerGroup().addTo(map);
 var layerControl = L.control.layers();
 L.control.layers(baseMaps).addTo(map);
-var KPIname = "NewKPI1";
-// GetHexbinVisualisation(KPIname, "OrRd", "equal_interval");
 var legend = L.control({ position: 'bottomright' });
-function GetHexbinVisualisation(KPI, colors, method) {
-     var dataSend = JSON.stringify(KPI);
-    // console.log(dataSend);
-    $.ajax({
-        url: '/getHexbinVisualGeojson',
-        type: 'POST',
-        data: dataSend,
-        contentType: 'application/json',
-        success: function(data) {
-
-        }
-    })
-
+var hasLegend = false;
+function GetHexbinVisualisation(KPIname, colors, method) {
+    $('#map').attr('name', KPIname)
+    if(hasLegend === true){
+        legend.removeFrom(map);
+    }
 
     var controlOnject = layerControl._layers
     for (var key in controlOnject) {
         if (controlOnject.hasOwnProperty(key)) {
-            console.log(key + " -> " + controlOnject[key]);
             delete controlOnject[key];
         }
     }
@@ -100,25 +90,22 @@ function GetHexbinVisualisation(KPI, colors, method) {
         method = "equal_interval";
     }
 
-    // console.log(colors+method)
-    // var KPIname = KPIname
-    // var legend = L.control({ position: 'bottomright' });
-    // legend.removeFrom(map);
-    $.getJSON("/getHexbinVisualGeojson/" + KPIname, function(data) {
+        var data = JSON.parse(getHexbinDataSync(KPIname));
+        // console.log(data);
         var grid = data.counted;
         var values = [];
         var brew = new classyBrew();
 
         grid.features.forEach(function(cell) {
             var pt_count = cell.properties.pt_count;
-            if (method === "quantile"){
-                if(pt_count != 0){
+            if (method === "quantile") {
+                if (pt_count != 0) {
                     values.push(pt_count);
                 }
-            }else{
+            } else {
                 values.push(pt_count);
             }
-            
+
         });
 
         brew.setSeries(values);
@@ -139,18 +126,16 @@ function GetHexbinVisualisation(KPI, colors, method) {
             var fillOpacity = WO.split(",")[1];
             _withCount.fillOpacity = fillOpacity;
             _withCount.weight = weight;
-            // _withCount.stroke = false;
         });
 
         layerdata = L.Proj.geoJson(grid, {
             onEachFeature: onEachFeature,
             style: style
         }).addTo(map);
-        layerControl.addOverlay(layerdata, "NewClass");
 
-        // ==============================Creating Legend===========================
+        layerControl.addOverlay(layerdata, "NewClass");
         
-        legend.onAdd = function(map) {
+         legend.onAdd = function(map) {
             var div = L.DomUtil.create('div', 'info legend'),
                 percents = brew.getBreaks(),
                 labels = [],
@@ -159,8 +144,9 @@ function GetHexbinVisualisation(KPI, colors, method) {
 
                 from = percents[i];
                 to = percents[i + 1];
-                 console.log(from);
-
+                // console.log(from);
+                // var color = brew.getColorInRange(12);
+                // console.log(color);
                 if (to) {
                     labels.push(
                         '<i style="background:' + brew.getColorInRange(from) + '"></i> ' +
@@ -172,12 +158,16 @@ function GetHexbinVisualisation(KPI, colors, method) {
         };
 
         legend.addTo(map);
-
-    })
-
+        hasLegend = true;
+}
+function getHexbinDataSync (KPIname) {
+    getDataHexbin = "/getHexbinVisualGeojson/" + KPIname;
+    $.ajaxSetup({ async: false });
+    var data = $.get(getDataHexbin).responseText;
+    $.ajaxSetup({ async: true });
+    return data;
 
 }
-
 function assignWeightandOpacity(pointcount, breaks) {
     var weight = 0;
     var fillOpacity = 0;
@@ -330,38 +320,6 @@ function FocusHexbin(hexbinSend) {
 
 }
 
-// function zoomToFeatureZoomin(e) {
-//     var hexbinSend = e.target.feature;
-//     map.fitBounds(e.target.getBounds());
-// }
-
-// function onEachFeatureZoomin(feature, layer) {
-//     layer.on({
-//         mouseover: highlightFeature,
-//         mouseout: resetHighlight,
-//         click: zoomToFeature
-//     });
-// }
-
-
-
-// var HDBpoints = data.points;
-// console.log(HDBpoints);
-// // L.Proj.geoJson(grid, {
-// //     // onEachFeature: onEachFeature,
-// //     style: styleZoomin
-// // }).addTo(ZoominMap);
-
-// L.geoJson(HDBpoints, {
-//     pointToLayer: function(feature, latlng) {
-//         return L.circleMarker(latlng, {
-//             radius: 0.5,
-//             fillColor: '#ffffff',
-//             fillOpacity: 1,
-//             stroke: false
-//         });
-//     }
-// }).addTo(ZoominMap);
 
 
 function styleZoomin(feature) {
@@ -379,10 +337,9 @@ $(document).ready(function() {
         $('.hexbin').change(function() {
             var colors = $('#items').val();
             var methods = $('#methods').val();
-            console.log(colors + " " + methods);
-            GetHexbinVisualisation("p1", colors, methods)
-             legend.removeFrom(map);
-
+             var KPIname = $('#map').attr('name');
+            // console.log(colors + " " + methods);
+            GetHexbinVisualisation(KPIname, colors, methods);
         })
     })
     // li.appendTo(".colors")
