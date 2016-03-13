@@ -130,7 +130,6 @@ function populateAndTable(modifiedRequirements) {
 
     $('.modifiedRequirements').text(JSON.stringify(modifiedRequirements));
     modifiedRequirements.forEach(function(reqObject, index) {
-        console.log(reqObject);
         var lastRow = $('.andTbl tbody tr').length;
         $('#filterCondition_' + lastRow).html(reqObject.reqString);
         $('#hdbCount_' + lastRow).html(reqObject.countSuccessHDB);

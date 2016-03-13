@@ -28,7 +28,7 @@ function loadResultTableData() {
             return;
         }
         if (err) {
-            console.log(err);
+            // console.log(err);
         }
         var reqStrings = [];
         var requirements = getResultRequirements(HDBData);
@@ -47,7 +47,7 @@ function sendFinalRequirements() {
 function loadResultTableDataWithIndexes() {
     var fileIndexes = getCheckedFileIndexes();
     var kpiName = $('.kpiName').prop('value');
-
+    var targetKPI = $('.targetKPI').prop('value');
     if (fileIndexes.length == 0) {
         alert('error: please tick at least one checkbox');
         return;
@@ -70,6 +70,7 @@ function loadResultTableDataWithIndexes() {
         var finalRequirements = getFinalRequirements(requirements);
         finalRequirements = addAndTableToFinalRequirements(finalRequirements, fileIndexes);
         finalRequirements.kpiName = kpiName;
+        finalRequirements.targetKPI = targetKPI;
         $.ajaxSetup({ async: false });
         var fileExists = $.get('checkFileExists/' + kpiName).responseText;
         $.ajaxSetup({ async: false });
