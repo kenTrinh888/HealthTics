@@ -75,10 +75,12 @@ function addBulletChart(bulletChartID, KPI) {
 function bulletChartData(KPI) {
     var measures = [];
     measures.push(KPI.reqFinal.percentPopulation);
+    var markers = [];
+    markers.push(KPI.targetKPI);
     return {
         "subtitle": "%", //sub-label for bullet chart
         "ranges": [30, 50, 100], //Minimum, mean and maximum values.
         "measures": measures, //Value representing current measurement (the thick blue line in the example)
-        "markers": [75] //Place a marker on the chart (the white triangle marker)
+        "markers": markers //Place a marker on the chart (the white triangle marker)
     };
 }
