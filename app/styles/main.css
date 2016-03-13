@@ -28,13 +28,20 @@ html {
 	font-family: Arial, sans-serif;
 	height: 100%;
 }
-#map {
+.map {
 	/*width: 200px;*/
-	height: 400px;
+    padding-left: 0px
+}
+#map{
+    /*width: 200px;*/
+    height: 400px;
 }
 #ZoominMap {
     /*width: 200px;*/
     height: 400px;
+}
+.dropdown-list{
+    margin-bottom: 20px;
 }
 /*#map { position:absolute; top:0; bottom:0; left:0; right:50%; width: 600px;
 	height: 500px;}

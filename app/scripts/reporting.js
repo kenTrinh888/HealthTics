@@ -6,6 +6,29 @@ $(document).on({
     ajaxStart: function() { $body.addClass("loading"); },
     ajaxStop: function() { $body.removeClass("loading"); }
 });
+
+var colors = ["OrRd", "PuBu", "BuPu", "Oranges",
+    "BuGn", "YlOrBr", "YlGn", "Reds",
+    "RdPu", "Greens", "YlGnBu", "Purples",
+    "GnBu", "Greys", "YlOrRd", "PuRd", "Blues",
+    "PuBuGn", "Spectral", "RdYlGn", "RdBu",
+    "PiYG", "PRGn", "RdYlBu", "BrBG",
+    "RdGy", "PuOr", "Set2", "Accent",
+    "Set1", "Set3", "Dark2", "Paired",
+    "Pastel2", "Pastel1"
+];
+var method = ['equal_interval', 'jenks', 'quantile']
+var methodOption = '';
+var option = '';
+for (var i = 0; i < colors.length; i++) {
+    option += '<option value="' + colors[i] + '">' + colors[i] + '</option>';
+}
+$('#items').append(option);
+for (var i = 0; i < method.length; i++) {
+    methodOption += '<option value="' + method[i] + '">' + method[i] + '</option>';
+}
+$('#methods').append(methodOption);
+
 /* create leaflet map */
 var OpenStreetMap_Mapnik = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
@@ -43,64 +66,151 @@ var baseMaps = {
     "Hydda_Full": Hydda_Full
 };
 var layerGroup = L.layerGroup().addTo(map);
-var layerControl = false;
+var layerControl = L.control.layers();
 L.control.layers(baseMaps).addTo(map);
-var KPIname ="FinalResult";
-$.getJSON("/getHexbinVisualGeojson/" + KPIname, function(data) {
-    var grid = data.counted;
-    var values = [];
-    var brew = new classyBrew();
-
-    grid.features.forEach(function(cell) {
-        var pt_count = cell.properties.pt_count;
-        values.push(pt_count);
-    });
-
-    brew.setSeries(values);
-    brew.setNumClasses(6);
-    var breaks = brew.getBreaks();
-    brew.setColorCode('YlOrRd'); // set color code
-
-    // i.e. equal_interval, jenks, quantile
-    brew.classify("equal_interval");
-    var colors = brew.getColors();
-    grid.features.forEach(function(cell) {
-        var pt_count = cell.properties.pt_count;
-        var _withCount = cell._withCount = {};
-        _withCount.fillColor = brew.getColorInRange(pt_count)
-        var WO = assignWeightandOpacity(pt_count, breaks);
-        var weight = WO.split(",")[0];
-        var fillOpacity = WO.split(",")[1];
-        _withCount.fillOpacity = fillOpacity;
-        _withCount.weight = weight;
-    });
-
-    layerdata = L.Proj.geoJson(grid, {
-        onEachFeature: onEachFeature,
-        style: style
-    }).addTo(map);
-    // ==============================Creating Legend===========================
-    var legend = L.control({ position: 'bottomright' });
-    legend.onAdd = function(map) {
-        var div = L.DomUtil.create('div', 'info legend'),
-            percents = brew.getBreaks(),
-            labels = [],
-            from, to;
-        for (var i = 0; i < percents.length; i++) {
-            from = percents[i];
-            to = percents[i + 1];
-            if (to) {
-                labels.push(
-                    '<i style="background:' + brew.getColorInRange(from) + '"></i> ' +
-                    from.toFixed(0) + '&ndash; ' + to.toFixed(0));
-            }
+var KPIname = "p1";
+GetHexbinVisualisation(KPIname, "OrRd", "equal_interval")
+var legend = L.control({ position: 'bottomright' });
+function GetHexbinVisualisation(KPIname, colors, method) {
+    // if(legend != "undefined"){
+    //     legend.removeFrom(map);
+    // }
+    // layerControl._layers ='';
+    // console.log(layerControl._layers.length);
+    var controlOnject = layerControl._layers
+    for (var key in controlOnject) {
+        if (controlOnject.hasOwnProperty(key)) {
+            console.log(key + " -> " + controlOnject[key]);
+            delete controlOnject[key];
         }
-        div.innerHTML = labels.join('<br>');
-        return div;
-    };
-    legend.addTo(map);
-    // ==============================Creating Legend===========================
-})
+    }
+    if (colors === null) {
+        colors = "OrRd";
+    }
+
+    if (method === null) {
+        method = "equal_interval";
+    }
+
+    // console.log(colors+method)
+    // var KPIname = KPIname
+    // var legend = L.control({ position: 'bottomright' });
+    // legend.removeFrom(map);
+    $.getJSON("/getHexbinVisualGeojson/" + KPIname, function(data) {
+        var grid = data.counted;
+        var values = [];
+        var brew = new classyBrew();
+
+        grid.features.forEach(function(cell) {
+            var pt_count = cell.properties.pt_count;
+            if (method === "quantile"){
+                if(pt_count != 0){
+                    values.push(pt_count);
+                }
+            }else{
+                values.push(pt_count);
+            }
+            
+        });
+
+        brew.setSeries(values);
+        brew.setNumClasses(6);
+        var breaks = brew.getBreaks();
+        // console.log(breaks);
+        brew.setColorCode(colors); // set color code
+
+        // i.e. equal_interval, jenks, quantile
+        brew.classify(method);
+        // var colors = brew.getColors();
+        grid.features.forEach(function(cell) {
+            var pt_count = cell.properties.pt_count;
+            var _withCount = cell._withCount = {};
+            _withCount.fillColor = brew.getColorInRange(pt_count)
+            var WO = assignWeightandOpacity(pt_count, breaks);
+            var weight = WO.split(",")[0];
+            var fillOpacity = WO.split(",")[1];
+            _withCount.fillOpacity = fillOpacity;
+            _withCount.weight = weight;
+        });
+
+        layerdata = L.Proj.geoJson(grid, {
+            onEachFeature: onEachFeature,
+            style: style
+        }).addTo(map);
+
+        // if (layerControl === false) {
+        //     layerControl = L.control.layers().addTo(map);
+        // }
+
+        layerControl.addOverlay(layerdata, "NewClass");
+        // map.on('overlayadd', function (eventLayer) {
+        //     console.log(eventLayer.name);
+        // })
+        // layerControl = true;
+
+        // ==============================Creating Legend===========================
+        
+        legend.onAdd = function(map) {
+            var div = L.DomUtil.create('div', 'info legend'),
+                percents = brew.getBreaks(),
+                labels = [],
+                from, to;
+            for (var i = 0; i < percents.length; i++) {
+
+                from = percents[i];
+                to = percents[i + 1];
+                 console.log(from);
+                 // var color = brew.getColorInRange(12);
+                 // console.log(color);
+                if (to) {
+                    labels.push(
+                        '<i style="background:' + brew.getColorInRange(from) + '"></i> ' +
+                        from.toFixed(0) + '&ndash; ' + to.toFixed(0));
+                }
+            }
+            div.innerHTML = labels.join('<br>');
+            return div;
+        };
+        // legend.removeFrom(map);
+
+        legend.addTo(map);
+        
+        
+        
+        // var legendonChange = L.control({ position: 'bottomright' });
+        // legendonChange.onAdd = function(map) {
+        //     var div = L.DomUtil.create('div', 'info legend'),
+        //         percents = brew.getBreaks(),
+        //         labels = [],
+        //         from, to;
+        //     for (var i = 0; i < percents.length; i++) {
+        //         from = percents[i];
+        //         to = percents[i + 1];
+        //         if (to) {
+        //             labels.push(
+        //                 '<i style="background:' + brew.getColorInRange(from) + '"></i> ' +
+        //                 from.toFixed(0) + '&ndash; ' + to.toFixed(0));
+        //         }
+        //     }
+        //     div.innerHTML = labels.join('<br>');
+        //     return div;
+        // };
+        // legend.addTo(map);
+        // map.on('overlayadd', function(eventLayer) {
+        //     // Switch to the Population legend...
+        //     if (eventLayer.name === 'New Class') {
+        //         this.removeControl(legendonChange);
+        //         legend.addTo(this);
+        //     } else { // Or switch to the Population Change legend...
+        //         this.removeControl(legend);
+        //         legendonChange.addTo(this);
+        //     }
+        // });
+        // ==============================Creating Legend===========================
+    })
+
+
+}
 
 function assignWeightandOpacity(pointcount, breaks) {
     var weight = 0;
@@ -201,7 +311,7 @@ var baseMapsZoomin = {
 var ZoominMap = L.map('ZoominMap', {
     center: [1.35, 103.8],
     zoom: 11,
-    layers: [ OpenStreetMap_BlackAndWhiteZoomin, OpenStreetMap_MapnikZoomin, Hydda_FullZoomin]
+    layers: [OpenStreetMap_BlackAndWhiteZoomin, OpenStreetMap_MapnikZoomin, Hydda_FullZoomin]
 });
 L.control.layers(baseMapsZoomin).addTo(ZoominMap);
 
@@ -222,13 +332,13 @@ function FocusHexbin(hexbinSend) {
             var hexbinPoint = data.hexbin;
             L.geoJson(HDBPoints, {
                 pointToLayer: function(feature, latlng) {
-                     var propertyObject = feature.properties;
-                var property = "";
-                for (var key in propertyObject) {
-                    if (propertyObject.hasOwnProperty(key)) {
-                        property += "<p><b>" + key + "</b>" + " : " + propertyObject[key] + "</p>";
+                    var propertyObject = feature.properties;
+                    var property = "";
+                    for (var key in propertyObject) {
+                        if (propertyObject.hasOwnProperty(key)) {
+                            property += "<p><b>" + key + "</b>" + " : " + propertyObject[key] + "</p>";
+                        }
                     }
-                }
                     return L.circleMarker(latlng, {
                         radius: 5,
                         fillColor: '#000000',
@@ -238,10 +348,10 @@ function FocusHexbin(hexbinSend) {
                 }
             }).addTo(ZoominMap);
             var Hexbinstyle = {
-                    weight: 2,
-                    color :'#000000',
-                    fillOpacity: 0
-                }
+                weight: 2,
+                color: '#000000',
+                fillOpacity: 0
+            }
             var hexbinMap = L.Proj.geoJson(hexbinPoint, {
                 style: Hexbinstyle
             }).addTo(ZoominMap);
@@ -298,5 +408,16 @@ function styleZoomin(feature) {
         fillOpacity: 0.7
     };
 }
+// var li = $('li')
+$(document).ready(function() {
+        $('.hexbin').change(function() {
+            var colors = $('#items').val();
+            var methods = $('#methods').val();
+            console.log(colors + " " + methods);
+            GetHexbinVisualisation("p1", colors, methods)
+             legend.removeFrom(map);
 
-// =======================================================End Second Map========================================
+        })
+    })
+    // li.appendTo(".colors")
+    // =======================================================End Second Map========================================
