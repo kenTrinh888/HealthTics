@@ -213,15 +213,15 @@ app.post('/sendModifiedRequirements', function(req, res) {
 })
 
 app.get('/checkFileExists/:kpiName', function(req, res) {
-    console.log(req.params.kpiName);
+    // console.log(req.params.kpiName);
     var nameOfFinalResult = req.params.kpiName + ".geojson";
     var folderDestination = globalurl + "/FinalResult/";
     folderDestination = folderDestination.replace('\\', '/');
     var existingFiles = fs.readdirSync(folderDestination);
     var doesFileExist = existingFiles.indexOf(nameOfFinalResult) != -1;
-    console.log("existed file name: " + existingFiles.toString());
-    console.log(nameOfFinalResult);
-    console.log(doesFileExist);
+    // console.log("existed file name: " + existingFiles.toString());
+    // console.log(nameOfFinalResult);
+    // console.log(doesFileExist);
     res.send(doesFileExist);
 })
 
@@ -338,7 +338,7 @@ app.post('/submitFilter', function(req, res) {
     var name = fs.readdirSync(path);
     // console.log(name);
     var rowCount = name.length;
-    console.log("first" + rowCount);
+    // console.log("first" + rowCount);
     for (var i = 0; i < name.length; i++) {
         if (name[i] === ".DS_Store") {
             rowCount = rowCount - 1;
@@ -990,7 +990,6 @@ app.get("/getHexbinVisualGeojson/:name", function(req, res) {
     var kpiName = req.params.name + ".geojson";
     var url = globalurl + "/FinalResult/" + kpiName;
     url = url.replace("\\","/");
-    console.log(url);
     fs.readFile(url, "utf8", function(err, data) {
         var dataJSON = JSON.parse(data);
         // console.log(dataJSON)
@@ -1074,6 +1073,11 @@ app.post("/getHexbinContainHDBs", function(req, res) {
         res.send(result);
 
     });
+})
+
+app.post('/visualizeBulletChart',function(req,res){
+    var requirements = req.body;
+    //ken modify from here
 })
 
 app.listen(3000);

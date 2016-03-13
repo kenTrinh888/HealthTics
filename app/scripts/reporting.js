@@ -69,14 +69,22 @@ var layerGroup = L.layerGroup().addTo(map);
 var layerControl = L.control.layers();
 L.control.layers(baseMaps).addTo(map);
 var KPIname = "NewKPI1";
-GetHexbinVisualisation(KPIname, "OrRd", "equal_interval")
+// GetHexbinVisualisation(KPIname, "OrRd", "equal_interval");
 var legend = L.control({ position: 'bottomright' });
-function GetHexbinVisualisation(KPIname, colors, method) {
-    // if(legend != "undefined"){
-    //     legend.removeFrom(map);
-    // }
-    // layerControl._layers ='';
-    // console.log(layerControl._layers.length);
+function GetHexbinVisualisation(KPI, colors, method) {
+     var dataSend = JSON.stringify(KPI);
+    // console.log(dataSend);
+    $.ajax({
+        url: '/getHexbinVisualGeojson',
+        type: 'POST',
+        data: dataSend,
+        contentType: 'application/json',
+        success: function(data) {
+
+        }
+    })
+
+
     var controlOnject = layerControl._layers
     for (var key in controlOnject) {
         if (controlOnject.hasOwnProperty(key)) {
