@@ -207,18 +207,9 @@ app.post('/deleteORResult', function(req, res) {
 //don't care about this one below
 app.post('/sendModifiedRequirements', function(req, res) {
     //ken modify from here
-    var requirements = req.body;
-    console.log(requirements);
-    console.log("sendModifiedRequirements");
-    // requirements.forEach(function(req, index) {
-    //     req.failed_HDB_JSONs.forEach(function(hdb, index) {
-    //         console.log(hdb.properties);
-    //     })
-    //     req.success_HDB_JSONs.forEach(function(hdb, index) {
-    //         console.log(hdb.properties);
-    //     })
-    // });
-    // res.redirect('/');
+    // var requirements = req.body;
+    // console.log(requirements);
+    // console.log("sendModifiedRequirements");
 })
 
 app.get('/checkFileExists/:kpiName', function(req, res) {
@@ -233,6 +224,7 @@ app.get('/checkFileExists/:kpiName', function(req, res) {
     console.log(doesFileExist);
     res.send(doesFileExist);
 })
+
 app.post('/sendFinalRequirements', function(req, res) {
     var requirements = req.body;
     var nameOfFinalResult = requirements.kpiName + ".geojson";;
@@ -247,6 +239,21 @@ app.post('/sendFinalRequirements', function(req, res) {
     });
 
     res.redirect('/');
+})
+
+app.get('/getAllKPIs', function(req,res){
+    var existingKPIFiles = [];
+    var folderDestination = globalurl + "/FinalResult/";
+    folderDestination = folderDestination.replace('\\', '/'); 
+    existingKPIFiles = fs.readdirSync(folderDestination);
+    var KPIJsons =[];
+    existingKPIFiles.forEach(function(kpiFile,index){
+        var KPIUrl = folderDestination+kpiFile;
+        var KPIData = fs.readFileSync(KPIUrl);        
+        var KPIJson = JSON.parse(KPIData);
+        KPIJsons.push(KPIJson);
+    })
+    res.send(KPIJsons);
 })
 
 app.post('/submitFilter', function(req, res) {
@@ -329,7 +336,7 @@ app.post('/submitFilter', function(req, res) {
 
     var path = globalurl + "/ORResults/";
     var name = fs.readdirSync(path);
-    console.log(name);
+    // console.log(name);
     var rowCount = name.length;
     console.log("first" + rowCount);
     for (var i = 0; i < name.length; i++) {
@@ -342,7 +349,7 @@ app.post('/submitFilter', function(req, res) {
     console.log("before" + rowCount);
     if (rowCount > 0) {
         var lastName = name[name.length - 1];
-        console.log(lastName);
+        // console.log(lastName);
         var LastNameExceptJSONextension = lastName.split(".")[0];
         var lastChar = LastNameExceptJSONextension.substr(LastNameExceptJSONextension.length - 1);
         console.log(lastChar);
@@ -982,9 +989,11 @@ app.get("/getNumberofHDB", function(req, res) {
 app.get("/getHexbinVisualGeojson/:name", function(req, res) {
     var kpiName = req.params.name + ".geojson";
     var url = globalurl + "/FinalResult/" + kpiName;
+    url = url.replace("\\","/");
     console.log(url);
     fs.readFile(url, "utf8", function(err, data) {
         var dataJSON = JSON.parse(data);
+        console.log(dataJSON)
         var successfulHDBs = dataJSON.reqFinal.success_HDB_JSONs;
         var HDBpoints = {
             "type": "FeatureCollection",

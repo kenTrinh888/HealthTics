@@ -28,7 +28,12 @@ html {
 	font-family: Arial, sans-serif;
 	height: 100%;
 }
+<<<<<<< HEAD
 .map {
+=======
+
+#map {
+>>>>>>> 444e62b31cb740f32069b42021ea91a90194e079
 	/*width: 200px;*/
     padding-left: 0px
 }
@@ -40,6 +45,7 @@ html {
     /*width: 200px;*/
     height: 400px;
 }
+<<<<<<< HEAD
 .dropdown-list{
     margin-bottom: 20px;
 }
@@ -51,7 +57,13 @@ html {
 	height: 100%;
 	width: 100%;
 }*/
+=======
+>>>>>>> 444e62b31cb740f32069b42021ea91a90194e079
 
+.kpibulletchart .nvd3-svg{
+	margin-bottom:-7em;
+	margin-left:-6em;
+}
 
 header {
 	position: absolute;

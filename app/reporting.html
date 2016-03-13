@@ -25,6 +25,7 @@
     <link rel="stylesheet" type="text/css" href="bower_components/datatables.net-dt/css/jquery.datatables.min.css">
     <link href="lib/bootsnipp/treeview.css" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="bower_components/magicsuggest/magicsuggest-min.css" />
+    <link rel="stylesheet" href="bower_components/nvd3/build/nv.d3.min.css" />
     <!-- <end -->
     <!-- bower:css -->
     <!-- endbower -->
@@ -66,6 +67,24 @@
             <!-- /.container -->
         </nav>
         <div class="container">
+            <h3><a href="#">List of KPI's</a></h3>
+            <div class="row">
+                <table class="table table-hover table-responsive resultTbl" id="kpiListTbl">
+                    <tr>
+                        <th class="col-md-2">KPI Name</th>
+                        <th class="col-md-6">Bullet Chart</th>
+                        <th class="col-md-2">Number of residents with access</th>
+                        <th class="col-md-2">% of residents with access</th>
+                    </tr>
+                    <tr id='KPIRow_1' class='KPIRow'>
+                        <td class='col-md-2'><span class='kpiName' id='kpiName_1'></span></td>
+                        <td class='col-md-8'><span class='kpibulletchart' id='kpibulletchart_1'><svg></svg></span></td>
+                        <td class='col-md-1'><span class='kpiNumber' id='kpiNumber_1'></span></td>
+                        <td class='col-md-1'><span class='kpiPercent' id='kpiPercent_1'></span></td>
+                    </tr>
+                </table>
+            </div>
+
             <!-- Projects Row -->
             <h3><a href="#">Map</a></h3>
             <div class="col-xs-12 col-sm-12 dropdown-list">
@@ -86,16 +105,8 @@
                 <!-- <div class="mapSection"> -->
                 <!-- <div class="col-sm-12"> -->
             </div>
-            <div class="col-xs-6 col-sm-6 map">
-                <div id="map"></div>
-            </div>
-            <div class="col-xs-6 col-sm-6">
-                <div id="ZoominMap"></div>
-            </div>
-            <!-- </div> -->
-            <!-- </div> -->
         </div>
-        </div>
+        
         <footer id="footer-change">
             <p>Copyright &copy; Team HealthTics 2016</p>
             <!-- /.row -->
@@ -125,12 +136,14 @@
     <link rel="stylesheet" type="text/css" href="/bower_components/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.min.css">
     <script src="/bower_components/bootstrap-switch/dist/js/bootstrap-switch.min.js"></script>
     <!-- End Bootstrap Switch Lib-->
+    <script src="/bower_components/d3/d3.min.js"></script>
+    <script src="/bower_components/nvd3/build/nv.d3.min.js"></script>
+
     <script src="/lib/classybrew/src/classybrew.js"></script>
     <script src="http://api.tiles.mapbox.com/mapbox.js/plugins/turf/v2.0.0/turf.min.js
 "></script>
+    <script src="scripts/bulletchart.js"></script>
     <script src="scripts/reporting.js"></script>
-    <div class="modal">
-        <!-- Place at bottom of page -->
-    </div>
 
+     <!-- <div class="modal">Place at bottom of page</div> -->
 </html>
