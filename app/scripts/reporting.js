@@ -138,16 +138,7 @@ function GetHexbinVisualisation(KPIname, colors, method) {
             onEachFeature: onEachFeature,
             style: style
         }).addTo(map);
-
-        // if (layerControl === false) {
-        //     layerControl = L.control.layers().addTo(map);
-        // }
-
         layerControl.addOverlay(layerdata, "NewClass");
-        // map.on('overlayadd', function (eventLayer) {
-        //     console.log(eventLayer.name);
-        // })
-        // layerControl = true;
 
         // ==============================Creating Legend===========================
         
@@ -161,8 +152,7 @@ function GetHexbinVisualisation(KPIname, colors, method) {
                 from = percents[i];
                 to = percents[i + 1];
                  console.log(from);
-                 // var color = brew.getColorInRange(12);
-                 // console.log(color);
+
                 if (to) {
                     labels.push(
                         '<i style="background:' + brew.getColorInRange(from) + '"></i> ' +
@@ -172,42 +162,9 @@ function GetHexbinVisualisation(KPIname, colors, method) {
             div.innerHTML = labels.join('<br>');
             return div;
         };
-        // legend.removeFrom(map);
 
         legend.addTo(map);
-        
-        
-        
-        // var legendonChange = L.control({ position: 'bottomright' });
-        // legendonChange.onAdd = function(map) {
-        //     var div = L.DomUtil.create('div', 'info legend'),
-        //         percents = brew.getBreaks(),
-        //         labels = [],
-        //         from, to;
-        //     for (var i = 0; i < percents.length; i++) {
-        //         from = percents[i];
-        //         to = percents[i + 1];
-        //         if (to) {
-        //             labels.push(
-        //                 '<i style="background:' + brew.getColorInRange(from) + '"></i> ' +
-        //                 from.toFixed(0) + '&ndash; ' + to.toFixed(0));
-        //         }
-        //     }
-        //     div.innerHTML = labels.join('<br>');
-        //     return div;
-        // };
-        // legend.addTo(map);
-        // map.on('overlayadd', function(eventLayer) {
-        //     // Switch to the Population legend...
-        //     if (eventLayer.name === 'New Class') {
-        //         this.removeControl(legendonChange);
-        //         legend.addTo(this);
-        //     } else { // Or switch to the Population Change legend...
-        //         this.removeControl(legend);
-        //         legendonChange.addTo(this);
-        //     }
-        // });
-        // ==============================Creating Legend===========================
+
     })
 
 
