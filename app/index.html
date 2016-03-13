@@ -234,6 +234,30 @@
                 </div>
                 <!-- /.row -->
             </footer>
+                <div class="modal fade" id="modal-updateAndTable" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display:none;">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                <h4 class="modal-title" id="myModalLabel">Save KPI as</h4>
+                            </div>
+                            <div class="modal-body">
+                                KPI Name: <input type="text" class="form-control kpiName"></input>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="andTableSubmit btn btn-primary pull-right" style="display:inline;">Save</button>
+                            </div>
+                        </div>
+                        <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                </div>
+                <!-- /.modal -->
+            </body>
+            <div class="loadingModal" id="loadingModal" style="display:none">
+                <!-- Place at bottom of page -->
+            </div>
+            <!-- Modal Login -->
         </div>
         <script src="/bower_components/jquery/dist/jquery.js"></script>
         <script src="lib/scripts/bootstrap.min.js"></script>
@@ -272,32 +296,9 @@
          $("[name='my-checkbox']").bootstrapSwitch();
         </script> -->
         <!-- endbuild -->
-        <button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#modal-updateAndTable">
+<!--         <button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#modal-updateAndTable">
             Save KPI as
-        </button>
-        <div class="modal fade" id="modal-updateAndTable" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                        <h4 class="modal-title" id="myModalLabel">Save KPI as</h4>
-                    </div>
-                    <div class="modal-body">
-                        KPI Name: <input type="text" class="form-control kpiName"></input>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="andTableSubmit btn btn-primary pull-right" style="display:inline;">Save</button>
-                    </div>
-                </div>
-                <!-- /.modal-content -->
-            </div>
-            <!-- /.modal-dialog -->
-        </div>
-        <!-- /.modal -->
-    </body>
-    <div class="loadingModal" id="loadingModal">
-        <!-- Place at bottom of page -->
-    </div>
-    <!-- Modal Login -->
+        </button> -->
+        
 
 </html>

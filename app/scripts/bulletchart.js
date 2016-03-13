@@ -7,7 +7,7 @@ $(document).ready(function(){
   // })
   allKPIs.forEach(function(KPI,index){
     if(index != allKPIs.length-1){
-      addRow(index);
+      addBulletChartRow(index);
     }
     $('#kpiName_'+(index+1)).html(KPI.kpiName);
     $('#kpiNumber_'+(index+1)).html(KPI.reqFinal.countSuccessDwellings);
@@ -20,7 +20,7 @@ $(document).ready(function(){
   })
 })
 
-function addRow(index){
+function addBulletChartRow(index){
   var KPIRowHTML = "<tr id='KPIRow_"+(index+2)+"' class='KPIRow'>\
                 <td class='col-md-2'><span class='kpiName' id='kpiName_"+(index+2)+"'></span></td>\
                 <td class='col-md-6'><span class='kpibulletchart' id='kpibulletchart_"+(index+2)+"'><svg></svg></span></td>\
