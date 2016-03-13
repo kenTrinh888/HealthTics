@@ -45,19 +45,22 @@ var baseMaps = {
 var layerGroup = L.layerGroup().addTo(map);
 var layerControl = false;
 L.control.layers(baseMaps).addTo(map);
-$.getJSON("/getHexbinVisualGeojson", function(data) {
+var KPIname ="FinalResult";
+$.getJSON("/getHexbinVisualGeojson/" + KPIname, function(data) {
     var grid = data.counted;
     var values = [];
     var brew = new classyBrew();
+
     grid.features.forEach(function(cell) {
         var pt_count = cell.properties.pt_count;
         values.push(pt_count);
     });
+
     brew.setSeries(values);
     brew.setNumClasses(6);
     var breaks = brew.getBreaks();
     brew.setColorCode('YlOrRd'); // set color code
-    // classify by passing in statistical method
+
     // i.e. equal_interval, jenks, quantile
     brew.classify("equal_interval");
     var colors = brew.getColors();
@@ -70,7 +73,8 @@ $.getJSON("/getHexbinVisualGeojson", function(data) {
         var fillOpacity = WO.split(",")[1];
         _withCount.fillOpacity = fillOpacity;
         _withCount.weight = weight;
-    })
+    });
+
     layerdata = L.Proj.geoJson(grid, {
         onEachFeature: onEachFeature,
         style: style

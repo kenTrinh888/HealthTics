@@ -979,8 +979,10 @@ app.get("/getNumberofHDB", function(req, res) {
 
 // })
 
-app.get("/getHexbinVisualGeojson", function(req, res) {
-    var url = globalurl + "/FinalResult/FinalResult.geojson";
+app.get("/getHexbinVisualGeojson/:name", function(req, res) {
+    var kpiName = req.params.name + ".geojson";
+    var url = globalurl + "/FinalResult/" + kpiName;
+    console.log(url);
     fs.readFile(url, "utf8", function(err, data) {
         var dataJSON = JSON.parse(data);
         var successfulHDBs = dataJSON.reqFinal.success_HDB_JSONs;
