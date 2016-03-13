@@ -1,4 +1,4 @@
-$body = $("body");
+// $body = $("body");
 
 // $(document).on({
 //     ajaxStart: function() { $body.addClass("loading"); },
@@ -42,7 +42,7 @@ function setAndTable() {
     });
     var andTableRowCount = 2;
 
-    addRow(andTable, andTableRowCount, '#addResultRow');
+    addAndTableRow(andTable, andTableRowCount, '#addResultRow');
 }
 
 function loadAndTableData() {
@@ -127,15 +127,17 @@ function getReqString(ORRequirements) {
 }
 
 function populateAndTable(modifiedRequirements) {
+
     $('.modifiedRequirements').text(JSON.stringify(modifiedRequirements));
     modifiedRequirements.forEach(function(reqObject, index) {
+        console.log(reqObject);
         var lastRow = $('.andTbl tbody tr').length;
         $('#filterCondition_' + lastRow).html(reqObject.reqString);
         $('#hdbCount_' + lastRow).html(reqObject.countSuccessHDB);
         $('#dwellingUnits_' + lastRow).html(reqObject.countSuccessDwellings);
         $('#percentPopulation_' + lastRow).html(reqObject.percentPopulation + " %");
         if (lastRow < modifiedRequirements.length) {
-            doAddRow('#addResultRow');
+            doaddAndTableRow('#addResultRow');
         }
     })
 }
@@ -183,7 +185,7 @@ function deleteORResult(selectedRowIndex, modifiedRequirements) {
     // location.reload();
 }
 
-function addRow(table, rowCount, addType) {
+function addAndTableRow(table, rowCount, addType) {
     $(addType).on('click', function(e) {
         // e.preventDefault();
         var emptyArr = [];
@@ -201,6 +203,6 @@ function addRow(table, rowCount, addType) {
     });
 }
 
-function doAddRow(andTableSelector) {
+function doaddAndTableRow(andTableSelector) {
     $(andTableSelector).click();
 }
