@@ -20,8 +20,6 @@ function visualizeBulletChart(allKPIs) {
         GetHexbinVisualisation(KPIJson, "OrRd", "equal_interval");
         changeHexBinAlgo(KPIJson);
     })
-
-    // console.log(requirements);
 }
 
 function visualizeDetailBulletChart(allKPIs, parentID) {
