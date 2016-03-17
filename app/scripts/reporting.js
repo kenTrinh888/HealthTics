@@ -70,8 +70,8 @@ var layerControl = L.control.layers();
 L.control.layers(baseMaps).addTo(map);
 var legend = L.control({ position: 'bottomright' });
 var hasLegend = false;
-function GetHexbinVisualisation(KPIname, colors, method) {
-    $('#map').attr('name', KPIname)
+function GetHexbinVisualisation(KPIJson, colors, method) {
+    // $('#map').attr('name', KPIname)
     if(hasLegend === true){
         legend.removeFrom(map);
     }
@@ -90,7 +90,7 @@ function GetHexbinVisualisation(KPIname, colors, method) {
         method = "equal_interval";
     }
 
-        var data = JSON.parse(getHexbinDataSync(KPIname));
+        var data = getHexbinDataSync(KPIJson);
         // console.log(data);
         var grid = data.counted;
         var values = [];
@@ -160,11 +160,22 @@ function GetHexbinVisualisation(KPIname, colors, method) {
         legend.addTo(map);
         hasLegend = true;
 }
-function getHexbinDataSync (KPIname) {
-    getDataHexbin = "/getHexbinVisualGeojson/" + KPIname;
-    $.ajaxSetup({ async: false });
-    var data = $.get(getDataHexbin).responseText;
-    $.ajaxSetup({ async: true });
+function getHexbinDataSync (KPIJson) {
+    getDataHexbin = "http://localhost:3000/getHexbinVisualGeojson/";
+    var data = {};
+    $.ajax({
+        type: "POST",
+        contentType: "application/JSON",
+        data: JSON.stringify(KPIJson),
+        url: getDataHexbin,
+        success: function(req){
+            data= req;
+        },
+        async: false
+    });
+    // $.ajaxSetup({ async: false });
+    // var data = $.get(getDataHexbin).responseText;
+    // $.ajaxSetup({ async: true });
     return data;
 
 }
@@ -332,15 +343,20 @@ function styleZoomin(feature) {
         fillOpacity: 0.7
     };
 }
+
+function changeHexBinAlgo(KPIJson){
+    $('.hexbin').change(function() {
+        var colors = $('#items').val();
+        var methods = $('#methods').val();
+        var KPIname = $('#map').attr('name');
+        // console.log(colors + " " + methods);
+        GetHexbinVisualisation(KPIJson, colors, methods);
+    })
+}
 // var li = $('li')
 $(document).ready(function() {
-        $('.hexbin').change(function() {
-            var colors = $('#items').val();
-            var methods = $('#methods').val();
-             var KPIname = $('#map').attr('name');
-            // console.log(colors + " " + methods);
-            GetHexbinVisualisation(KPIname, colors, methods);
-        })
-    })
+    
+})
+
     // li.appendTo(".colors")
     // =======================================================End Second Map========================================

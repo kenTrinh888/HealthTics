@@ -50,6 +50,11 @@ html {
 	margin-left:-8em;
 }
 
+.detailkpibulletchart .nvd3-svg{
+	margin-bottom:-7em;
+	margin-left:-8em;
+}
+
 header {
 	position: absolute;
 	top: 0;

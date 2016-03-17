@@ -241,15 +241,15 @@ app.post('/sendFinalRequirements', function(req, res) {
     res.redirect('/');
 })
 
-app.get('/getAllKPIs', function(req,res){
+app.get('/getAllKPIs', function(req, res) {
     var existingKPIFiles = [];
     var folderDestination = globalurl + "/FinalResult/";
-    folderDestination = folderDestination.replace('\\', '/'); 
+    folderDestination = folderDestination.replace('\\', '/');
     existingKPIFiles = fs.readdirSync(folderDestination);
-    var KPIJsons =[];
-    existingKPIFiles.forEach(function(kpiFile,index){
-        var KPIUrl = folderDestination+kpiFile;
-        var KPIData = fs.readFileSync(KPIUrl);        
+    var KPIJsons = [];
+    existingKPIFiles.forEach(function(kpiFile, index) {
+        var KPIUrl = folderDestination + kpiFile;
+        var KPIData = fs.readFileSync(KPIUrl);
         var KPIJson = JSON.parse(KPIData);
         KPIJsons.push(KPIJson);
     })
@@ -870,8 +870,8 @@ app.get("/getNumberofHDB2/:fileIndexes", function(req, res) {
     }
     var path = __dirname + '/app' + '/ORResults';
     var name = fs.readdirSync(path);
-    if(name[0]==='.DS_Store'){
-        name.splice(0,1);
+    if (name[0] === '.DS_Store') {
+        name.splice(0, 1);
     }
     var directories = [];
     var results = [];
@@ -879,7 +879,7 @@ app.get("/getNumberofHDB2/:fileIndexes", function(req, res) {
         aName = name[i];
 
         if (aName != ".DS_Store") {
-           
+
             if (fileIndexes.indexOf(String(i + 1)) != -1) {
                 url = __dirname + "/app/ORResults/" + aName;
                 url = url.replace("\\", "/");
@@ -986,41 +986,37 @@ app.get("/getNumberofHDB", function(req, res) {
 
 // })
 
-app.get("/getHexbinVisualGeojson/:name", function(req, res) {
-    var kpiName = req.params.name + ".geojson";
-    var url = globalurl + "/FinalResult/" + kpiName;
-    url = url.replace("\\","/");
-    fs.readFile(url, "utf8", function(err, data) {
-        var dataJSON = JSON.parse(data);
-        // console.log(dataJSON)
-        var successfulHDBs = dataJSON.reqFinal.success_HDB_JSONs;
-        var HDBpoints = {
-            "type": "FeatureCollection",
-            "features": []
-        };
-        for (var m = 0; m < successfulHDBs.length; m++) {
-            HDBpoints.features.push(successfulHDBs[m]);
-        }
-        // (west, south, east, north)
-        //     var boundsSW = L.latLng(1.201023, 103.597500),
-        // boundsNE = L.latLng(1.490837, 104.067218),
-        // bounds = L.latLngBounds(boundsSW, boundsNE);
-        // var bbox = [1.201023, 103.597500, 104.067218, 1.490837];
-        var bbox = [103.597500, 1.201023, 104.067218, 1.490837]
-        var cellWidth = 2;
-        var units = 'kilometers';
+app.post("/getHexbinVisualGeojson/", function(req, res) {
+    // var kpiName = req.params.name + ".geojson";
+    // var url = globalurl + "/FinalResult/" + kpiName;
+    // url = url.replace("\\", "/");
 
-        var hexgrid = turf.hexGrid(bbox, cellWidth, units);
-        var counted = turf.count(hexgrid, HDBpoints, 'pt_count');
+    var dataJSON = req.body;
 
-        var resultFeatures = HDBpoints.features.concat(counted.features);
-        var result = {
-            "points": HDBpoints,
-            "counted": counted
-        };
-        res.send(result);
+    // console.log(dataJSON);
+    var successfulHDBs = dataJSON.reqFinal.success_HDB_JSONs;
+    var HDBpoints = {
+        "type": "FeatureCollection",
+        "features": []
+    };
+    for (var m = 0; m < successfulHDBs.length; m++) {
+        HDBpoints.features.push(successfulHDBs[m]);
+    }
 
-    });
+    var bbox = [103.597500, 1.201023, 104.067218, 1.490837]
+    var cellWidth = 2;
+    var units = 'kilometers';
+
+    var hexgrid = turf.hexGrid(bbox, cellWidth, units);
+    var counted = turf.count(hexgrid, HDBpoints, 'pt_count');
+
+    var resultFeatures = HDBpoints.features.concat(counted.features);
+    var result = {
+        "points": HDBpoints,
+        "counted": counted
+    };
+    res.send(result);
+
 })
 
 app.post("/getHexbinContainHDBs", function(req, res) {
@@ -1034,7 +1030,7 @@ app.post("/getHexbinContainHDBs", function(req, res) {
     // var HexbinReceivedJSON = JSON.parse(HexbinReceived);
 
 
-    var url = globalurl + "/FinalResult/FinalResult.geojson";
+    var url = globalurl + "/FinalResult/p1.geojson";
     fs.readFile(url, "utf8", function(err, data) {
         var dataJSON = JSON.parse(data);
         var successfulHDBs = dataJSON.reqFinal.success_HDB_JSONs;
@@ -1075,7 +1071,7 @@ app.post("/getHexbinContainHDBs", function(req, res) {
     });
 })
 
-app.post('/visualizeBulletChart',function(req,res){
+app.post('/visualizeBulletChart', function(req, res) {
     var requirements = req.body;
     //ken modify from here
 })
