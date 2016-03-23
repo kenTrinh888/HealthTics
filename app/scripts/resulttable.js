@@ -47,7 +47,8 @@ function sendFinalRequirements() {
 function loadResultTableDataWithIndexes() {
     var fileIndexes = getCheckedFileIndexes();
     var kpiName = $('.kpiName').prop('value');
-    var targetKPI = $('.targetKPI').prop('value');
+    // var targetKPI = $('.targetKPI').prop('value');
+    var targetKPI = 90;
     if (fileIndexes.length == 0) {
         alert('error: please tick at least one checkbox');
         return;

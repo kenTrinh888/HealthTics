@@ -67,6 +67,7 @@ function setLayerDropdownlist(dropdownID, layers) {
     });
     setSublayerColumnHiddenInput(layerDropdownObject,dropdownID);
     layerDropdownObjects.push(layerDropdownObject);
+    // layerDropdownObject.setData();
     // console.log(layerDropdownObjects);
 }
 

@@ -106,6 +106,7 @@ function GetHexbinVisualisation(KPIJson, colors, method) {
         var pt_count = cell.properties.pt_count;
         if (method === "quantile") {
             if (pt_count != 0) {
+
                 values.push(pt_count);
             }
         } else {
@@ -163,6 +164,7 @@ function GetHexbinVisualisation(KPIJson, colors, method) {
 function getHexbinDataSync(KPIJson) {
     getDataHexbin = "getHexbinVisualGeojson/";
     var data = {};
+    // console.log(KPIJson);
     $.ajax({
         type: "POST",
         contentType: "application/JSON",
@@ -176,6 +178,7 @@ function getHexbinDataSync(KPIJson) {
     // $.ajaxSetup({ async: false });
     // var data = $.get(getDataHexbin).responseText;
     // $.ajaxSetup({ async: true });
+    console.log(data);
     return data;
 }
 
