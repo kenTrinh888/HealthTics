@@ -42,9 +42,7 @@ $("[name='my-checkbox']").bootstrapSwitch();
 var postcodeContain;
 $('.postalCodeCheck').on('switchChange.bootstrapSwitch', function (event, state) {
 postcodeContain = state;
-console.log(postcodeContain);
-
-    
+console.log(postcodeContain);    
 });
   // var postcodeContain;
 // var postcodeContain = $("#polygonCheck").is(":checked") ? $("#polygonCheck").val() : null;
@@ -54,10 +52,12 @@ console.log(postcodeContain);
 // console.log(postcodeContain);
 
 $('#convert').submit(function(e) {
-postcodeContain = $("[name='my-checkbox']").val();
+// postcodeContain = $("[name='my-checkbox']").val();
+var postcodeContain = $('.postalCodeCheck').is(":checked");
 console.log(postcodeContain);
     // var postcodeContain = true;
     // if(postcodeContain === "on"){
+    // var postcodeContain = true;
 
     // }
     var file = $("#upload")[0].files[0];
@@ -69,7 +69,7 @@ console.log(postcodeContain);
     $(this).ajaxSubmit({
         // console.log("submit");
         success: function(data, textStatus, jqXHR) {
-            if (postcodeContain===true) {
+            if (postcodeContain === true) {
                 var arrayofPoints = data.features;
 
                 for (index in arrayofPoints) {

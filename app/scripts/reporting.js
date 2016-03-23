@@ -62,8 +62,14 @@ var map = L.map('map', {
     center: [1.35, 103.8],
     zoom: 11,
     layers: [Stamen_Toner, OpenStreetMap_BlackAndWhite, OpenStreetMap_Mapnik, CartoDB_DarkMatter, Hydda_Full],
-    zoomControl: false
+    // zoomControl: false
 });
+// map.setView([1.35, 103.8],12)
+// var boundsSW = L.latLng(1.201023, 103.597500),
+//     boundsNE = L.latLng(1.490837, 104.067218),
+//     bounds = L.latLngBounds(boundsSW, boundsNE);
+// map.setMaxBounds(bounds);
+// map.fitBounds(bounds);
 var baseMaps = {
     "OpenStreetMap_Mapnik": OpenStreetMap_Mapnik,
     "Stamen_Toner": Stamen_Toner,
