@@ -37,8 +37,9 @@ function populateBulletChart(allKPIs) {
         if (index != allKPIs.length - 1) {
             addBulletChartRow(index);
         }
+        var targetKpiNumber = +(KPI.targetKPI/100 * KPI.reqFinal.countAllDwellings).toFixed(0);
         $('#totalPopulation_' + (index + 1)).html(KPI.reqFinal.countAllDwellings);
-        $('#targetKpiNumber_' + (index + 1)).html(KPI.targetKPI/100 * KPI.reqFinal.countAllDwellings);
+        $('#targetKpiNumber_' + (index + 1)).html(targetKpiNumber);
         $('#kpiName_' + (index + 1)).html(KPI.kpiName);
         $('#kpiNumber_' + (index + 1)).html(KPI.reqFinal.countSuccessDwellings);
         $('#kpiPercent_' + (index + 1)).html(KPI.reqFinal.percentPopulation);
