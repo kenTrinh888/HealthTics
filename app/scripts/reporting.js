@@ -280,7 +280,7 @@ var baseMapsZoomin = {
     "OpenStreetMap_BlackAndWhite": OpenStreetMap_BlackAndWhiteZoomin,
     "Hydda_Full": Hydda_FullZoomin
 };
-var ZoominMap = L.map('ZoominMap', {
+var zone, ZoominMap = L.map('ZoominMap', {
     center: [1.35, 103.8],
     zoom: 11,
     layers: [OpenStreetMap_BlackAndWhiteZoomin, OpenStreetMap_MapnikZoomin, Hydda_FullZoomin],
@@ -291,69 +291,34 @@ L.control.layers(baseMapsZoomin).addTo(ZoominMap);
 function FocusHexbin(hexbinSend) {
     // console.log(KPIJson);
     var dataSend = JSON.stringify(hexbinSend);
-    $.ajax({
+    var data = $.ajax({
         url: '/getHexbinContainHDBs',
         type: 'POST',
         data: dataSend,
         contentType: 'application/json',
-        success: function(data) {
-            // console.log(hexbinSend);
-            var iconName = "dollar";
-            var MarkerColor = "red";
-            var Marker = L.AwesomeMarkers.icon({
-                icon: iconName,
-                markerColor: MarkerColor,
-                prefix: 'fa'
-            });
-            var HDBPoints = data.HDBPoints;
-            var hexbinPoint = data.hexbin;
-            // console.log(HDBPoints);
-            L.geoJson(HDBPoints, {
-                pointToLayer: function(feature, latlng) {
-                    var propertyObject = feature.properties;
-                    var property = "";
-                    var pointcount = feature.properties.pt_count;
-                    var propertyObject = feature.properties;
-                    // var property = "min";
-                    for (var key in propertyObject) {
-                        // console.log(propertyObject)
-                        if (propertyObject.hasOwnProperty(key)) {
-                            // console.log(key);
-                            if (key === "pt_count") {
-                                property += "<p><b>" + "Number of Facility" + "</b>" + " : " + propertyObject[key] + "</p>";
-
-                            } else {
-                                property += "<p><b>" + key + "</b>" + " : " + propertyObject[key] + "</p>";
-
-                            }
-                        }
-                    }
-
-                    return L.circleMarker(latlng, {
-                        radius: pointcount,
-                        fillColor: 'red',
-                        opacity: pointcount,
-                        stroke: false
-                    }).bindPopup(property);
-                    // return L.marker(latlng, {
-                    //     icon: Marker
-                    // }).bindPopup(property);
-                }
-            }).addTo(ZoominMap);
-
-
-            var Hexbinstyle = {
-                weight: 2,
-                color: '#000000',
-                fillOpacity: 0
-            }
-
-            var hexbinMap = L.Proj.geoJson(hexbinPoint, {
-                style: Hexbinstyle
-            }).addTo(ZoominMap);
-            ZoominMap.fitBounds(hexbinMap.getBounds());
-        }
+        async: false
     });
+    dataJSON = data.responseJSON;
+    // console.log(dataJSON);
+
+    var HDBPoints = dataJSON.HDBPoints;
+    var hexbinPoint = dataJSON.hexbin;
+    var Hexbinstyle = {
+        weight: 2,
+        color: '#000000',
+        fillOpacity: 0
+    }
+
+    var hexbinMap = L.Proj.geoJson(hexbinPoint, {
+        style: Hexbinstyle
+    }).addTo(ZoominMap);
+
+    displayHDBPropotion(HDBPoints);
+
+
+
+    ZoominMap.fitBounds(hexbinMap.getBounds());
+
 }
 
 function styleZoomin(feature) {
@@ -378,3 +343,70 @@ function changeHexBinAlgo(KPIJson) {
 }
 
 // =======================================================End Second Map========================================
+
+function displayHDBPropotion(dataLayer) {
+    createPropSymbols(dataLayer);
+
+
+}
+
+function createPropSymbols(dataLayer) {
+
+    zone = L.Proj.geoJson(dataLayer, {
+        pointToLayer: function(feature, latlng) {
+            return L.circleMarker(latlng, {
+                fillColor: "#708598",
+                color: '#537898',
+                weight: 1,
+                fillOpacity: 0.6
+
+            });
+        }
+    }).addTo(ZoominMap);
+    updatePropSymbols();
+
+} // end createPropSymbols()
+function updatePropSymbols() {
+
+    zone.eachLayer(function(layer) {
+
+        // console.log(layer);
+        var props = layer.feature.properties,
+            radius = calcPropRadius(props.pt_count),
+            popupContent =            "<b>POSTAL CODE: </b>" + props.POSTCODE + "</br><b>Accessible Facilities: </b>" + String(props.pt_count) + "<br>" ;
+        // console.log(radius)
+        layer.setRadius(radius);
+        // layer.on('click', function(e) {
+        //     alert(e.latlng); // e is an event object (MouseEvent in this case)
+        // });
+        // layer.bindPopup(popupContent).openPopup();
+        layer.bindPopup(popupContent, {
+            offset: new L.Point(0, -radius)
+        });
+        layer.on({
+            mouseover: function(e) {
+                this.openPopup();
+                this.setStyle({
+                    color: 'yellow'
+                });
+            },
+            mouseout: function(e) {
+                this.closePopup();
+                this.setStyle({
+                    color: '#537898'
+                });
+
+            }
+        });
+
+    });
+} // end updatePropSymbols
+function calcPropRadius(attributeValue) {
+
+    var scaleFactor = 16, // value dependent upon particular data set
+        area = attributeValue * scaleFactor;
+    return Math.sqrt(area / Math.PI) * 2;
+
+} // end calcPropRadius
+
+// /-------End Display Propotional Map------------/

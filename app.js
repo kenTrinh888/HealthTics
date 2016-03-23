@@ -198,7 +198,7 @@ app.use(bodyParser.urlencoded({
 app.post('/deleteORResult', function(req, res) {
     fileToDelete = req.body;
     fs.unlinkSync(fileToDelete.directory);
-    console.log("deleted:" + fileToDelete.directory);
+    // console.log("deleted:" + fileToDelete.directory);
     res.redirect('/');
 });
 
@@ -993,7 +993,6 @@ app.post("/getHexbinContainHDBs", function(req, res) {
     var nameHDB = HexbinReceivedJSON.kpiName;
     // console.log(nameHDB)
     var url = globalurl + "/FinalResult/" + nameHDB + ".geojson";
-    console.log(url)
     fs.readFile(url, "utf8", function(err, data) {
         // console.log(data)
         var dataJSON = JSON.parse(data);
