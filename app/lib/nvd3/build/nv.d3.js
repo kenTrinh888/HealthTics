@@ -2702,6 +2702,7 @@
                         return d < 0 ? x0(d) : x0(0) },
                     xp1 = function(d) {
                         return d < 0 ? x1(d) : x1(0) };
+                
 
                 g.select('rect.nv-rangeMax')
                     .attr('height', availableHeight)
@@ -2715,6 +2716,11 @@
                     .attr('x', xp1(rangeAvg))
                     .datum(rangeAvg)
 
+                //change color here
+                var currentKpi = d.measures[0];
+                var targetKpi = d.markers[0];
+                var redColor = nv.utils.getColor(['#d9534f']);
+                color = (currentKpi >= targetKpi) ? color : redColor;
                 g.select('rect.nv-rangeMin')
                     .attr('height', availableHeight)
                     .attr('width', w1(rangeMax))
@@ -2758,7 +2764,7 @@
                 var markerData = markerz.map(function(marker, index) {
                     return { value: marker, label: markerLabelz[index] }
                 });
-
+                //change dragging behaviour
                 var drag = d3.behavior.drag()
                     .origin(Object)
                     .on("dragstart", dragstarted)
@@ -2826,8 +2832,15 @@
                    var indexToModify = $(this).parents('span').attr('id').split("_")[1];
                    var totalPopulation = $('#totalPopulation_'+indexToModify).html();
                    var targetKpiPercentage = d.value / 100;
-                   var targetPopulation = +(targetKpiPercentage * totalPopulation).toFixed(2); 
-                   $('#targetKpiNumber_'+indexToModify).html(targetPopulation);
+                   var targetKpiNumber = +(targetKpiPercentage * totalPopulation).toFixed(0);
+                   var currentKpiPercentage = parseFloat($('#kpiPercent_'+indexToModify).html());
+
+                   //change color during drag
+                   var fillRedColor = 'fill: rgb(217,83,79);';
+                   var fillBlueColor = 'fill: rgb(31,119,180);';
+                   var fillColor = (currentKpiPercentage >= d.value) ? fillBlueColor : fillRedColor;
+                   $(this).siblings('.nv-measure').attr('style',fillColor);
+                   $('#targetKpiNumber_'+indexToModify).html(targetKpiNumber);
                 }
 
                 function dragended(d) {
