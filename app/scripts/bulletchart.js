@@ -1,12 +1,10 @@
-
-
 $(document).ready(function() {
     var allKPIs = JSON.parse(getAllKPIs());
 
     populateBulletChart(allKPIs);
     visualizeBulletChart(allKPIs);
     // console.log(KPIJson);
-    
+
     populateDetailBulletChart(allKPIs);
 })
 
@@ -34,17 +32,40 @@ function visualizeDetailBulletChart(allKPIs, parentID) {
 }
 
 function populateBulletChart(allKPIs) {
+    // console.log(allKPIs);
     allKPIs.forEach(function(KPI, index) {
         if (index != allKPIs.length - 1) {
             addBulletChartRow(index);
         }
+        $('#totalPopulation_' + (index + 1)).html(KPI.reqFinal.countAllDwellings);
+        $('#targetKpiNumber_' + (index + 1)).html(KPI.targetKPI/100 * KPI.reqFinal.countAllDwellings);
         $('#kpiName_' + (index + 1)).html(KPI.kpiName);
         $('#kpiNumber_' + (index + 1)).html(KPI.reqFinal.countSuccessDwellings);
         $('#kpiPercent_' + (index + 1)).html(KPI.reqFinal.percentPopulation);
 
         var bulletChartID = '#kpibulletchart_' + (index + 1) + ' svg';
         addBulletChart(bulletChartID, KPI);
+
     })
+}
+
+function setTargetNumber(KPI) {
+    var isDragging = false;
+    $(".nv-markerTriangle")
+        .mousedown(function() {
+            isDragging = false;
+        })
+        .mousemove(function() {
+            isDragging = true;
+        })
+        .mouseup(function() {
+            var wasDragging = isDragging;
+            isDragging = false;
+            if (!wasDragging) {
+                console.log('draggeeeeee');
+                $("#throbble").toggle();
+            }
+        });
 }
 
 function populateDetailBulletChart(allKPIs) {
@@ -73,6 +94,7 @@ function populateDetailBulletChart(allKPIs) {
 
         })
         visualizeDetailBulletChart(allKPIs, parentID);
+
         repopulateBulletChart();
     });
 }
@@ -90,10 +112,14 @@ function repopulateBulletChart() {
 
 function addBulletChartRow(index) {
     var KPIRowHTML = "<tr id='KPIRow_" + (index + 2) + "' class='KPIRow'>\
-                <td class='col-md-2'><span class='kpiName' id='kpiName_" + (index + 2) + "'></span></td>\
-                <td class='col-md-7 bulletRow'><span class='kpibulletchart' id='kpibulletchart_" + (index + 2) + "'><svg></svg></span></td>\
-                <td class='col-md-2'><span class='kpiNumber' id='kpiNumber_" + (index + 2) + "'></span></td>\
-                <td class='col-md-2'><span class='kpiPercent' id='kpiPercent_" + (index + 2) + "'></span></td>\
+                <td class='col-md-1'><span class='kpiName' id='kpiName_" + (index + 2) + "'></span></td>\
+                <td class='col-md-6 bulletRow'><span class='kpibulletchart' id='kpibulletchart_" + (index + 2) + "'><svg></svg></span></td>\
+                <td class='col-md-1'><span class='kpiNumber' id='kpiNumber_" + (index + 2) + "'></span></td>\
+                <td class='col-md-1'><span class='kpiPercent' id='kpiPercent_" + (index + 2) + "'></span></td>\
+                <td class='col-md-1'>\
+                  <span class='targetKpiNumber' id='targetKpiNumber_" + (index + 2) + "'></span>\
+                  <span class='totalPopulation' style='display:none' id='totalPopulation_" + (index + 2) + "'></span>\
+                </td>\
                 <td class='col-md-1'><button class='btn btn-primary visualize' id='visualize_" + (index + 2) + "'>Visualize</button></td>\
                 <td class='col-md-1'><button class='btn btn-primary showDetail' id='showDetail_" + (index + 2) + "'>Show detail</button></td>\
                 </tr>";
@@ -102,13 +128,17 @@ function addBulletChartRow(index) {
 
 function addDetailBulletChartRow(index) {
     var KPIRowHTML = "<tr id='detailKPIRow_" + (index + 1) + "' class='detailKPIRow'>\
-                <td class='col-md-2'><span class='detailkpiName' id='detailkpiName_" + (index + 1) + "'></span></td>\
-                <td class='col-md-7 bulletRow'><span class='detailkpibulletchart' id='detailkpibulletchart_" + (index + 1) + "'><svg></svg></span></td>\
-                <td class='col-md-2'><span class='detailkpiNumber' id='detailkpiNumber_" + (index + 1) + "'></span></td>\
-                <td class='col-md-2'><span class='detailkpiPercent' id='detailkpiPercent_" + (index + 1) + "'></span></td>\
-                <td class='col-md-1'><button class='btn btn-primary detailkpiVisualize' id='visualize_" + (index + 1) + "'>Visualize</button></td>\
-                <td class='col-md-1'><button class='btn btn-primary backToKPIList' id='backToKPIList_" + (index + 1) + "'>Back to KPI list</button></td>\
-                </tr>";
+              <td class='col-md-1'><span class='detailkpiName' id='detailkpiName_" + (index + 1) + "'></span></td>\
+              <td class='col-md-6 bulletRow'><span class='detailkpibulletchart' id='detailkpibulletchart_" + (index + 1) + "'><svg></svg></span></td>\
+              <td class='col-md-1'><span class='detailkpiNumber' id='detailkpiNumber_" + (index + 1) + "'></span></td>\
+              <td class='col-md-1'><span class='detailkpiPercent' id='detailkpiPercent_" + (index + 1) + "'></span></td>\
+              <td class='col-md-1'>\
+                <span class='detailtargetKpiNumber' id='detailtargetKpiNumber_" + (index + 1) + "'></span>\
+                <span class='detailtotalPopulation' style='display:none' id='detailtotalPopulation_" + (index + 1) + "'></span>\
+              </td>\
+              <td class='col-md-1'><button class='btn btn-primary detailkpiVisualize' id='visualize_" + (index + 1) + "'>Visualize</button></td>\
+              <td class='col-md-1'><button class='btn btn-primary backToKPIList' id='backToKPIList_" + (index + 1) + "'>Back to KPI list</button></td>\
+              </tr>";
     $('#kpiListTbl tbody').append(KPIRowHTML);
 
 }

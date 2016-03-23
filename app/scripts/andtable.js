@@ -153,10 +153,10 @@ function deleteRow(table, tableSelector, deleteType, modifiedRequirements) {
     });
 
     $(deleteType).click(function() {
-        if (table.rows().count() == 1) {
-            alert("error: unable to delete row");
-            return;
-        }
+        // if (table.rows().count() == 1) {
+        //     alert("error: unable to delete row");
+        //     return;
+        // }
         var selectedRow = table.row('.selected');
         var selectedRowIndex = selectedRow.index();
         if (selectedRowIndex === undefined || selectedRowIndex === null) {
@@ -178,7 +178,7 @@ function deleteORResult(selectedRowIndex, modifiedRequirements) {
         contentType: 'application/json',
         url: 'http://localhost:3000/deleteORResult',
         success: function(data) {
-            console.log(data);
+            // console.log(data);
         }
     });
     // location.reload();

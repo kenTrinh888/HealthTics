@@ -89,7 +89,7 @@ function GetHexbinVisualisation(KPIJson, colors, method) {
     if (method === null) {
         method = "equal_interval";
     }
-
+        console.log(KPIJson);
         var data = getHexbinDataSync(KPIJson);
         // console.log(data);
         var grid = data.counted;
@@ -163,6 +163,7 @@ function GetHexbinVisualisation(KPIJson, colors, method) {
 function getHexbinDataSync (KPIJson) {
     getDataHexbin = "http://localhost:3000/getHexbinVisualGeojson/";
     var data = {};
+    // console.log(KPIJson);
     $.ajax({
         type: "POST",
         contentType: "application/JSON",
@@ -176,6 +177,7 @@ function getHexbinDataSync (KPIJson) {
     // $.ajaxSetup({ async: false });
     // var data = $.get(getDataHexbin).responseText;
     // $.ajaxSetup({ async: true });
+    console.log(data);
     return data;
 
 }

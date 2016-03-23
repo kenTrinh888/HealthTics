@@ -990,7 +990,7 @@ app.post("/getHexbinVisualGeojson/", function(req, res) {
     // var kpiName = req.params.name + ".geojson";
     // var url = globalurl + "/FinalResult/" + kpiName;
     // url = url.replace("\\", "/");
-
+    // console.log(req.body);
     var dataJSON = req.body;
 
     // console.log(dataJSON);
@@ -1002,7 +1002,7 @@ app.post("/getHexbinVisualGeojson/", function(req, res) {
     for (var m = 0; m < successfulHDBs.length; m++) {
         HDBpoints.features.push(successfulHDBs[m]);
     }
-
+    // console.log(HDBpoints);
     var bbox = [103.597500, 1.201023, 104.067218, 1.490837]
     var cellWidth = 2;
     var units = 'kilometers';

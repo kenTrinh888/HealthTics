@@ -69,7 +69,7 @@ console.log(postcodeContain);
     $(this).ajaxSubmit({
         // console.log("submit");
         success: function(data, textStatus, jqXHR) {
-            if (postcodeContain) {
+            if (postcodeContain===true) {
                 var arrayofPoints = data.features;
 
                 for (index in arrayofPoints) {

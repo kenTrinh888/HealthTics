@@ -2771,22 +2771,11 @@
                     d3.select(this).classed("dragging", true);
                 }
 
-                function dragged(d) {
-
-                    console.log('dragged');
-                    
+                function dragged(d) {                    
                     var maxWidth = parseFloat($(this).siblings('.nv-rangeMax').attr('width'));
                     var positionHere = $(this).siblings('.nv-rangeMax').offset();
-                    console.log(positionHere);
-                    console.log('maxwidth: ' + typeof maxWidth);
-                    console.log('maxwidth: ' + maxWidth);
-                    console.log('rangemax: ' +rangeMax);
-                    console.log('sourceeventX: '+ d3.event.sourceEvent.x);
                     // console.log(typeof rangeMax);
                     var newPosition = d3.event.sourceEvent.x - positionHere.left;
-                    console.log('sourceeventX-rangeMax: '+ (d3.event.sourceEvent.x - positionHere.left));
-                    // var positionChanged = x1(d.value) + (d3.event.sourceEvent.x-maxWidth);
-                    // console.log(positionChanged);
                     var currentPosition = x1(d.value);
                     var currentPercentage = d.value;
                     var newPercentage = 0.01;
@@ -2829,15 +2818,16 @@
                         newPercentage = 0;
                         d.value = newPercentage;
                     }
-                    console.log('curPos: ' + currentPosition);
-                    console.log('newPos: ' + newPosition);
-                    console.log('curPctg: ' +currentPercentage);
-                    console.log('newPctg: ' +newPercentage);
-                    // dispatch.elementMouseover.hide();
                     dispatch.elementMouseover({
                         value: d.value,
                         label: d.label || 'Target'
                     })
+
+                   var indexToModify = $(this).parents('span').attr('id').split("_")[1];
+                   var totalPopulation = $('#totalPopulation_'+indexToModify).html();
+                   var targetKpiPercentage = d.value / 100;
+                   var targetPopulation = +(targetKpiPercentage * totalPopulation).toFixed(2); 
+                   $('#targetKpiNumber_'+indexToModify).html(targetPopulation);
                 }
 
                 function dragended(d) {
@@ -2877,7 +2867,6 @@
                 g.selectAll("path.nv-markerTriangle")
                     .data(markerData)
                     .attr('transform', function(d) {
-                        console.log(d.value);
                         return 'translate(' + x1(d.value) + ',' + (availableHeight / 2) + ')' });
 
                 g.selectAll("path.nv-markerTriangle")

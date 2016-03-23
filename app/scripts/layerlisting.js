@@ -65,11 +65,15 @@ function setSubLayersHTML(subLayers, parentNode) {
 function setFilterTableDropdown() {
     //Modify Combobox dropdownlist
     var allLayers = getAllLayers();
-    // console.log(allLayers);
-    layerDropdownObjects.forEach(function(dropdownObject) {
-        dropdownObject.setData([]);
-        dropdownObject.setData(allLayers);
-    })
+    layerDropdownObjects.forEach(function(element,index) {
+        // console.log(index);
+        // console.log(element);
+        if(index!=1){
+            element.setData([]);
+            element.setData(allLayers);
+        }
+        
+    });
 }
 
 function callApiSetSubLayers(parentNode, selectedColumn) {
@@ -83,7 +87,8 @@ function callApiSetSubLayers(parentNode, selectedColumn) {
             console.log(parentNode);
             setSubLayersHTML(subLayers, parentNode);
             setFilterTableDropdown();
-        }
+        },
+        async: false
     })
 }
 
