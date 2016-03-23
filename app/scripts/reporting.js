@@ -1,12 +1,10 @@
 L.Icon.Default.imagePath = '/images';
 L.AwesomeMarkers.Icon.prototype.options.prefix = 'ion';
 $body = $("body");
-
 $(document).on({
     ajaxStart: function() { $body.addClass("loading"); },
     ajaxStop: function() { $body.removeClass("loading"); }
 });
-
 var colors = ["OrRd", "PuBu", "BuPu", "Oranges",
     "BuGn", "YlOrBr", "YlGn", "Reds",
     "RdPu", "Greens", "YlGnBu", "Purples",
@@ -25,10 +23,17 @@ for (var i = 0; i < colors.length; i++) {
 }
 $('#items').append(option);
 for (var i = 0; i < method.length; i++) {
-    methodOption += '<option value="' + method[i] + '">' + method[i] + '</option>';
+    var methodValue = "";
+    if (i == 0) {
+        methodValue = "Equal Interval";
+    } else if (i == 1) {
+        methodValue = "Jenks";
+    } else {
+        methodValue = "Quantile";
+    }
+    methodOption += '<option value="' + method[i] + '">' + methodValue + '</option>';
 }
 $('#methods').append(methodOption);
-
 /* create leaflet map */
 var OpenStreetMap_Mapnik = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
@@ -56,7 +61,8 @@ var CartoDB_DarkMatter = L.tileLayer('http://{s}.basemaps.cartocdn.com/dark_all/
 var map = L.map('map', {
     center: [1.35, 103.8],
     zoom: 11,
-    layers: [Stamen_Toner, OpenStreetMap_BlackAndWhite, OpenStreetMap_Mapnik, CartoDB_DarkMatter, Hydda_Full]
+    layers: [Stamen_Toner, OpenStreetMap_BlackAndWhite, OpenStreetMap_Mapnik, CartoDB_DarkMatter, Hydda_Full],
+    zoomControl: false
 });
 var baseMaps = {
     "OpenStreetMap_Mapnik": OpenStreetMap_Mapnik,
@@ -70,12 +76,13 @@ var layerControl = L.control.layers();
 L.control.layers(baseMaps).addTo(map);
 var legend = L.control({ position: 'bottomright' });
 var hasLegend = false;
+
 function GetHexbinVisualisation(KPIJson, colors, method) {
     // $('#map').attr('name', KPIname)
-    if(hasLegend === true){
+    // console.log(KPIJson);
+    if (hasLegend === true) {
         legend.removeFrom(map);
     }
-
     var controlOnject = layerControl._layers
     for (var key in controlOnject) {
         if (controlOnject.hasOwnProperty(key)) {
@@ -85,91 +92,84 @@ function GetHexbinVisualisation(KPIJson, colors, method) {
     if (colors === null) {
         colors = "OrRd";
     }
-
     if (method === null) {
         method = "equal_interval";
     }
-
-        var data = getHexbinDataSync(KPIJson);
-        // console.log(data);
-        var grid = data.counted;
-        var values = [];
-        var brew = new classyBrew();
-
-        grid.features.forEach(function(cell) {
-            var pt_count = cell.properties.pt_count;
-            if (method === "quantile") {
-                if (pt_count != 0) {
-                    values.push(pt_count);
-                }
-            } else {
+    var data = getHexbinDataSync(KPIJson);
+    // console.log(data);
+    var grid = data.counted;
+    var values = [];
+    var brew = new classyBrew();
+    // console.log(KPIJson);
+    grid.features.forEach(function(cell) {
+        cell["kpiName"] = KPIJson.kpiName
+        var pt_count = cell.properties.pt_count;
+        if (method === "quantile") {
+            if (pt_count != 0) {
                 values.push(pt_count);
             }
+        } else {
+            values.push(pt_count);
+        }
+    });
+    brew.setSeries(values);
+    brew.setNumClasses(6);
+    var breaks = brew.getBreaks();
+    // console.log(breaks);
+    brew.setColorCode(colors); // set color code
+    // i.e. equal_interval, jenks, quantile
+    brew.classify(method);
+    // var colors = brew.getColors();
+    grid.features.forEach(function(cell) {
+        var pt_count = cell.properties.pt_count;
+        var _withCount = cell._withCount = {};
+        _withCount.fillColor = brew.getColorInRange(pt_count)
+        var WO = assignWeightandOpacity(pt_count, breaks);
+        var weight = WO.split(",")[0];
+        var fillOpacity = WO.split(",")[1];
+        _withCount.fillOpacity = fillOpacity;
+        _withCount.weight = weight;
+    });
+    layerdata = L.Proj.geoJson(grid, {
+        onEachFeature: onEachFeature,
+        style: style
+    }).addTo(map);
+    layerControl.addOverlay(layerdata, "NewClass");
 
-        });
-
-        brew.setSeries(values);
-        brew.setNumClasses(6);
-        var breaks = brew.getBreaks();
-        // console.log(breaks);
-        brew.setColorCode(colors); // set color code
-
-        // i.e. equal_interval, jenks, quantile
-        brew.classify(method);
-        // var colors = brew.getColors();
-        grid.features.forEach(function(cell) {
-            var pt_count = cell.properties.pt_count;
-            var _withCount = cell._withCount = {};
-            _withCount.fillColor = brew.getColorInRange(pt_count)
-            var WO = assignWeightandOpacity(pt_count, breaks);
-            var weight = WO.split(",")[0];
-            var fillOpacity = WO.split(",")[1];
-            _withCount.fillOpacity = fillOpacity;
-            _withCount.weight = weight;
-        });
-
-        layerdata = L.Proj.geoJson(grid, {
-            onEachFeature: onEachFeature,
-            style: style
-        }).addTo(map);
-
-        layerControl.addOverlay(layerdata, "NewClass");
-        
-         legend.onAdd = function(map) {
-            var div = L.DomUtil.create('div', 'info legend'),
-                percents = brew.getBreaks(),
-                labels = [],
-                from, to;
-            for (var i = 0; i < percents.length; i++) {
-
-                from = percents[i];
-                to = percents[i + 1];
-                // console.log(from);
-                // var color = brew.getColorInRange(12);
-                // console.log(color);
-                if (to) {
-                    labels.push(
-                        '<i style="background:' + brew.getColorInRange(from) + '"></i> ' +
-                        from.toFixed(0) + '&ndash; ' + to.toFixed(0));
-                }
+    legend.onAdd = function(map) {
+        var div = L.DomUtil.create('div', 'info legend'),
+            percents = brew.getBreaks(),
+            labels = [],
+            from, to;
+        for (var i = 0; i < percents.length; i++) {
+            from = percents[i];
+            to = percents[i + 1];
+            // console.log(from);
+            // var color = brew.getColorInRange(12);
+            // console.log(color);
+            if (to) {
+                labels.push(
+                    '<i style="background:' + brew.getColorInRange(from) + '"></i> ' +
+                    from.toFixed(0) + '&ndash; ' + to.toFixed(0));
             }
-            div.innerHTML = labels.join('<br>');
-            return div;
-        };
-
-        legend.addTo(map);
-        hasLegend = true;
+        }
+        div.innerHTML = labels.join('<br>');
+        return div;
+    };
+    legend.addTo(map);
+    hasLegend = true;
 }
-function getHexbinDataSync (KPIJson) {
-    getDataHexbin = "http://localhost:3000/getHexbinVisualGeojson/";
+
+function getHexbinDataSync(KPIJson) {
+    getDataHexbin = "getHexbinVisualGeojson/";
     var data = {};
     $.ajax({
         type: "POST",
         contentType: "application/JSON",
         data: JSON.stringify(KPIJson),
         url: getDataHexbin,
-        success: function(req){
-            data= req;
+        success: function(req) {
+            data = req;
         },
         async: false
     });
@@ -177,8 +177,8 @@ function getHexbinDataSync (KPIJson) {
     // var data = $.get(getDataHexbin).responseText;
     // $.ajaxSetup({ async: true });
     return data;
-
 }
+
 function assignWeightandOpacity(pointcount, breaks) {
     var weight = 0;
     var fillOpacity = 0;
@@ -228,7 +228,9 @@ function resetHighlight(e) {
 }
 
 function zoomToFeature(e) {
+    // console.log(KPIJson);
     var hexbinSend = e.target.feature;
+    // console.log(hexbinSend);
     FocusHexbin(hexbinSend);
     // map.fitBounds(e.target.getBounds());
 }
@@ -278,60 +280,78 @@ var baseMapsZoomin = {
 var ZoominMap = L.map('ZoominMap', {
     center: [1.35, 103.8],
     zoom: 11,
-    layers: [OpenStreetMap_BlackAndWhiteZoomin, OpenStreetMap_MapnikZoomin, Hydda_FullZoomin]
+    layers: [OpenStreetMap_BlackAndWhiteZoomin, OpenStreetMap_MapnikZoomin, Hydda_FullZoomin],
+    zoomControl: false
 });
 L.control.layers(baseMapsZoomin).addTo(ZoominMap);
 
-
 function FocusHexbin(hexbinSend) {
-
+    // console.log(KPIJson);
     var dataSend = JSON.stringify(hexbinSend);
-    // console.log(dataSend);
     $.ajax({
         url: '/getHexbinContainHDBs',
         type: 'POST',
         data: dataSend,
         contentType: 'application/json',
-
         success: function(data) {
-            // console.log(data);
+            // console.log(hexbinSend);
+            var iconName = "dollar";
+            var MarkerColor = "red";
+            var Marker = L.AwesomeMarkers.icon({
+                icon: iconName,
+                markerColor: MarkerColor,
+                prefix: 'fa'
+            });
             var HDBPoints = data.HDBPoints;
             var hexbinPoint = data.hexbin;
+            // console.log(HDBPoints);
             L.geoJson(HDBPoints, {
                 pointToLayer: function(feature, latlng) {
                     var propertyObject = feature.properties;
                     var property = "";
+                    var pointcount = feature.properties.pt_count;
+                    var propertyObject = feature.properties;
+                    // var property = "min";
                     for (var key in propertyObject) {
+                        // console.log(propertyObject)
                         if (propertyObject.hasOwnProperty(key)) {
-                            property += "<p><b>" + key + "</b>" + " : " + propertyObject[key] + "</p>";
+                            // console.log(key);
+                            if (key === "pt_count") {
+                                property += "<p><b>" + "Number of Facility" + "</b>" + " : " + propertyObject[key] + "</p>";
+
+                            } else {
+                                property += "<p><b>" + key + "</b>" + " : " + propertyObject[key] + "</p>";
+
+                            }
                         }
                     }
+
                     return L.circleMarker(latlng, {
-                        radius: 5,
-                        fillColor: '#000000',
-                        fillOpacity: 1,
+                        radius: pointcount,
+                        fillColor: 'red',
+                        opacity: pointcount,
                         stroke: false
-                    }).bindPopup(property);;
+                    }).bindPopup(property);
+                    // return L.marker(latlng, {
+                    //     icon: Marker
+                    // }).bindPopup(property);
                 }
             }).addTo(ZoominMap);
+
+
             var Hexbinstyle = {
                 weight: 2,
                 color: '#000000',
                 fillOpacity: 0
             }
+
             var hexbinMap = L.Proj.geoJson(hexbinPoint, {
                 style: Hexbinstyle
             }).addTo(ZoominMap);
             ZoominMap.fitBounds(hexbinMap.getBounds());
-
-
         }
     });
-
-
 }
-
-
 
 function styleZoomin(feature) {
     return {
@@ -344,7 +364,7 @@ function styleZoomin(feature) {
     };
 }
 
-function changeHexBinAlgo(KPIJson){
+function changeHexBinAlgo(KPIJson) {
     $('.hexbin').change(function() {
         var colors = $('#items').val();
         var methods = $('#methods').val();
@@ -353,10 +373,5 @@ function changeHexBinAlgo(KPIJson){
         GetHexbinVisualisation(KPIJson, colors, methods);
     })
 }
-// var li = $('li')
-$(document).ready(function() {
-    
-})
 
-    // li.appendTo(".colors")
-    // =======================================================End Second Map========================================
+// =======================================================End Second Map========================================

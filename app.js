@@ -246,6 +246,7 @@ app.get('/getAllKPIs', function(req, res) {
     var folderDestination = globalurl + "/FinalResult/";
     folderDestination = folderDestination.replace('\\', '/');
     existingKPIFiles = fs.readdirSync(folderDestination);
+    // console.log(existingKPIFiles);
     var KPIJsons = [];
     existingKPIFiles.forEach(function(kpiFile, index) {
         var KPIUrl = folderDestination + kpiFile;
@@ -258,31 +259,15 @@ app.get('/getAllKPIs', function(req, res) {
 
 app.post('/submitFilter', function(req, res) {
     objectReceived = setFilterTableData(req.body); //transform data to the preferred geojson format
-    // var url = globalurl + "/HDB/HDB.json";
-    // try {
-    //     fs.readFile(url, "utf8", function(err, data) {
-    //         var HDB = JSON.parse(data);
-    //         for (var m = 0; m < HDB.length; m++) {
-    //             var aHDB = HDB[m];
-    //             for (var i = 0; i < objectReceived.length; i++) {
-    //                 var lengthOfRequirements = objectReceived.length;
-    //                 ORrequirement = objectReceived[i];
-
-    //                 calculateBuffer(aHDB, ORrequirement, lengthOfRequirements, HDB.length);
-    //             }
-    //         }
-    //         if (err) {
-    //             console.log(err);
-    //         }
-    //     })
-    // } catch (err) {
-    //     // console.log(err);
-    // }
-
-    // res.redirect("/");
-    //ken do from here
     var url = globalurl + "/HDB/HDB.json";
     var HDB = JSON.parse(fs.readFileSync(url, "utf8"));
+    CalculateFacilities(HDB, objectReceived);
+    res.redirect("/");
+
+
+});
+
+function CalculateFacilities(HDB, objectReceived) {
     // console.log(JSON.stringify(HDB));
     var HDBArray = [];
 
@@ -306,33 +291,11 @@ app.post('/submitFilter', function(req, res) {
             } else {
                 HDBArray[m].ORREquirement.push(requirementReturns);
             }
-            // HDBArray[m].push(requirementReturns);
-            // HDBObject.ORrequirement.push(requirementReturns);
-            // console.log(requirementReturns);
-            // if(!HDBObject.hasOwnProperty(m)){
-            //     console.log("no index")
-            //     var HDB_JSON = {"HDB_JSON":aHDB}
-            //     HDBObject[m] = HDB_JSON;
-            //     HDBObject.m = {"ORrequirement" : []};
-            //     HDBObject.m.ORrequirement.push(requirementReturns);
-            // }else{
-            //     console.log("has index")
-            //     HDBObject.m.ORrequirement.push(requirementReturns);
-
-            // }
-
-
-
-            // var requirementReturns = calculateBuffer(aHDB, layerRequest, ORrequirement);
-            // HDBObject.ORrequirement.push(requirementReturns);
-            // console.log(requirementReturns);
-            // HDBArray.push(HDBReturn);
         }
         // HDBArray.push(HDBObject);
 
     }
-    // console.log(JSON.stringify(HDBArray));
-    res.redirect("/");
+
 
     var path = globalurl + "/ORResults/";
     var name = fs.readdirSync(path);
@@ -346,16 +309,16 @@ app.post('/submitFilter', function(req, res) {
 
     }
 
-    console.log("before" + rowCount);
+    // console.log("before" + rowCount);
     if (rowCount > 0) {
         var lastName = name[name.length - 1];
         // console.log(lastName);
         var LastNameExceptJSONextension = lastName.split(".")[0];
         var lastChar = LastNameExceptJSONextension.substr(LastNameExceptJSONextension.length - 1);
-        console.log(lastChar);
+        // console.log(lastChar);
         rowCount = parseInt(lastChar) + 1;
     }
-    console.log("after" + rowCount);
+    // console.log("after" + rowCount);
 
     var ANDREquirementNameFile = "ORresult" + rowCount;
     var urlDestination = globalurl + "/ORResults/" + ANDREquirementNameFile + ".json";
@@ -390,7 +353,7 @@ app.post('/submitFilter', function(req, res) {
         }
     });
 
-});
+}
 
 function calculateBuffer(aHDB, layerRequest, ORrequirement) {
     var typeofGEOJSOB = aHDB.type;
@@ -986,7 +949,7 @@ app.get("/getNumberofHDB", function(req, res) {
 
 // })
 
-app.post("/getHexbinVisualGeojson/", function(req, res) {
+app.post("/getHexbinVisualGeojson", function(req, res) {
     // var kpiName = req.params.name + ".geojson";
     // var url = globalurl + "/FinalResult/" + kpiName;
     // url = url.replace("\\", "/");
@@ -1021,19 +984,34 @@ app.post("/getHexbinVisualGeojson/", function(req, res) {
 
 app.post("/getHexbinContainHDBs", function(req, res) {
     var HexbinReceivedJSON = req.body;
-    // console.log(HexbinReceivedJSON);
     var searchWithin = {
         "type": "FeatureCollection",
         "features": []
     };
     searchWithin.features.push(HexbinReceivedJSON);
     // var HexbinReceivedJSON = JSON.parse(HexbinReceived);
-
-
-    var url = globalurl + "/FinalResult/p1.geojson";
+    var nameHDB = HexbinReceivedJSON.kpiName;
+    // console.log(nameHDB)
+    var url = globalurl + "/FinalResult/" + nameHDB + ".geojson";
+    console.log(url)
     fs.readFile(url, "utf8", function(err, data) {
+        // console.log(data)
         var dataJSON = JSON.parse(data);
+        var requirementDirectory = dataJSON.reqData;
+        var requirements = [];
+        for (var i = 0; i < requirementDirectory.length; i++) {
+            var url = requirementDirectory[i].directory;
+            var afile = JSON.parse(fs.readFileSync(url, "utf8"));
+            // console.log(afile);
+            var requirementOR = afile[0].ORREquirement;
+            for (var n = 0; n < requirementOR.length; n++) {
+                requirements.push(requirementOR[n].requirement_description);
+            }
+        }
+        // console.log(requirements);
+        //         // console.log(dataJSON)
         var successfulHDBs = dataJSON.reqFinal.success_HDB_JSONs;
+        // console.log(resultBuffer);
         var HDBpoints = {
             "type": "FeatureCollection",
             "features": []
@@ -1041,29 +1019,21 @@ app.post("/getHexbinContainHDBs", function(req, res) {
         for (var m = 0; m < successfulHDBs.length; m++) {
             HDBpoints.features.push(successfulHDBs[m]);
         }
-        // (west, south, east, north)
-        //     var boundsSW = L.latLng(1.201023, 103.597500),
-        // boundsNE = L.latLng(1.490837, 104.067218),
-        // bounds = L.latLngBounds(boundsSW, boundsNE);
-        // var bbox = [1.201023, 103.597500, 104.067218, 1.490837];
-        //  var bbox = [103.597500,1.201023, 104.067218, 1.490837]
-        // var cellWidth = 2;
-        // var units = 'kilometers';
-
-        // var hexgrid = turf.hexGrid(bbox, cellWidth, units);
-        // var counted = turf.count(hexgrid, HDBpoints, 'pt_count');
-
-        // var resultFeatures = HDBpoints.features.concat(counted.features);
-        // var result = {
-        //     "points": HDBpoints,
-        //     "counted": counted
-        // };
-        // res.send(result);ContaintHDBs
         var ptsWithin = turf.within(HDBpoints, searchWithin);
-        var resultFeatures = searchWithin.features.concat(ptsWithin.features);
+        var HDBFeatures = [];
+        for (var point in ptsWithin.features) {
+            HDBFeatures.push(ptsWithin.features[point]);
+        }
+        // console.log(HDBFeatures);
+        var resultBuffer = CalculateFacilitiesHexbin(HDBFeatures, requirements);
+        // console.log(resultBuffer);
+        // HDB = ptsWithin;
+        // CalculateFacilities()
+        // var resultHDB = searchWithin.features.concat(ptsWithin.features);
+        // console.log(JSON.stringify(resultBuffer))
         var result = {
             "hexbin": searchWithin,
-            "HDBPoints": ptsWithin
+            "HDBPoints": resultBuffer
         };
 
         res.send(result);
@@ -1071,8 +1041,135 @@ app.post("/getHexbinContainHDBs", function(req, res) {
     });
 })
 
-app.post('/visualizeBulletChart', function(req, res) {
-    var requirements = req.body;
+function CalculateFacilitiesHexbin(HDB, objectReceived) {
+    // console.log(JSON.stringify(HDB));
+
+    var HDBArray = [];
+     var HDBpoints = {
+            "type": "FeatureCollection",
+            "features": []
+        };
+    var HDBObject = {};
+    for (var m = 0; m < HDB.length; m++) {
+         var aHDB = HDB[m];
+         var count = 0;
+        for (var i = 0; i < objectReceived.length; i++) {
+
+            var ORrequirementSend = objectReceived[i];
+            // console.log(ORrequirement);
+            var urlLayerRetrieved = globalurl + "/geojson/" + ORrequirementSend.parentLayer + ".geojson";
+            var layerRequest = JSON.parse(fs.readFileSync(urlLayerRetrieved));
+            var numbercount = calculateBufferHexbin(aHDB, layerRequest, ORrequirementSend);
+            // console.log("index: " + m + " :" + numbercount);
+            count += numbercount;
+        }
+        aHDB.properties["pt_count"] =count;
+        HDBpoints.features.push(aHDB);
+        // HDBArray.push(HDBObject);
+
+    }
+
+
+    // var path = globalurl + "/ORResults/";
+    // var name = fs.readdirSync(path);
+    // // console.log(name);
+    // var rowCount = name.length;
+    // // console.log("first" + rowCount);
+    // for (var i = 0; i < name.length; i++) {
+    //     if (name[i] === ".DS_Store") {
+    //         rowCount = rowCount - 1;
+    //     }
+
+    // }
+
+    // // console.log("before" + rowCount);
+    // if (rowCount > 0) {
+    //     var lastName = name[name.length - 1];
+    //     // console.log(lastName);
+    //     var LastNameExceptJSONextension = lastName.split(".")[0];
+    //     var lastChar = LastNameExceptJSONextension.substr(LastNameExceptJSONextension.length - 1);
+    //     // console.log(lastChar);
+    //     rowCount = parseInt(lastChar) + 1;
+    // }
+    // // console.log("after" + rowCount);
+
+    // var ANDREquirementNameFile = "ORresult" + rowCount;
+    // var urlDestination = globalurl + "/ORResults/" + ANDREquirementNameFile + ".json";
+    // for (var i = 0; i < HDBArray.length; i++) {
+
+    //     var oneHDB = HDBArray[i];
+    //     // console.log(oneHDB);
+    //     var ORREquirementArray = oneHDB.ORREquirement;
+    //     var evaluationArray = [];
+    //     for (var m = 0; m < ORREquirementArray.length; m++) {
+    //         var evaluation = ORREquirementArray[m].requirement_result;
+    //         evaluationArray.push(evaluation);
+    //     }
+
+    //     var totalEvaluation = _.uniq(evaluationArray);
+    //     // console.log(evaluationArray);
+
+    //     if (totalEvaluation.length > 1) {
+    //         HDBArray[i]["totalRequirement"] = true;
+    //     } else {
+    //         if (totalEvaluation[0] === true) {
+    //             HDBArray[i]["totalRequirement"] = true;
+    //         } else {
+    //             HDBArray[i]["totalRequirement"] = false;
+    //         }
+    //     }
+
+    // }
+
+    return HDBpoints;
+
+}
+
+function calculateBufferHexbin(aHDB, layerRequest, ORrequirement) {
+    var typeofGEOJSOB = aHDB.type;
+    if (typeofGEOJSOB === "Feature") {
+        var currentPoint = aHDB;
+    } else {
+        var currentPoint = {
+            "type": "Feature",
+            "properties": {},
+            "geometry": {}
+        };
+        currentPoint["properties"] = aHDB.properties;
+        currentPoint["geometry"]["coordinates"] = aHDB.coordinates;
+        currentPoint["geometry"]["type"] = aHDB.type;
+    }
+    var unit = "kilometers";
+    var distance = parseInt(ORrequirement.within_range);
+    var distanceTranslated = distance / 1000;
+    var HDBbuffered = turf.buffer(currentPoint, distanceTranslated, unit);
+    HDBbuffered.features[0].properties = {
+        "fill": "#6BC65F",
+        "stroke": "#25561F",
+        "stroke-width": 2
+    };
+    HDBbuffered.csr = { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::3414" } },
+        urlLayerRetrieved = globalurl + "/geojson/" + ORrequirement.parentLayer + ".geojson";
+    var filtered = {}
+    var key = ORrequirement.sublayer_column;
+    if (key != 'N/A') {
+        var value = ORrequirement.subLayer;
+        filtered = turf.filter(layerRequest, key, value);
+        // console.log(value);
+        // Check Buffer Point Within
+    } else {
+        filtered = layerRequest;
+    }
+    // var ptsWithin = turf.within(filtered, HDBbuffered);
+    var counted = turf.count(HDBbuffered, filtered, 'pt_count');
+    // ptsWithin.csr = { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::3414" } },
+    var countNumber = counted.features[0].properties.pt_count;
+    return countNumber;
+
+}
+
+app.post('/getHexbinContainHDBs', function(req, res) {
+    var HDB = req.body;
     //ken modify from here
 })
 
