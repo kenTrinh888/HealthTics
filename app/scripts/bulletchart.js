@@ -51,50 +51,46 @@ function populateBulletChart(allKPIs) {
     })
 }
 
-function setTargetNumber(KPI) {
-    var isDragging = false;
-    $(".nv-markerTriangle")
-        .mousedown(function() {
-            isDragging = false;
-        })
-        .mousemove(function() {
-            isDragging = true;
-        })
-        .mouseup(function() {
-            var wasDragging = isDragging;
-            isDragging = false;
-            if (!wasDragging) {
-                console.log('draggeeeeee');
-                $("#throbble").toggle();
-            }
-        });
-}
 
 function populateDetailBulletChart(allKPIs) {
     $('.showDetail').click(function() {
+
         var rowID = $(this).attr('id').split('_')[1];
         $('.KPIRow').each(function() {
             $(this).hide();
         });
+        
+        var kpiName = $('#kpiName_' + rowID).html();
+
+        $.ajaxSetup({ async: false });
+        var KPI = $.get('getCurrentKPI/' + kpiName).responseText;
+        $.ajaxSetup({ async: true });
+        KPI = JSON.parse(KPI);
+
         $('#KPIRow_' + rowID).show();
+        $('#KPIRow_' + rowID).addClass('selectedKPIRow');
         $('#KPIRow_' + rowID).find('.showDetail').attr('disabled', 'disabled');
         var parentID = rowID - 1; //for sending visualization of detailed KPI;
-        allKPIs.forEach(function(KPI, i) {
-            if (i == rowID - 1) {
+        // allKPIs.forEach(function(KPI, i) {
+            // console.log(KPI);
+            // if (i == rowID - 1) {
                 KPI.andTable.forEach(function(andTableKPI, index) {
                     if (index != KPI.andTable.length) {
                         addDetailBulletChartRow(index);
                     }
+                    var targetKpiNumber = +(andTableKPI.targetKPI/100 * andTableKPI.countAllDwellings).toFixed(0);
                     $('#detailkpiName_' + (index + 1)).html(andTableKPI.reqString);
                     $('#detailkpiNumber_' + (index + 1)).html(andTableKPI.countSuccessDwellings);
                     $('#detailkpiPercent_' + (index + 1)).html(andTableKPI.percentPopulation);
+                    $('#detailtotalPopulation_' + (index + 1)).html(KPI.reqFinal.countAllDwellings);
+                    $('#detailtargetKpiNumber_' + (index + 1)).html(targetKpiNumber);
 
                     var bulletChartID = '#detailkpibulletchart_' + (index + 1) + ' svg';
                     addDetailBulletChart(bulletChartID, andTableKPI);
                 })
-            }
+            // }
 
-        })
+        // })
         visualizeDetailBulletChart(allKPIs, parentID);
 
         repopulateBulletChart();
@@ -103,6 +99,7 @@ function populateDetailBulletChart(allKPIs) {
 
 function repopulateBulletChart() {
     $('.backToKPIList').click(function() {
+        $('.selectedKPIRow').removeClass('selectedKPIRow');
         $('.detailKPIRow').remove();
         $('.KPIRow').show();
         // var rowID = $(this).attr('id').split('_')[1];
@@ -120,6 +117,7 @@ function addBulletChartRow(index) {
                 <td class='col-md-1'><span class='kpiPercent' id='kpiPercent_" + (index + 2) + "'></span></td>\
                 <td class='col-md-1'>\
                   <span class='targetKpiNumber' id='targetKpiNumber_" + (index + 2) + "'></span>\
+                  <span class='targetKpiPercent' style='display:none' id='targetKpiPercent_" + (index + 2) + "'></span>\
                   <span class='totalPopulation' style='display:none' id='totalPopulation_" + (index + 2) + "'></span>\
                 </td>\
                 <td class='col-md-1'><button class='btn btn-primary visualize' id='visualize_" + (index + 2) + "'>Visualize</button></td>\
@@ -136,6 +134,7 @@ function addDetailBulletChartRow(index) {
               <td class='col-md-1'><span class='detailkpiPercent' id='detailkpiPercent_" + (index + 1) + "'></span></td>\
               <td class='col-md-1'>\
                 <span class='detailtargetKpiNumber' id='detailtargetKpiNumber_" + (index + 1) + "'></span>\
+                <span class='detailtargetKpiPercent' style='display:none' id='detailtargetKpiPercent_" + (index + 1) + "'></span>\
                 <span class='detailtotalPopulation' style='display:none' id='detailtotalPopulation_" + (index + 1) + "'></span>\
               </td>\
               <td class='col-md-1'><button class='btn btn-primary detailkpiVisualize' id='visualize_" + (index + 1) + "'>Visualize</button></td>\
@@ -167,6 +166,7 @@ function addBulletChart(bulletChartID, KPI) {
 }
 
 function addDetailBulletChart(bulletChartID, andTableKPI) {
+    // console.log(andTableKPI);
     nv.addGraph(function() {
         var chart = nv.models.bulletChart();
 
@@ -195,10 +195,12 @@ function bulletChartData(KPI) {
 function detailBulletChartData(andTableKPI) {
     var measures = [];
     measures.push(andTableKPI.percentPopulation);
+    var markers = [];
+    markers.push(andTableKPI.targetKPI);
     return {
         "subtitle": "%", //sub-label for bullet chart
         "ranges": [30, 50, 100], //Minimum, mean and maximum values.
-        "measures": measures //Value representing current measurement (the thick blue line in the example)
-            // "markers": markers //Place a marker on the chart (the white triangle marker)
+        "measures": measures, //Value representing current measurement (the thick blue line in the example)
+        "markers": markers    // "markers": markers //Place a marker on the chart (the white triangle marker)
     };
 }

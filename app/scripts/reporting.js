@@ -224,7 +224,7 @@ function assignWeightandOpacity(pointcount, breaks) {
         var newWeight = m + 1;
         var newOpacity = m / 10;
         if (pointcount > aBreak) {
-            weight = newWeight;
+            weight = 1;
             fillOpacity = newOpacity
         }
     }
