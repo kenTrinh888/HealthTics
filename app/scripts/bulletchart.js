@@ -15,6 +15,7 @@ function visualizeBulletChart(allKPIs) {
         var KPIJson = allKPIs[bulletChartID];
 
         // GetHexbinVisualisation(requirements)
+        // console.log(KPIJson);
         GetHexbinVisualisation(KPIJson, "OrRd", "equal_interval");
         changeHexBinAlgo(KPIJson);
     })

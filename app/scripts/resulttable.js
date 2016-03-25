@@ -147,6 +147,7 @@ function getResultRequirements(HDBData) {
         requirements.reqData.push(reqObject);
     });
     requirements.reqFinal.success_HDB_JSONs = success_HDB_JSONs;
+    requirements.reqFinal.failed_HDB_JSONs = failedArr;
     return requirements;
 }
 
