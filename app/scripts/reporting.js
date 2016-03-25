@@ -34,6 +34,11 @@ for (var i = 0; i < method.length; i++) {
     methodOption += '<option value="' + method[i] + '">' + methodValue + '</option>';
 }
 $('#methods').append(methodOption);
+
+// ButtonLgendHideShow
+$("[name='maplegend']").bootstrapSwitch();
+
+
 /* create leaflet map */
 var OpenStreetMap_Mapnik = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
@@ -64,6 +69,12 @@ var map = L.map('map', {
     layers: [Stamen_Toner, OpenStreetMap_BlackAndWhite, OpenStreetMap_Mapnik, CartoDB_DarkMatter, Hydda_Full],
     // zoomControl: false
 });
+// Disable drag and zoom handlers.
+map.dragging.disable();
+map.touchZoom.disable();
+map.doubleClickZoom.disable();
+map.scrollWheelZoom.disable();
+map.keyboard.disable();
 // map.setView([1.35, 103.8],12)
 // var boundsSW = L.latLng(1.201023, 103.597500),
 //     boundsNE = L.latLng(1.490837, 104.067218),
@@ -78,23 +89,31 @@ var baseMaps = {
     "Hydda_Full": Hydda_Full
 };
 var layerGroup = L.layerGroup().addTo(map);
-var layerControl = L.control.layers();
+var layerGroup = false;
+var hexbinGroupLayer = false;
+var sucessfulHDBGroupLayer = false;
 L.control.layers(baseMaps).addTo(map);
 var legend = L.control({ position: 'bottomright' });
 var hasLegend = false;
+var count = 0;
 
 function GetHexbinVisualisation(KPIJson, colors, method) {
+
+    if (layerGroup != false) {
+        layerGroup.clearLayers();
+        layerGroup = false;
+    }
     // $('#map').attr('name', KPIname)
     // console.log(KPIJson);
     if (hasLegend === true) {
         legend.removeFrom(map);
     }
-    var controlOnject = layerControl._layers
-    for (var key in controlOnject) {
-        if (controlOnject.hasOwnProperty(key)) {
-            delete controlOnject[key];
-        }
-    }
+    // var controlOnject = layerControl._layers
+    // for (var key in controlOnject) {
+    //     if (controlOnject.hasOwnProperty(key)) {
+    //         delete controlOnject[key];
+    //     }
+    // }
     if (colors === null) {
         colors = "OrRd";
     }
@@ -138,10 +157,19 @@ function GetHexbinVisualisation(KPIJson, colors, method) {
         _withCount.weight = weight;
     });
     layerdata = L.Proj.geoJson(grid, {
-        onEachFeature: onEachFeature,
-        style: style
-    }).addTo(map);
-    layerControl.addOverlay(layerdata, "NewClass");
+            onEachFeature: onEachFeature,
+            style: style
+        })
+        // L.layerGroup()
+        //     .addLayer(layerdata)
+        //     .addTo(map);
+    if (layerGroup === false) {
+        layerGroup = L.layerGroup()
+            .addLayer(layerdata)
+            .addTo(map);
+    }
+    //         count+=1;
+    // layerControl.addOverlay(layerdata, "NewClass" );
 
     legend.onAdd = function(map) {
         var div = L.DomUtil.create('div', 'info legend'),
@@ -184,7 +212,7 @@ function getHexbinDataSync(KPIJson) {
     // $.ajaxSetup({ async: false });
     // var data = $.get(getDataHexbin).responseText;
     // $.ajaxSetup({ async: true });
-    console.log(data);
+    // console.log(data);
     return data;
 }
 
@@ -209,8 +237,8 @@ function style(feature) {
 
 function onEachFeature(feature, layer) {
     layer.on({
-        mouseover: highlightFeature,
-        mouseout: resetHighlight,
+        // mouseover: highlightFeature,
+        // mouseout: resetHighlight,
         click: zoomToFeature
     });
 }
@@ -221,27 +249,43 @@ info.onAdd = function(map) {
     return this._div;
 };
 info.update = function(feature) {
+    // console.log(feature);
     if (feature != null) {
         // console.log(feature);
-        var count = feature.properties.pt_count;
-        this._div.innerHTML = (count ? count + ' HDB(s)' : 'Hover over a grid');
+        var count = feature.pt_count;
+        this._div.innerHTML = (count ? count + ' HDB(s)' : 'Click the grid');
     } else {
-        this._div.innerHTML = ('Hover over a grid');
+        // console.log(feature);
+        this._div.innerHTML = ('Click the grid');
     }
 };
 info.addTo(map);
+
 
 function resetHighlight(e) {
     layerdata.resetStyle(e.target);
     info.update(e.target.feature);
 }
 
+var LayerClick = [];
+
 function zoomToFeature(e) {
-    // console.log(KPIJson);
-    var hexbinSend = e.target.feature;
-    // console.log(hexbinSend);
-    FocusHexbin(hexbinSend);
-    // map.fitBounds(e.target.getBounds());
+    if (LayerClick.length === 0) {
+        LayerClick.push(e);
+        highlightFeature(e);
+        var hexbinSend = e.target.feature;
+        FocusHexbin(hexbinSend);
+
+    } else {
+        // console.log(LayerClick);
+        LayerClick.push(e);
+        var previouslayer = LayerClick[LayerClick.length - 2];
+        resetHighlight(previouslayer);
+        highlightFeature(e);
+        var hexbinSend = e.target.feature;
+        FocusHexbin(hexbinSend);
+    }
+
 }
 
 function highlightFeature(e) {
@@ -256,6 +300,7 @@ function highlightFeature(e) {
     if (!L.Browser.ie && !L.Browser.opera) {
         layer.bringToFront();
     }
+    info.update(layer.feature.properties);
 }
 // =======================================================Second Map========================================
 var OpenStreetMap_MapnikZoomin = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -289,12 +334,21 @@ var baseMapsZoomin = {
 var zone, ZoominMap = L.map('ZoominMap', {
     center: [1.35, 103.8],
     zoom: 11,
-    layers: [OpenStreetMap_BlackAndWhiteZoomin, OpenStreetMap_MapnikZoomin, Hydda_FullZoomin],
-    zoomControl: false
+    layers: [OpenStreetMap_BlackAndWhiteZoomin, OpenStreetMap_MapnikZoomin, Hydda_FullZoomin]
 });
 L.control.layers(baseMapsZoomin).addTo(ZoominMap);
+ZoominMap.dragging.disable();
+ZoominMap.touchZoom.disable();
+ZoominMap.doubleClickZoom.disable();
+ZoominMap.scrollWheelZoom.disable();
+ZoominMap.keyboard.disable();
+if (ZoominMap.tap) ZoominMap.tap.disable();
 
 function FocusHexbin(hexbinSend) {
+    if (hexbinGroupLayer != false) {
+        hexbinGroupLayer.clearLayers();
+        hexbinGroupLayer = false;
+    }
     // console.log(KPIJson);
     var dataSend = JSON.stringify(hexbinSend);
     var data = $.ajax({
@@ -317,12 +371,14 @@ function FocusHexbin(hexbinSend) {
 
     var hexbinMap = L.Proj.geoJson(hexbinPoint, {
         style: Hexbinstyle
-    }).addTo(ZoominMap);
+    })
+    if (hexbinGroupLayer === false) {
+        hexbinGroupLayer = L.layerGroup()
+            .addLayer(hexbinMap)
+            .addTo(ZoominMap);
+    }
 
     displayHDBPropotion(HDBPoints);
-
-
-
     ZoominMap.fitBounds(hexbinMap.getBounds());
 
 }
@@ -354,10 +410,14 @@ function displayHDBPropotion(dataLayer) {
     createPropSymbols(dataLayer);
 
 
+
 }
 
 function createPropSymbols(dataLayer) {
-
+    if (sucessfulHDBGroupLayer != false) {
+        sucessfulHDBGroupLayer.clearLayers();
+        sucessfulHDBGroupLayer = false;
+    }
     zone = L.Proj.geoJson(dataLayer, {
         pointToLayer: function(feature, latlng) {
             return L.circleMarker(latlng, {
@@ -368,8 +428,14 @@ function createPropSymbols(dataLayer) {
 
             });
         }
-    }).addTo(ZoominMap);
+    });
+
     updatePropSymbols();
+    if (sucessfulHDBGroupLayer === false) {
+        sucessfulHDBGroupLayer = L.layerGroup()
+            .addLayer(zone)
+            .addTo(ZoominMap);
+    }
 
 } // end createPropSymbols()
 function updatePropSymbols() {
@@ -379,7 +445,7 @@ function updatePropSymbols() {
         // console.log(layer);
         var props = layer.feature.properties,
             radius = calcPropRadius(props.pt_count),
-            popupContent =            "<b>POSTAL CODE: </b>" + props.POSTCODE + "</br><b>Accessible Facilities: </b>" + String(props.pt_count) + "<br>" ;
+            popupContent = "<b>POSTAL CODE: </b>" + props.POSTCODE + "</br><b>Accessible Facilities: </b>" + String(props.pt_count) + "<br>";
         // console.log(radius)
         layer.setRadius(radius);
         // layer.on('click', function(e) {
@@ -387,7 +453,9 @@ function updatePropSymbols() {
         // });
         // layer.bindPopup(popupContent).openPopup();
         layer.bindPopup(popupContent, {
-            offset: new L.Point(0, -radius)
+            // offset: new L.Point(0, -radius)
+            // autoPan:true
+            keepInView: true
         });
         layer.on({
             mouseover: function(e) {
@@ -416,3 +484,18 @@ function calcPropRadius(attributeValue) {
 } // end calcPropRadius
 
 // /-------End Display Propotional Map------------/
+
+//LEGEND HANDLING
+$('.LegendShowHide').on('switchChange.bootstrapSwitch', function(event, state) {
+    // postcodeContain = state;
+    // console.log(state);
+    if (state === true) {
+        if (hasLegend === false) {
+            legend.addTo(map);
+        }
+
+    } else {
+        legend.removeFrom(map);
+        hasLegend = false;
+    }
+});
