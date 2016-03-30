@@ -969,8 +969,13 @@ app.post("/getHexbinVisualGeojson", function(req, res) {
     var bbox = [103.597500, 1.201023, 104.067218, 1.490837]
     var cellWidth = 2;
     var units = 'kilometers';
+    var url = globalurl + "/PlanningArea/SGCoastLine.geojson";
+    var SingaporeZone = JSON.parse(fs.readFileSync(url, "utf8"));
+
 
     var hexgrid = turf.hexGrid(bbox, cellWidth, units);
+    // var intersection = turf.intersect(hexgrid, SingaporeZone);
+    console.log(JSON.stringify(SingaporeZone));
     var counted = turf.count(hexgrid, HDBpoints, 'pt_count');
 
     var resultFeatures = HDBpoints.features.concat(counted.features);
