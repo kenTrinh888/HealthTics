@@ -366,9 +366,11 @@
                             .append("line")
                             .attr("class", "nv-guideline")
                             .attr("x1", function(d) {
-                                return d; })
+                                return d;
+                            })
                             .attr("x2", function(d) {
-                                return d; })
+                                return d;
+                            })
                             .attr("y1", availableHeight)
                             .attr("y2", 0);
                         line.exit().remove();
@@ -611,29 +613,35 @@
 
             var trowEnter = tbodyEnter.selectAll("tr")
                 .data(function(p) {
-                    return p.series })
+                    return p.series
+                })
                 .enter()
                 .append("tr")
                 .classed("highlight", function(p) {
-                    return p.highlight });
+                    return p.highlight
+                });
 
             trowEnter.append("td")
                 .classed("legend-color-guide", true)
                 .append("div")
                 .style("background-color", function(p) {
-                    return p.color });
+                    return p.color
+                });
 
             trowEnter.append("td")
                 .classed("key", true)
                 .classed("total", function(p) {
-                    return !!p.total })
+                    return !!p.total
+                })
                 .html(function(p, i) {
-                    return keyFormatter(p.key, i) });
+                    return keyFormatter(p.key, i)
+                });
 
             trowEnter.append("td")
                 .classed("value", true)
                 .html(function(p, i) {
-                    return valueFormatter(p.value, i) });
+                    return valueFormatter(p.value, i)
+                });
 
             trowEnter.selectAll("td").each(function(p) {
                 if (p.highlight) {
@@ -807,39 +815,96 @@
 
         nvtooltip._options = Object.create({}, {
             // simple read/write options
-            duration: { get: function() {
-                    return duration; }, set: function(_) { duration = _; } },
-            gravity: { get: function() {
-                    return gravity; }, set: function(_) { gravity = _; } },
-            distance: { get: function() {
-                    return distance; }, set: function(_) { distance = _; } },
-            snapDistance: { get: function() {
-                    return snapDistance; }, set: function(_) { snapDistance = _; } },
-            classes: { get: function() {
-                    return classes; }, set: function(_) { classes = _; } },
-            chartContainer: { get: function() {
-                    return chartContainer; }, set: function(_) { chartContainer = _; } },
-            enabled: { get: function() {
-                    return enabled; }, set: function(_) { enabled = _; } },
-            hideDelay: { get: function() {
-                    return hideDelay; }, set: function(_) { hideDelay = _; } },
-            contentGenerator: { get: function() {
-                    return contentGenerator; }, set: function(_) { contentGenerator = _; } },
-            valueFormatter: { get: function() {
-                    return valueFormatter; }, set: function(_) { valueFormatter = _; } },
-            headerFormatter: { get: function() {
-                    return headerFormatter; }, set: function(_) { headerFormatter = _; } },
-            keyFormatter: { get: function() {
-                    return keyFormatter; }, set: function(_) { keyFormatter = _; } },
-            headerEnabled: { get: function() {
-                    return headerEnabled; }, set: function(_) { headerEnabled = _; } },
-            position: { get: function() {
-                    return position; }, set: function(_) { position = _; } },
+            duration: {
+                get: function() {
+                    return duration;
+                },
+                set: function(_) { duration = _; }
+            },
+            gravity: {
+                get: function() {
+                    return gravity;
+                },
+                set: function(_) { gravity = _; }
+            },
+            distance: {
+                get: function() {
+                    return distance;
+                },
+                set: function(_) { distance = _; }
+            },
+            snapDistance: {
+                get: function() {
+                    return snapDistance;
+                },
+                set: function(_) { snapDistance = _; }
+            },
+            classes: {
+                get: function() {
+                    return classes;
+                },
+                set: function(_) { classes = _; }
+            },
+            chartContainer: {
+                get: function() {
+                    return chartContainer;
+                },
+                set: function(_) { chartContainer = _; }
+            },
+            enabled: {
+                get: function() {
+                    return enabled;
+                },
+                set: function(_) { enabled = _; }
+            },
+            hideDelay: {
+                get: function() {
+                    return hideDelay;
+                },
+                set: function(_) { hideDelay = _; }
+            },
+            contentGenerator: {
+                get: function() {
+                    return contentGenerator;
+                },
+                set: function(_) { contentGenerator = _; }
+            },
+            valueFormatter: {
+                get: function() {
+                    return valueFormatter;
+                },
+                set: function(_) { valueFormatter = _; }
+            },
+            headerFormatter: {
+                get: function() {
+                    return headerFormatter;
+                },
+                set: function(_) { headerFormatter = _; }
+            },
+            keyFormatter: {
+                get: function() {
+                    return keyFormatter;
+                },
+                set: function(_) { keyFormatter = _; }
+            },
+            headerEnabled: {
+                get: function() {
+                    return headerEnabled;
+                },
+                set: function(_) { headerEnabled = _; }
+            },
+            position: {
+                get: function() {
+                    return position;
+                },
+                set: function(_) { position = _; }
+            },
 
             // Deprecated options
             fixedTop: {
                 get: function() {
-                    return null; },
+                    return null;
+                },
                 set: function(_) {
                     // deprecated after 1.8.1
                     nv.deprecated('fixedTop', 'feature removed after 1.8.1');
@@ -847,7 +912,8 @@
             },
             offset: {
                 get: function() {
-                    return { left: 0, top: 0 }; },
+                    return { left: 0, top: 0 };
+                },
                 set: function(_) {
                     // deprecated after 1.8.1
                     nv.deprecated('offset', 'use chart.tooltip.distance() instead');
@@ -857,7 +923,8 @@
             // options with extra logic
             hidden: {
                 get: function() {
-                    return hidden; },
+                    return hidden;
+                },
                 set: function(_) {
                     if (hidden != _) {
                         hidden = !!_;
@@ -867,7 +934,8 @@
             },
             data: {
                 get: function() {
-                    return data; },
+                    return data;
+                },
                 set: function(_) {
                     // if showing a single data point, adjust data format with that
                     if (_.point) {
@@ -881,10 +949,18 @@
             },
 
             // read only properties
-            node: { get: function() {
-                    return tooltip.node(); }, set: function(_) {} },
-            id: { get: function() {
-                    return id; }, set: function(_) {} }
+            node: {
+                get: function() {
+                    return tooltip.node();
+                },
+                set: function(_) {}
+            },
+            id: {
+                get: function() {
+                    return id;
+                },
+                set: function(_) {}
+            }
         });
 
         nv.utils.initOptions(nvtooltip);
@@ -993,7 +1069,8 @@
     nv.utils.customTheme = function(dictionary, getKey, defaultColors) {
         // use default series.key if getKey is undefined
         getKey = getKey || function(series) {
-            return series.key };
+            return series.key
+        };
         defaultColors = defaultColors || d3.scale.category20().range();
 
         // start at end of default color list and walk back to index 0
@@ -1139,15 +1216,18 @@
             if (duration === 0) {
                 selection.__rendered = true;
                 selection.delay = function() {
-                    return this; };
+                    return this;
+                };
                 selection.duration = function() {
-                    return this; };
+                    return this;
+                };
                 return selection;
             } else {
                 if (selection.length === 0) {
                     selection.__rendered = true;
                 } else if (selection.every(function(d) {
-                        return !d.length; })) {
+                        return !d.length;
+                    })) {
                     selection.__rendered = true;
                 } else {
                     selection.__rendered = false;
@@ -1169,7 +1249,8 @@
 
         this.renderEnd = function() {
             if (renderStack.every(function(d) {
-                    return d.__rendered; })) {
+                    return d.__rendered;
+                })) {
                 renderStack.forEach(function(d) { d.__rendered = false; });
                 dispatch.renderEnd.apply(this, arguments);
             }
@@ -1212,7 +1293,8 @@
         var _self = this;
         var _setState = function() {};
         var _getState = function() {
-            return {}; };
+            return {};
+        };
         var init = null;
         var changed = null;
 
@@ -1529,7 +1611,8 @@
             .attr('x', x)
             .attr('y', y)
             .text(function(t) {
-                return t; });
+                return t;
+            });
     };
 
     /*
@@ -1617,7 +1700,8 @@
             .scale(scale)
             .orient('bottom')
             .tickFormat(function(d) {
-                return d });
+                return d
+            });
 
         //============================================================
         // Private Variables
@@ -1856,7 +1940,8 @@
                         break;
                 }
                 axisLabel.text(function(d) {
-                    return d });
+                    return d
+                });
 
                 if (showMaxMin && (axis.orient() === 'left' || axis.orient() === 'right')) {
                     //check if max and min overlap other values, if so, hide the values that overlap
@@ -1938,29 +2023,66 @@
         chart.options = nv.utils.optionsFunc.bind(chart);
         chart._options = Object.create({}, {
             // simple options, just get/set the necessary values
-            axisLabelDistance: { get: function() {
-                    return axisLabelDistance; }, set: function(_) { axisLabelDistance = _; } },
-            staggerLabels: { get: function() {
-                    return staggerLabels; }, set: function(_) { staggerLabels = _; } },
-            rotateLabels: { get: function() {
-                    return rotateLabels; }, set: function(_) { rotateLabels = _; } },
-            rotateYLabel: { get: function() {
-                    return rotateYLabel; }, set: function(_) { rotateYLabel = _; } },
-            showMaxMin: { get: function() {
-                    return showMaxMin; }, set: function(_) { showMaxMin = _; } },
-            axisLabel: { get: function() {
-                    return axisLabelText; }, set: function(_) { axisLabelText = _; } },
-            height: { get: function() {
-                    return height; }, set: function(_) { height = _; } },
-            ticks: { get: function() {
-                    return ticks; }, set: function(_) { ticks = _; } },
-            width: { get: function() {
-                    return width; }, set: function(_) { width = _; } },
+            axisLabelDistance: {
+                get: function() {
+                    return axisLabelDistance;
+                },
+                set: function(_) { axisLabelDistance = _; }
+            },
+            staggerLabels: {
+                get: function() {
+                    return staggerLabels;
+                },
+                set: function(_) { staggerLabels = _; }
+            },
+            rotateLabels: {
+                get: function() {
+                    return rotateLabels;
+                },
+                set: function(_) { rotateLabels = _; }
+            },
+            rotateYLabel: {
+                get: function() {
+                    return rotateYLabel;
+                },
+                set: function(_) { rotateYLabel = _; }
+            },
+            showMaxMin: {
+                get: function() {
+                    return showMaxMin;
+                },
+                set: function(_) { showMaxMin = _; }
+            },
+            axisLabel: {
+                get: function() {
+                    return axisLabelText;
+                },
+                set: function(_) { axisLabelText = _; }
+            },
+            height: {
+                get: function() {
+                    return height;
+                },
+                set: function(_) { height = _; }
+            },
+            ticks: {
+                get: function() {
+                    return ticks;
+                },
+                set: function(_) { ticks = _; }
+            },
+            width: {
+                get: function() {
+                    return width;
+                },
+                set: function(_) { width = _; }
+            },
 
             // options that require extra logic in the setter
             margin: {
                 get: function() {
-                    return margin; },
+                    return margin;
+                },
                 set: function(_) {
                     margin.top = _.top !== undefined ? _.top : margin.top;
                     margin.right = _.right !== undefined ? _.right : margin.right;
@@ -1970,7 +2092,8 @@
             },
             duration: {
                 get: function() {
-                    return duration; },
+                    return duration;
+                },
                 set: function(_) {
                     duration = _;
                     renderWatch.reset(duration);
@@ -1978,7 +2101,8 @@
             },
             scale: {
                 get: function() {
-                    return scale; },
+                    return scale;
+                },
                 set: function(_) {
                     scale = _;
                     axis.scale(scale);
@@ -2009,9 +2133,11 @@
             x = d3.scale.ordinal(),
             y = d3.scale.linear(),
             getX = function(d) {
-                return d.x },
+                return d.x
+            },
             getY = function(d) {
-                return d.y },
+                return d.y
+            },
             color = nv.utils.defaultColor(),
             container = null,
             xDomain, yDomain, xRange, yRange, dispatch = d3.dispatch('elementMouseover', 'elementMouseout', 'elementMousemove', 'renderEnd'),
@@ -2036,7 +2162,8 @@
 
                 // Setup Scales
                 x.domain(xDomain || data.map(function(d, i) {
-                        return getX(d, i); }))
+                        return getX(d, i);
+                    }))
                     .rangeBands(xRange || [0, availableWidth], .1);
 
                 // if we know yDomain, no need to calculate
@@ -2082,20 +2209,24 @@
                 wrap.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
                 var boxplots = wrap.selectAll('.nv-boxplot').data(function(d) {
-                    return d });
+                    return d
+                });
                 var boxEnter = boxplots.enter().append('g').style('stroke-opacity', 1e-6).style('fill-opacity', 1e-6);
                 boxplots
                     .attr('class', 'nv-boxplot')
                     .attr('transform', function(d, i, j) {
-                        return 'translate(' + (x(getX(d, i)) + x.rangeBand() * .05) + ', 0)'; })
+                        return 'translate(' + (x(getX(d, i)) + x.rangeBand() * .05) + ', 0)';
+                    })
                     .classed('hover', function(d) {
-                        return d.hover });
+                        return d.hover
+                    });
                 boxplots
                     .watchTransition(renderWatch, 'nv-boxplot: boxplots')
                     .style('stroke-opacity', 1)
                     .style('fill-opacity', .75)
                     .delay(function(d, i) {
-                        return i * duration / data.length })
+                        return i * duration / data.length
+                    })
                     .attr('transform', function(d, i) {
                         return 'translate(' + (x(getX(d, i)) + x.rangeBand() * .05) + ', 0)';
                     });
@@ -2124,13 +2255,17 @@
                 // TODO: support custom colors here
                 var outliers = boxplots.selectAll('.nv-boxplot-outlier').data(function(d) {
                     if (d.values.hasOwnProperty('outliers') && d.values.outliers !== null) {
-                        return d.values.outliers; } else {
-                        return []; }
+                        return d.values.outliers;
+                    } else {
+                        return [];
+                    }
                 });
                 outliers.enter().append('circle')
                     .style('fill', function(d, i, j) {
-                        return color(d, j) }).style('stroke', function(d, i, j) {
-                        return color(d, j) })
+                        return color(d, j)
+                    }).style('stroke', function(d, i, j) {
+                        return color(d, j)
+                    })
                     .on('mouseover', function(d, i, j) {
                         d3.select(this).classed('hover', true);
                         dispatch.elementMouseover({
@@ -2154,16 +2289,20 @@
                     .watchTransition(renderWatch, 'nv-boxplot: nv-boxplot-outlier')
                     .attr('cx', x.rangeBand() * .45)
                     .attr('cy', function(d, i, j) {
-                        return y(d); })
+                        return y(d);
+                    })
                     .attr('r', '3');
                 outliers.exit().remove();
 
                 var box_width = function() {
-                    return (maxBoxWidth === null ? x.rangeBand() * .9 : Math.min(75, x.rangeBand() * .9)); };
+                    return (maxBoxWidth === null ? x.rangeBand() * .9 : Math.min(75, x.rangeBand() * .9));
+                };
                 var box_left = function() {
-                    return x.rangeBand() * .45 - box_width() / 2; };
+                    return x.rangeBand() * .45 - box_width() / 2;
+                };
                 var box_right = function() {
-                    return x.rangeBand() * .45 + box_width() / 2; };
+                    return x.rangeBand() * .45 + box_width() / 2;
+                };
 
                 // update whisker lines and ticks
                 ['low', 'high'].forEach(function(key) {
@@ -2173,19 +2312,23 @@
                         .watchTransition(renderWatch, 'nv-boxplot: boxplots')
                         .attr('x1', x.rangeBand() * .45)
                         .attr('y1', function(d, i) {
-                            return y(d.values['whisker_' + key]); })
+                            return y(d.values['whisker_' + key]);
+                        })
                         .attr('x2', x.rangeBand() * .45)
                         .attr('y2', function(d, i) {
-                            return y(d.values[endpoint]); });
+                            return y(d.values[endpoint]);
+                        });
 
                     boxplots.select('line.nv-boxplot-tick.nv-boxplot-' + key)
                         .watchTransition(renderWatch, 'nv-boxplot: boxplots')
                         .attr('x1', box_left)
                         .attr('y1', function(d, i) {
-                            return y(d.values['whisker_' + key]); })
+                            return y(d.values['whisker_' + key]);
+                        })
                         .attr('x2', box_right)
                         .attr('y2', function(d, i) {
-                            return y(d.values['whisker_' + key]); });
+                            return y(d.values['whisker_' + key]);
+                        });
                 });
 
                 ['low', 'high'].forEach(function(key) {
@@ -2251,16 +2394,20 @@
                 boxplots.select('rect.nv-boxplot-box')
                     .watchTransition(renderWatch, 'nv-boxplot: boxes')
                     .attr('y', function(d, i) {
-                        return y(d.values.Q3); })
+                        return y(d.values.Q3);
+                    })
                     .attr('width', box_width)
                     .attr('x', box_left)
 
                 .attr('height', function(d, i) {
-                        return Math.abs(y(d.values.Q3) - y(d.values.Q1)) || 1 })
+                        return Math.abs(y(d.values.Q3) - y(d.values.Q1)) || 1
+                    })
                     .style('fill', function(d, i) {
-                        return d.color || color(d, i) })
+                        return d.color || color(d, i)
+                    })
                     .style('stroke', function(d, i) {
-                        return d.color || color(d, i) });
+                        return d.color || color(d, i)
+                    });
 
                 // median line
                 boxEnter.append('line').attr('class', 'nv-boxplot-median');
@@ -2269,10 +2416,12 @@
                     .watchTransition(renderWatch, 'nv-boxplot: boxplots line')
                     .attr('x1', box_left)
                     .attr('y1', function(d, i) {
-                        return y(d.values.Q2); })
+                        return y(d.values.Q2);
+                    })
                     .attr('x2', box_right)
                     .attr('y2', function(d, i) {
-                        return y(d.values.Q2); });
+                        return y(d.values.Q2);
+                    });
 
                 //store old scales for use in transitions on update
                 x0 = x.copy();
@@ -2292,36 +2441,85 @@
 
         chart._options = Object.create({}, {
             // simple options, just get/set the necessary values
-            width: { get: function() {
-                    return width; }, set: function(_) { width = _; } },
-            height: { get: function() {
-                    return height; }, set: function(_) { height = _; } },
-            maxBoxWidth: { get: function() {
-                    return maxBoxWidth; }, set: function(_) { maxBoxWidth = _; } },
-            x: { get: function() {
-                    return getX; }, set: function(_) { getX = _; } },
-            y: { get: function() {
-                    return getY; }, set: function(_) { getY = _; } },
-            xScale: { get: function() {
-                    return x; }, set: function(_) { x = _; } },
-            yScale: { get: function() {
-                    return y; }, set: function(_) { y = _; } },
-            xDomain: { get: function() {
-                    return xDomain; }, set: function(_) { xDomain = _; } },
-            yDomain: { get: function() {
-                    return yDomain; }, set: function(_) { yDomain = _; } },
-            xRange: { get: function() {
-                    return xRange; }, set: function(_) { xRange = _; } },
-            yRange: { get: function() {
-                    return yRange; }, set: function(_) { yRange = _; } },
-            id: { get: function() {
-                    return id; }, set: function(_) { id = _; } },
+            width: {
+                get: function() {
+                    return width;
+                },
+                set: function(_) { width = _; }
+            },
+            height: {
+                get: function() {
+                    return height;
+                },
+                set: function(_) { height = _; }
+            },
+            maxBoxWidth: {
+                get: function() {
+                    return maxBoxWidth;
+                },
+                set: function(_) { maxBoxWidth = _; }
+            },
+            x: {
+                get: function() {
+                    return getX;
+                },
+                set: function(_) { getX = _; }
+            },
+            y: {
+                get: function() {
+                    return getY;
+                },
+                set: function(_) { getY = _; }
+            },
+            xScale: {
+                get: function() {
+                    return x;
+                },
+                set: function(_) { x = _; }
+            },
+            yScale: {
+                get: function() {
+                    return y;
+                },
+                set: function(_) { y = _; }
+            },
+            xDomain: {
+                get: function() {
+                    return xDomain;
+                },
+                set: function(_) { xDomain = _; }
+            },
+            yDomain: {
+                get: function() {
+                    return yDomain;
+                },
+                set: function(_) { yDomain = _; }
+            },
+            xRange: {
+                get: function() {
+                    return xRange;
+                },
+                set: function(_) { xRange = _; }
+            },
+            yRange: {
+                get: function() {
+                    return yRange;
+                },
+                set: function(_) { yRange = _; }
+            },
+            id: {
+                get: function() {
+                    return id;
+                },
+                set: function(_) { id = _; }
+            },
             // rectClass: {get: function(){return rectClass;}, set: function(_){rectClass=_;}},
 
             // options that require extra logic in the setter
             margin: {
                 get: function() {
-                    return margin; },
+                    return margin;
+                },
                 set: function(_) {
                     margin.top = _.top !== undefined ? _.top : margin.top;
                     margin.right = _.right !== undefined ? _.right : margin.right;
@@ -2331,14 +2529,16 @@
             },
             color: {
                 get: function() {
-                    return color; },
+                    return color;
+                },
                 set: function(_) {
                     color = nv.utils.getColor(_);
                 }
             },
             duration: {
                 get: function() {
-                    return duration; },
+                    return duration;
+                },
                 set: function(_) {
                     duration = _;
                     renderWatch.reset(duration);
@@ -2378,7 +2578,8 @@
             .orient('bottom')
             .showMaxMin(false)
             .tickFormat(function(d) {
-                return d });
+                return d
+            });
         yAxis
             .orient((rightAlignYAxis) ? 'right' : 'left')
             .tickFormat(d3.format(',.1f'));
@@ -2413,7 +2614,8 @@
                 // Display No Data message if there's nothing to show. (quartiles required at minimum)
                 if (!data || !data.length ||
                     !data.filter(function(d) {
-                        return d.values.hasOwnProperty("Q1") && d.values.hasOwnProperty("Q2") && d.values.hasOwnProperty("Q3"); }).length) {
+                        return d.values.hasOwnProperty("Q1") && d.values.hasOwnProperty("Q2") && d.values.hasOwnProperty("Q3");
+                    }).length) {
                     var noDataText = container.selectAll('.nv-noData').data([noData]);
 
                     noDataText.enter().append('text')
@@ -2425,7 +2627,8 @@
                         .attr('x', margin.left + availableWidth / 2)
                         .attr('y', margin.top + availableHeight / 2)
                         .text(function(d) {
-                            return d });
+                            return d
+                        });
 
                     return chart;
                 } else {
@@ -2463,7 +2666,8 @@
 
                 var barsWrap = g.select('.nv-barsWrap')
                     .datum(data.filter(function(d) {
-                        return !d.disabled }))
+                        return !d.disabled
+                    }))
 
                 barsWrap.transition().call(boxplot);
 
@@ -2492,7 +2696,8 @@
                         xTicks
                             .selectAll('text')
                             .attr('transform', function(d, i, j) {
-                                return 'translate(0,' + (j % 2 == 0 ? '5' : '17') + ')' })
+                                return 'translate(0,' + (j % 2 == 0 ? '5' : '17') + ')'
+                            })
                     }
                 }
 
@@ -2551,25 +2756,54 @@
 
         chart._options = Object.create({}, {
             // simple options, just get/set the necessary values
-            width: { get: function() {
-                    return width; }, set: function(_) { width = _; } },
-            height: { get: function() {
-                    return height; }, set: function(_) { height = _; } },
-            staggerLabels: { get: function() {
-                    return staggerLabels; }, set: function(_) { staggerLabels = _; } },
-            showXAxis: { get: function() {
-                    return showXAxis; }, set: function(_) { showXAxis = _; } },
-            showYAxis: { get: function() {
-                    return showYAxis; }, set: function(_) { showYAxis = _; } },
-            tooltipContent: { get: function() {
-                    return tooltip; }, set: function(_) { tooltip = _; } },
-            noData: { get: function() {
-                    return noData; }, set: function(_) { noData = _; } },
+            width: {
+                get: function() {
+                    return width;
+                },
+                set: function(_) { width = _; }
+            },
+            height: {
+                get: function() {
+                    return height;
+                },
+                set: function(_) { height = _; }
+            },
+            staggerLabels: {
+                get: function() {
+                    return staggerLabels;
+                },
+                set: function(_) { staggerLabels = _; }
+            },
+            showXAxis: {
+                get: function() {
+                    return showXAxis;
+                },
+                set: function(_) { showXAxis = _; }
+            },
+            showYAxis: {
+                get: function() {
+                    return showYAxis;
+                },
+                set: function(_) { showYAxis = _; }
+            },
+            tooltipContent: {
+                get: function() {
+                    return tooltip;
+                },
+                set: function(_) { tooltip = _; }
+            },
+            noData: {
+                get: function() {
+                    return noData;
+                },
+                set: function(_) { noData = _; }
+            },
 
             // options that require extra logic in the setter
             margin: {
                 get: function() {
-                    return margin; },
+                    return margin;
+                },
                 set: function(_) {
                     margin.top = _.top !== undefined ? _.top : margin.top;
                     margin.right = _.right !== undefined ? _.right : margin.right;
@@ -2579,7 +2813,8 @@
             },
             duration: {
                 get: function() {
-                    return duration; },
+                    return duration;
+                },
                 set: function(_) {
                     duration = _;
                     renderWatch.reset(duration);
@@ -2590,7 +2825,8 @@
             },
             color: {
                 get: function() {
-                    return color; },
+                    return color;
+                },
                 set: function(_) {
                     color = nv.utils.getColor(_);
                     boxplot.color(color);
@@ -2598,7 +2834,8 @@
             },
             rightAlignYAxis: {
                 get: function() {
-                    return rightAlignYAxis; },
+                    return rightAlignYAxis;
+                },
                 set: function(_) {
                     rightAlignYAxis = _;
                     yAxis.orient((_) ? 'right' : 'left');
@@ -2628,17 +2865,23 @@
             ,
             reverse = false,
             ranges = function(d) {
-                return d.ranges },
+                return d.ranges
+            },
             markers = function(d) {
-                return d.markers ? d.markers : [] },
+                return d.markers ? d.markers : []
+            },
             measures = function(d) {
-                return d.measures },
+                return d.measures
+            },
             rangeLabels = function(d) {
-                return d.rangeLabels ? d.rangeLabels : [] },
+                return d.rangeLabels ? d.rangeLabels : []
+            },
             markerLabels = function(d) {
-                return d.markerLabels ? d.markerLabels : [] },
+                return d.markerLabels ? d.markerLabels : []
+            },
             measureLabels = function(d) {
-                return d.measureLabels ? d.measureLabels : [] },
+                return d.measureLabels ? d.measureLabels : []
+            },
             forceX = [0] // List of numbers to Force into the X scale (ie. 0, or a max / min, etc.)
             ,
             width = 380,
@@ -2695,14 +2938,18 @@
                 wrap.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
                 var w0 = function(d) {
-                        return Math.abs(x0(d) - x0(0)) }, // TODO: could optimize by precalculating x0(0) and x1(0)
+                        return Math.abs(x0(d) - x0(0))
+                    }, // TODO: could optimize by precalculating x0(0) and x1(0)
                     w1 = function(d) {
-                        return Math.abs(x1(d) - x1(0)) };
+                        return Math.abs(x1(d) - x1(0))
+                    };
                 var xp0 = function(d) {
-                        return d < 0 ? x0(d) : x0(0) },
+                        return d < 0 ? x0(d) : x0(0)
+                    },
                     xp1 = function(d) {
-                        return d < 0 ? x1(d) : x1(0) };
-                
+                        return d < 0 ? x1(d) : x1(0)
+                    };
+
 
                 g.select('rect.nv-rangeMax')
                     .attr('height', availableHeight)
@@ -2777,7 +3024,7 @@
                     d3.select(this).classed("dragging", true);
                 }
 
-                function dragged(d) {                    
+                function dragged(d) {
                     var maxWidth = parseFloat($(this).siblings('.nv-rangeMax').attr('width'));
                     var positionHere = $(this).siblings('.nv-rangeMax').offset();
                     // console.log(typeof rangeMax);
@@ -2785,40 +3032,40 @@
                     var currentPosition = x1(d.value);
                     var currentPercentage = d.value;
                     var newPercentage = 0.01;
-                    if(isNaN(currentPosition)){
-                        currentPosition = 0.01;                        
+                    if (isNaN(currentPosition)) {
+                        currentPosition = 0.01;
                     }
-                    if(isNaN(currentPercentage)){
-                        currentPercentage = 0.01;                        
+                    if (isNaN(currentPercentage)) {
+                        currentPercentage = 0.01;
                     }
-                    if(isNaN(newPercentage)){
-                        newPercentage = 0.01;                        
+                    if (isNaN(newPercentage)) {
+                        newPercentage = 0.01;
                     }
-                    
-                    if(newPosition <= maxWidth){
-                        d3.select(this).attr('transform', function(d) {                            
+
+                    if (newPosition <= maxWidth) {
+                        d3.select(this).attr('transform', function(d) {
                             return 'translate(' + newPosition + ',' + (availableHeight / 2) + ')'
                         });
-                        newPercentage = (newPosition * currentPercentage)/currentPosition;
+                        newPercentage = (newPosition * currentPercentage) / currentPosition;
                         d.value = +newPercentage.toFixed(2);
-                    }else{
+                    } else {
                         newPosition = maxWidth;
-                        d3.select(this).attr('transform', function(d) {                            
+                        d3.select(this).attr('transform', function(d) {
                             return 'translate(' + newPosition + ',' + (availableHeight / 2) + ')'
                         });
-                        newPercentage = (newPosition * currentPercentage)/currentPosition;
+                        newPercentage = (newPosition * currentPercentage) / currentPosition;
                         d.value = +newPercentage.toFixed(2);
                     }
 
-                    if(newPosition >= 0){
-                        d3.select(this).attr('transform', function(d) {                            
+                    if (newPosition >= 0) {
+                        d3.select(this).attr('transform', function(d) {
                             return 'translate(' + newPosition + ',' + (availableHeight / 2) + ')'
                         });
-                        newPercentage = (newPosition * currentPercentage)/currentPosition;
+                        newPercentage = (newPosition * currentPercentage) / currentPosition;
                         d.value = +newPercentage.toFixed(0);
-                    }else{
+                    } else {
                         newPosition = 0;
-                        d3.select(this).attr('transform', function(d) {                            
+                        d3.select(this).attr('transform', function(d) {
                             return 'translate(' + newPosition + ',' + (availableHeight / 2) + ')'
                         });
                         newPercentage = 0;
@@ -2829,22 +3076,68 @@
                         label: d.label || 'Target'
                     })
 
-                   var indexToModify = $(this).parents('span').attr('id').split("_")[1];
-                   var totalPopulation = $('#totalPopulation_'+indexToModify).html();
-                   var targetKpiPercentage = d.value / 100;
-                   var targetKpiNumber = +(targetKpiPercentage * totalPopulation).toFixed(0);
-                   var currentKpiPercentage = parseFloat($('#kpiPercent_'+indexToModify).html());
+                    
+                    var indexToModify = $(this).parents('span').attr('id').split("_")[1];
+                    var totalPopulation = $('#totalPopulation_' + indexToModify).html();
+                    var targetKpiPercentage = d.value / 100;
+                    var targetKpiNumber = +(targetKpiPercentage * totalPopulation).toFixed(0);
+                    var currentKpiPercentage = parseFloat($('#kpiPercent_' + indexToModify).html());
+                    
+                    //change color during drag
+                    var fillRedColor = 'fill: rgb(217,83,79);';
+                    var fillBlueColor = 'fill: rgb(31,119,180);';
+                    var fillColor = (currentKpiPercentage >= d.value) ? fillBlueColor : fillRedColor;
+                    
 
-                   //change color during drag
-                   var fillRedColor = 'fill: rgb(217,83,79);';
-                   var fillBlueColor = 'fill: rgb(31,119,180);';
-                   var fillColor = (currentKpiPercentage >= d.value) ? fillBlueColor : fillRedColor;
-                   $(this).siblings('.nv-measure').attr('style',fillColor);
-                   $('#targetKpiNumber_'+indexToModify).html(targetKpiNumber);
+                    var detailKpiExists = $('.detailKPIRow').length > 0;
+                    if(detailKpiExists === true){
+                        totalPopulation = $('#detailtotalPopulation_' + indexToModify).html();
+                        targetKpiPercentage = d.value / 100;
+                        targetKpiNumber = +(targetKpiPercentage * totalPopulation).toFixed(0);
+                        currentKpiPercentage = parseFloat($('#detailkpiPercent_' + indexToModify).html());
+                        $('#detailtargetKpiNumber_' + indexToModify).html(targetKpiNumber);
+                        fillColor = (currentKpiPercentage >= d.value) ? fillBlueColor : fillRedColor;
+                    }else{
+                        $('#targetKpiNumber_' + indexToModify).html(targetKpiNumber);
+                    }
+                    $(this).siblings('.nv-measure').attr('style', fillColor);
+
+                    
+                    
                 }
 
                 function dragended(d) {
-                    console.log('dragended');
+                    // console.log('dragended');
+                    var indexToModify = $(this).parents('span').attr('id').split("_")[1];
+                    var kpiName = $('#kpiName_' + indexToModify).html();
+                    var andTableIndex = -1;
+                    var detailKpiExists = $('.detailKPIRow').length > 0;
+                    if (detailKpiExists === true) {
+                        var isDetailKPI = $(this).parents('.detailKPIRow').length > 0;
+                        if (isDetailKPI) {
+                            andTableIndex = indexToModify;
+                            indexToModify = parseInt($('.selectedKPIRow').attr('id').split('_')[1]);
+                            kpiName = $('#kpiName_' + indexToModify).html();
+                            // console.log(kpiName);
+                        }
+                    }
+
+                    var bulletChartJson = {
+                        "targetKpi": d.value,
+                        "kpiName": kpiName,
+                        "kpiIndex": indexToModify - 1,
+                        "andTableIndex": andTableIndex - 1
+                    };
+
+                    $.ajax({
+                        type: 'POST',
+                        data: JSON.stringify(bulletChartJson),
+                        contentType: 'application/json',
+                        url: 'http://localhost:3000/getBulletChartJson',
+                        success: function(data) {
+                            console.log(data);
+                        }
+                    });
                     d3.select(this).classed("dragging", false);
                 }
                 gEnter
@@ -2854,7 +3147,7 @@
                     .append('path')
                     .attr('class', 'nv-markerTriangle')
                     .attr('d', 'M0,' + h3 + 'L' + h3 + ',' + (-h3) + ' ' + (-h3) + ',' + (-h3) + 'Z')
-                    .on('mouseover', function(d) {                        
+                    .on('mouseover', function(d) {
                         dispatch.elementMouseover({
                             value: d.value,
                             label: d.label || 'Target',
@@ -2880,7 +3173,8 @@
                 g.selectAll("path.nv-markerTriangle")
                     .data(markerData)
                     .attr('transform', function(d) {
-                        return 'translate(' + x1(d.value) + ',' + (availableHeight / 2) + ')' });
+                        return 'translate(' + x1(d.value) + ',' + (availableHeight / 2) + ')'
+                    });
 
                 g.selectAll("path.nv-markerTriangle")
                     .call(drag);
@@ -2923,25 +3217,54 @@
 
         chart._options = Object.create({}, {
             // simple options, just get/set the necessary values
-            ranges: { get: function() {
-                    return ranges; }, set: function(_) { ranges = _; } }, // ranges (bad, satisfactory, good)
-            markers: { get: function() {
-                    return markers; }, set: function(_) { markers = _; } }, // markers (previous, goal)
-            measures: { get: function() {
-                    return measures; }, set: function(_) { measures = _; } }, // measures (actual, forecast)
-            forceX: { get: function() {
-                    return forceX; }, set: function(_) { forceX = _; } },
-            width: { get: function() {
-                    return width; }, set: function(_) { width = _; } },
-            height: { get: function() {
-                    return height; }, set: function(_) { height = _; } },
-            tickFormat: { get: function() {
-                    return tickFormat; }, set: function(_) { tickFormat = _; } },
+            ranges: {
+                get: function() {
+                    return ranges;
+                },
+                set: function(_) { ranges = _; }
+            }, // ranges (bad, satisfactory, good)
+            markers: {
+                get: function() {
+                    return markers;
+                },
+                set: function(_) { markers = _; }
+            }, // markers (previous, goal)
+            measures: {
+                get: function() {
+                    return measures;
+                },
+                set: function(_) { measures = _; }
+            }, // measures (actual, forecast)
+            forceX: {
+                get: function() {
+                    return forceX;
+                },
+                set: function(_) { forceX = _; }
+            },
+            width: {
+                get: function() {
+                    return width;
+                },
+                set: function(_) { width = _; }
+            },
+            height: {
+                get: function() {
+                    return height;
+                },
+                set: function(_) { height = _; }
+            },
+            tickFormat: {
+                get: function() {
+                    return tickFormat;
+                },
+                set: function(_) { tickFormat = _; }
+            },
 
             // options that require extra logic in the setter
             margin: {
                 get: function() {
-                    return margin; },
+                    return margin;
+                },
                 set: function(_) {
                     margin.top = _.top !== undefined ? _.top : margin.top;
                     margin.right = _.right !== undefined ? _.right : margin.right;
@@ -2951,7 +3274,8 @@
             },
             orient: {
                 get: function() {
-                    return orient; },
+                    return orient;
+                },
                 set: function(_) { // left, right, top, bottom
                     orient = _;
                     reverse = orient == 'right' || orient == 'bottom';
@@ -2959,7 +3283,8 @@
             },
             color: {
                 get: function() {
-                    return color; },
+                    return color;
+                },
                 set: function(_) {
                     color = nv.utils.getColor(_);
                 }
@@ -2990,11 +3315,14 @@
             reverse = false,
             margin = { top: 5, right: 40, bottom: 20, left: 120 },
             ranges = function(d) {
-                return d.ranges },
+                return d.ranges
+            },
             markers = function(d) {
-                return d.markers ? d.markers : [] },
+                return d.markers ? d.markers : []
+            },
             measures = function(d) {
-                return d.measures },
+                return d.measures
+            },
             width = null,
             height = 55,
             tickFormat = null,
@@ -3055,9 +3383,11 @@
                 this.__chart__ = x1;
 
                 var w0 = function(d) {
-                        return Math.abs(x0(d) - x0(0)) }, // TODO: could optimize by precalculating x0(0) and x1(0)
+                        return Math.abs(x0(d) - x0(0))
+                    }, // TODO: could optimize by precalculating x0(0) and x1(0)
                     w1 = function(d) {
-                        return Math.abs(x1(d) - x1(0)) };
+                        return Math.abs(x1(d) - x1(0))
+                    };
 
                 var title = gEnter.select('.nv-titles').append('g')
                     .attr('text-anchor', 'end')
@@ -3065,13 +3395,15 @@
                 title.append('text')
                     .attr('class', 'nv-title')
                     .text(function(d) {
-                        return d.title; });
+                        return d.title;
+                    });
 
                 title.append('text')
                     .attr('class', 'nv-subtitle')
                     .attr('dy', '1em')
                     .text(function(d) {
-                        return d.subtitle; });
+                        return d.subtitle;
+                    });
 
                 bullet
                     .width(availableWidth)
@@ -3093,7 +3425,8 @@
                 var tickEnter = tick.enter().append('g')
                     .attr('class', 'nv-tick')
                     .attr('transform', function(d) {
-                        return 'translate(' + x0(d) + ',0)' })
+                        return 'translate(' + x0(d) + ',0)'
+                    })
                     .style('opacity', 1e-6);
 
                 tickEnter.append('line')
@@ -3109,7 +3442,8 @@
                 // Transition the updating ticks to the new scale, x1.
                 var tickUpdate = d3.transition(tick)
                     .attr('transform', function(d) {
-                        return 'translate(' + x1(d) + ',0)' })
+                        return 'translate(' + x1(d) + ',0)'
+                    })
                     .style('opacity', 1);
 
                 tickUpdate.select('line')
@@ -3122,7 +3456,8 @@
                 // Transition the exiting ticks to the new scale, x1.
                 d3.transition(tick.exit())
                     .attr('transform', function(d) {
-                        return 'translate(' + x1(d) + ',0)' })
+                        return 'translate(' + x1(d) + ',0)'
+                    })
                     .style('opacity', 1e-6)
                     .remove();
             });
@@ -3164,27 +3499,60 @@
 
         chart._options = Object.create({}, {
             // simple options, just get/set the necessary values
-            ranges: { get: function() {
-                    return ranges; }, set: function(_) { ranges = _; } }, // ranges (bad, satisfactory, good)
-            markers: { get: function() {
-                    return markers; }, set: function(_) { markers = _; } }, // markers (previous, goal)
-            measures: { get: function() {
-                    return measures; }, set: function(_) { measures = _; } }, // measures (actual, forecast)
-            width: { get: function() {
-                    return width; }, set: function(_) { width = _; } },
-            height: { get: function() {
-                    return height; }, set: function(_) { height = _; } },
-            tickFormat: { get: function() {
-                    return tickFormat; }, set: function(_) { tickFormat = _; } },
-            ticks: { get: function() {
-                    return ticks; }, set: function(_) { ticks = _; } },
-            noData: { get: function() {
-                    return noData; }, set: function(_) { noData = _; } },
+            ranges: {
+                get: function() {
+                    return ranges;
+                },
+                set: function(_) { ranges = _; }
+            }, // ranges (bad, satisfactory, good)
+            markers: {
+                get: function() {
+                    return markers;
+                },
+                set: function(_) { markers = _; }
+            }, // markers (previous, goal)
+            measures: {
+                get: function() {
+                    return measures;
+                },
+                set: function(_) { measures = _; }
+            }, // measures (actual, forecast)
+            width: {
+                get: function() {
+                    return width;
+                },
+                set: function(_) { width = _; }
+            },
+            height: {
+                get: function() {
+                    return height;
+                },
+                set: function(_) { height = _; }
+            },
+            tickFormat: {
+                get: function() {
+                    return tickFormat;
+                },
+                set: function(_) { tickFormat = _; }
+            },
+            ticks: {
+                get: function() {
+                    return ticks;
+                },
+                set: function(_) { ticks = _; }
+            },
+            noData: {
+                get: function() {
+                    return noData;
+                },
+                set: function(_) { noData = _; }
+            },
 
             // options that require extra logic in the setter
             margin: {
                 get: function() {
-                    return margin; },
+                    return margin;
+                },
                 set: function(_) {
                     margin.top = _.top !== undefined ? _.top : margin.top;
                     margin.right = _.right !== undefined ? _.right : margin.right;
@@ -3194,7 +3562,8 @@
             },
             orient: {
                 get: function() {
-                    return orient; },
+                    return orient;
+                },
                 set: function(_) { // left, right, top, bottom
                     orient = _;
                     reverse = orient == 'right' || orient == 'bottom';
@@ -3225,17 +3594,23 @@
             container, x = d3.scale.linear(),
             y = d3.scale.linear(),
             getX = function(d) {
-                return d.x },
+                return d.x
+            },
             getY = function(d) {
-                return d.y },
+                return d.y
+            },
             getOpen = function(d) {
-                return d.open },
+                return d.open
+            },
             getClose = function(d) {
-                return d.close },
+                return d.close
+            },
             getHigh = function(d) {
-                return d.high },
+                return d.high
+            },
             getLow = function(d) {
-                return d.low },
+                return d.low
+            },
             forceX = [],
             forceY = [],
             padData = false // If true, adds half a data points width to front and back, for lining up a line chart with a bar chart
@@ -3315,7 +3690,8 @@
 
                 var ticks = wrap.select('.nv-ticks').selectAll('.nv-tick')
                     .data(function(d) {
-                        return d });
+                        return d
+                    });
                 ticks.exit().remove();
 
                 var tickGroups = ticks.enter().append('g');
@@ -3323,18 +3699,22 @@
                 // The colors are currently controlled by CSS.
                 ticks
                     .attr('class', function(d, i, j) {
-                        return (getOpen(d, i) > getClose(d, i) ? 'nv-tick negative' : 'nv-tick positive') + ' nv-tick-' + j + '-' + i });
+                        return (getOpen(d, i) > getClose(d, i) ? 'nv-tick negative' : 'nv-tick positive') + ' nv-tick-' + j + '-' + i
+                    });
 
                 var lines = tickGroups.append('line')
                     .attr('class', 'nv-candlestick-lines')
                     .attr('transform', function(d, i) {
-                        return 'translate(' + x(getX(d, i)) + ',0)'; })
+                        return 'translate(' + x(getX(d, i)) + ',0)';
+                    })
                     .attr('x1', 0)
                     .attr('y1', function(d, i) {
-                        return y(getHigh(d, i)); })
+                        return y(getHigh(d, i));
+                    })
                     .attr('x2', 0)
                     .attr('y2', function(d, i) {
-                        return y(getLow(d, i)); });
+                        return y(getLow(d, i));
+                    });
 
                 var rects = tickGroups.append('rect')
                     .attr('class', 'nv-candlestick-rects nv-bars')
@@ -3352,13 +3732,16 @@
 
                 ticks.select('.nv-candlestick-lines').transition()
                     .attr('transform', function(d, i) {
-                        return 'translate(' + x(getX(d, i)) + ',0)'; })
+                        return 'translate(' + x(getX(d, i)) + ',0)';
+                    })
                     .attr('x1', 0)
                     .attr('y1', function(d, i) {
-                        return y(getHigh(d, i)); })
+                        return y(getHigh(d, i));
+                    })
                     .attr('x2', 0)
                     .attr('y2', function(d, i) {
-                        return y(getLow(d, i)); });
+                        return y(getLow(d, i));
+                    });
 
                 ticks.select('.nv-candlestick-rects').transition()
                     .attr('transform', function(d, i) {
@@ -3399,52 +3782,133 @@
 
         chart._options = Object.create({}, {
             // simple options, just get/set the necessary values
-            width: { get: function() {
-                    return width; }, set: function(_) { width = _; } },
-            height: { get: function() {
-                    return height; }, set: function(_) { height = _; } },
-            xScale: { get: function() {
-                    return x; }, set: function(_) { x = _; } },
-            yScale: { get: function() {
-                    return y; }, set: function(_) { y = _; } },
-            xDomain: { get: function() {
-                    return xDomain; }, set: function(_) { xDomain = _; } },
-            yDomain: { get: function() {
-                    return yDomain; }, set: function(_) { yDomain = _; } },
-            xRange: { get: function() {
-                    return xRange; }, set: function(_) { xRange = _; } },
-            yRange: { get: function() {
-                    return yRange; }, set: function(_) { yRange = _; } },
-            forceX: { get: function() {
-                    return forceX; }, set: function(_) { forceX = _; } },
-            forceY: { get: function() {
-                    return forceY; }, set: function(_) { forceY = _; } },
-            padData: { get: function() {
-                    return padData; }, set: function(_) { padData = _; } },
-            clipEdge: { get: function() {
-                    return clipEdge; }, set: function(_) { clipEdge = _; } },
-            id: { get: function() {
-                    return id; }, set: function(_) { id = _; } },
-            interactive: { get: function() {
-                    return interactive; }, set: function(_) { interactive = _; } },
+            width: {
+                get: function() {
+                    return width;
+                },
+                set: function(_) { width = _; }
+            },
+            height: {
+                get: function() {
+                    return height;
+                },
+                set: function(_) { height = _; }
+            },
+            xScale: {
+                get: function() {
+                    return x;
+                },
+                set: function(_) { x = _; }
+            },
+            yScale: {
+                get: function() {
+                    return y;
+                },
+                set: function(_) { y = _; }
+            },
+            xDomain: {
+                get: function() {
+                    return xDomain;
+                },
+                set: function(_) { xDomain = _; }
+            },
+            yDomain: {
+                get: function() {
+                    return yDomain;
+                },
+                set: function(_) { yDomain = _; }
+            },
+            xRange: {
+                get: function() {
+                    return xRange;
+                },
+                set: function(_) { xRange = _; }
+            },
+            yRange: {
+                get: function() {
+                    return yRange;
+                },
+                set: function(_) { yRange = _; }
+            },
+            forceX: {
+                get: function() {
+                    return forceX;
+                },
+                set: function(_) { forceX = _; }
+            },
+            forceY: {
+                get: function() {
+                    return forceY;
+                },
+                set: function(_) { forceY = _; }
+            },
+            padData: {
+                get: function() {
+                    return padData;
+                },
+                set: function(_) { padData = _; }
+            },
+            clipEdge: {
+                get: function() {
+                    return clipEdge;
+                },
+                set: function(_) { clipEdge = _; }
+            },
+            id: {
+                get: function() {
+                    return id;
+                },
+                set: function(_) { id = _; }
+            },
+            interactive: {
+                get: function() {
+                    return interactive;
+                },
+                set: function(_) { interactive = _; }
+            },
 
-            x: { get: function() {
-                    return getX; }, set: function(_) { getX = _; } },
-            y: { get: function() {
-                    return getY; }, set: function(_) { getY = _; } },
-            open: { get: function() {
-                    return getOpen(); }, set: function(_) { getOpen = _; } },
-            close: { get: function() {
-                    return getClose(); }, set: function(_) { getClose = _; } },
-            high: { get: function() {
-                    return getHigh; }, set: function(_) { getHigh = _; } },
-            low: { get: function() {
-                    return getLow; }, set: function(_) { getLow = _; } },
+            x: {
+                get: function() {
+                    return getX;
+                },
+                set: function(_) { getX = _; }
+            },
+            y: {
+                get: function() {
+                    return getY;
+                },
+                set: function(_) { getY = _; }
+            },
+            open: {
+                get: function() {
+                    return getOpen();
+                },
+                set: function(_) { getOpen = _; }
+            },
+            close: {
+                get: function() {
+                    return getClose();
+                },
+                set: function(_) { getClose = _; }
+            },
+            high: {
+                get: function() {
+                    return getHigh;
+                },
+                set: function(_) { getHigh = _; }
+            },
+            low: {
+                get: function() {
+                    return getLow;
+                },
+                set: function(_) { getLow = _; }
+            },
 
             // options that require extra logic in the setter
             margin: {
                 get: function() {
-                    return margin; },
+                    return margin;
+                },
                 set: function(_) {
                     margin.top = _.top != undefined ? _.top : margin.top;
                     margin.right = _.right != undefined ? _.right : margin.right;
@@ -3454,7 +3918,8 @@
             },
             color: {
                 get: function() {
-                    return color; },
+                    return color;
+                },
                 set: function(_) {
                     color = nv.utils.getColor(_);
                 }
@@ -3498,7 +3963,8 @@
             defaultState = null,
             noData = null,
             average = function(d) {
-                return d.average },
+                return d.average
+            },
             dispatch = d3.dispatch('stateChange', 'changeState', 'renderEnd'),
             transitionDuration = 250,
             duration = 250,
@@ -3531,7 +3997,8 @@
             return function() {
                 return {
                     active: data.map(function(d) {
-                        return !d.disabled }),
+                        return !d.disabled
+                    }),
                     index: index.i,
                     rescaleY: rescaleY
                 };
@@ -3580,7 +4047,8 @@
 
                 // DEPRECATED set state.disableddisabled
                 state.disabled = data.map(function(d) {
-                    return !!d.disabled });
+                    return !!d.disabled
+                });
 
                 if (!defaultState) {
                     var key;
@@ -3621,7 +4089,8 @@
 
                 // Display No Data message if there's nothing to show.
                 if (!data || !data.length || !data.filter(function(d) {
-                        return d.values.length }).length) {
+                        return d.values.length
+                    }).length) {
                     nv.utils.noData(chart, container)
                     return chart;
                 } else {
@@ -3635,7 +4104,8 @@
                 if (!rescaleY) {
                     var seriesDomains = data
                         .filter(function(series) {
-                            return !series.disabled })
+                            return !series.disabled
+                        })
                         .map(function(series, i) {
                             var initialDomain = d3.extent(series.values, lines.y());
 
@@ -3650,9 +4120,11 @@
 
                     var completeDomain = [
                         d3.min(seriesDomains, function(d) {
-                            return d[0] }),
+                            return d[0]
+                        }),
                         d3.max(seriesDomains, function(d) {
-                            return d[1] })
+                            return d[1]
+                        })
                     ];
 
                     lines.yDomain(completeDomain);
@@ -3725,7 +4197,8 @@
 
                 // Show error if series goes below 100%
                 var tempDisabled = data.filter(function(d) {
-                    return d.tempDisabled });
+                    return d.tempDisabled
+                });
 
                 wrap.select('.tempDisabled').remove(); //clean-up and prevent duplicates
                 if (tempDisabled.length) {
@@ -3734,7 +4207,8 @@
                         .attr('y', '-.71em')
                         .style('text-anchor', 'end')
                         .text(tempDisabled.map(function(d) {
-                            return d.key }).join(', ') + ' values cannot be calculated for this time period.');
+                            return d.key
+                        }).join(', ') + ' values cannot be calculated for this time period.');
                 }
 
                 //Set up interactive layer
@@ -3758,17 +4232,20 @@
                 lines
                 //.x(function(d) { return d.x })
                     .y(function(d) {
-                        return d.display.y })
+                        return d.display.y
+                    })
                     .width(availableWidth)
                     .height(availableHeight)
                     .color(data.map(function(d, i) {
                         return d.color || color(d, i);
                     }).filter(function(d, i) {
-                        return !data[i].disabled && !data[i].tempDisabled; }));
+                        return !data[i].disabled && !data[i].tempDisabled;
+                    }));
 
                 var linesWrap = g.select('.nv-linesWrap')
                     .datum(data.filter(function(d) {
-                        return !d.disabled && !d.tempDisabled }));
+                        return !d.disabled && !d.tempDisabled
+                    }));
 
                 linesWrap.call(lines);
 
@@ -3783,7 +4260,8 @@
 
                 var avgLines = g.select(".nv-avgLinesWrap").selectAll("line")
                     .data(avgLineData, function(d) {
-                        return d.key; });
+                        return d.key;
+                    });
 
                 var getAvgLineY = function(d) {
                     //If average lines go off the svg element, clamp them to the svg bounds.
@@ -3832,7 +4310,8 @@
 
                 indexLine
                     .attr('transform', function(d) {
-                        return 'translate(' + dx(d.i) + ',0)' })
+                        return 'translate(' + dx(d.i) + ',0)'
+                    })
                     .attr('height', availableHeight);
 
                 // Setup Axes
@@ -3942,7 +4421,8 @@
                         var domainExtent = Math.abs(chart.yScale().domain()[0] - chart.yScale().domain()[1]);
                         var threshold = 0.03 * domainExtent;
                         var indexToHighlight = nv.nearestValueIndex(allData.map(function(d) {
-                            return d.value }), yValue, threshold);
+                            return d.value
+                        }), yValue, threshold);
                         if (indexToHighlight !== null)
                             allData[indexToHighlight].highlight = true;
                     }
@@ -4073,33 +4553,78 @@
 
         chart._options = Object.create({}, {
             // simple options, just get/set the necessary values
-            width: { get: function() {
-                    return width; }, set: function(_) { width = _; } },
-            height: { get: function() {
-                    return height; }, set: function(_) { height = _; } },
-            rescaleY: { get: function() {
-                    return rescaleY; }, set: function(_) { rescaleY = _; } },
-            showControls: { get: function() {
-                    return showControls; }, set: function(_) { showControls = _; } },
-            showLegend: { get: function() {
-                    return showLegend; }, set: function(_) { showLegend = _; } },
-            average: { get: function() {
-                    return average; }, set: function(_) { average = _; } },
-            defaultState: { get: function() {
-                    return defaultState; }, set: function(_) { defaultState = _; } },
-            noData: { get: function() {
-                    return noData; }, set: function(_) { noData = _; } },
-            showXAxis: { get: function() {
-                    return showXAxis; }, set: function(_) { showXAxis = _; } },
-            showYAxis: { get: function() {
-                    return showYAxis; }, set: function(_) { showYAxis = _; } },
-            noErrorCheck: { get: function() {
-                    return noErrorCheck; }, set: function(_) { noErrorCheck = _; } },
+            width: {
+                get: function() {
+                    return width;
+                },
+                set: function(_) { width = _; }
+            },
+            height: {
+                get: function() {
+                    return height;
+                },
+                set: function(_) { height = _; }
+            },
+            rescaleY: {
+                get: function() {
+                    return rescaleY;
+                },
+                set: function(_) { rescaleY = _; }
+            },
+            showControls: {
+                get: function() {
+                    return showControls;
+                },
+                set: function(_) { showControls = _; }
+            },
+            showLegend: {
+                get: function() {
+                    return showLegend;
+                },
+                set: function(_) { showLegend = _; }
+            },
+            average: {
+                get: function() {
+                    return average;
+                },
+                set: function(_) { average = _; }
+            },
+            defaultState: {
+                get: function() {
+                    return defaultState;
+                },
+                set: function(_) { defaultState = _; }
+            },
+            noData: {
+                get: function() {
+                    return noData;
+                },
+                set: function(_) { noData = _; }
+            },
+            showXAxis: {
+                get: function() {
+                    return showXAxis;
+                },
+                set: function(_) { showXAxis = _; }
+            },
+            showYAxis: {
+                get: function() {
+                    return showYAxis;
+                },
+                set: function(_) { showYAxis = _; }
+            },
+            noErrorCheck: {
+                get: function() {
+                    return noErrorCheck;
+                },
+                set: function(_) { noErrorCheck = _; }
+            },
 
             // options that require extra logic in the setter
             margin: {
                 get: function() {
-                    return margin; },
+                    return margin;
+                },
                 set: function(_) {
                     margin.top = _.top !== undefined ? _.top : margin.top;
                     margin.right = _.right !== undefined ? _.right : margin.right;
@@ -4109,7 +4634,8 @@
             },
             color: {
                 get: function() {
-                    return color; },
+                    return color;
+                },
                 set: function(_) {
                     color = nv.utils.getColor(_);
                     legend.color(color);
@@ -4117,7 +4643,8 @@
             },
             useInteractiveGuideline: {
                 get: function() {
-                    return useInteractiveGuideline; },
+                    return useInteractiveGuideline;
+                },
                 set: function(_) {
                     useInteractiveGuideline = _;
                     if (_ === true) {
@@ -4128,7 +4655,8 @@
             },
             rightAlignYAxis: {
                 get: function() {
-                    return rightAlignYAxis; },
+                    return rightAlignYAxis;
+                },
                 set: function(_) {
                     rightAlignYAxis = _;
                     yAxis.orient((_) ? 'right' : 'left');
@@ -4136,7 +4664,8 @@
             },
             duration: {
                 get: function() {
-                    return duration; },
+                    return duration;
+                },
                 set: function(_) {
                     duration = _;
                     lines.duration(duration);
@@ -4168,9 +4697,11 @@
             container, x = d3.scale.ordinal(),
             y = d3.scale.linear(),
             getX = function(d) {
-                return d.x },
+                return d.x
+            },
             getY = function(d) {
-                return d.y },
+                return d.y
+            },
             forceY = [0] // 0 is forced by default.. this makes sense for the majority of bar graphs... user can always do chart.forceY([]) to remove
             ,
             color = nv.utils.defaultColor(),
@@ -4213,10 +4744,12 @@
                     });
 
                 x.domain(xDomain || d3.merge(seriesData).map(function(d) {
-                        return d.x }))
+                        return d.x
+                    }))
                     .rangeBands(xRange || [0, availableWidth], .1);
                 y.domain(yDomain || d3.extent(d3.merge(seriesData).map(function(d) {
-                    return d.y }).concat(forceY)));
+                    return d.y
+                }).concat(forceY)));
 
                 // If showValues, pad the Y axis range to account for label height
                 if (showValues) y.range(yRange || [availableHeight - (y.domain()[0] < 0 ? 12 : 0), y.domain()[1] > 0 ? 12 : 0]);
@@ -4238,8 +4771,10 @@
                 //TODO: by definition, the discrete bar should not have multiple groups, will modify/remove later
                 var groups = wrap.select('.nv-groups').selectAll('.nv-group')
                     .data(function(d) {
-                        return d }, function(d) {
-                        return d.key });
+                        return d
+                    }, function(d) {
+                        return d.key
+                    });
                 groups.enter().append('g')
                     .style('stroke-opacity', 1e-6)
                     .style('fill-opacity', 1e-6);
@@ -4250,9 +4785,11 @@
                     .remove();
                 groups
                     .attr('class', function(d, i) {
-                        return 'nv-group nv-series-' + i })
+                        return 'nv-group nv-series-' + i
+                    })
                     .classed('hover', function(d) {
-                        return d.hover });
+                        return d.hover
+                    });
                 groups
                     .watchTransition(renderWatch, 'discreteBar: groups')
                     .style('stroke-opacity', 1)
@@ -4260,7 +4797,8 @@
 
                 var bars = groups.selectAll('g.nv-bar')
                     .data(function(d) {
-                        return d.values });
+                        return d.values
+                    });
                 bars.exit().remove();
 
                 var barsEnter = bars.enter().append('g')
@@ -4320,11 +4858,13 @@
 
                     bars.select('text')
                         .text(function(d, i) {
-                            return valueFormat(getY(d, i)) })
+                            return valueFormat(getY(d, i))
+                        })
                         .watchTransition(renderWatch, 'discreteBar: bars text')
                         .attr('x', x.rangeBand() * .9 / 2)
                         .attr('y', function(d, i) {
-                            return getY(d, i) < 0 ? y(getY(d, i)) - y(0) + 12 : -4 })
+                            return getY(d, i) < 0 ? y(getY(d, i)) - y(0) + 12 : -4
+                        })
 
                     ;
                 } else {
@@ -4333,11 +4873,14 @@
 
                 bars
                     .attr('class', function(d, i) {
-                        return getY(d, i) < 0 ? 'nv-bar negative' : 'nv-bar positive' })
+                        return getY(d, i) < 0 ? 'nv-bar negative' : 'nv-bar positive'
+                    })
                     .style('fill', function(d, i) {
-                        return d.color || color(d, i) })
+                        return d.color || color(d, i)
+                    })
                     .style('stroke', function(d, i) {
-                        return d.color || color(d, i) })
+                        return d.color || color(d, i)
+                    })
                     .select('rect')
                     .attr('class', rectClass)
                     .watchTransition(renderWatch, 'discreteBar: bars rect')
@@ -4379,41 +4922,102 @@
 
         chart._options = Object.create({}, {
             // simple options, just get/set the necessary values
-            width: { get: function() {
-                    return width; }, set: function(_) { width = _; } },
-            height: { get: function() {
-                    return height; }, set: function(_) { height = _; } },
-            forceY: { get: function() {
-                    return forceY; }, set: function(_) { forceY = _; } },
-            showValues: { get: function() {
-                    return showValues; }, set: function(_) { showValues = _; } },
-            x: { get: function() {
-                    return getX; }, set: function(_) { getX = _; } },
-            y: { get: function() {
-                    return getY; }, set: function(_) { getY = _; } },
-            xScale: { get: function() {
-                    return x; }, set: function(_) { x = _; } },
-            yScale: { get: function() {
-                    return y; }, set: function(_) { y = _; } },
-            xDomain: { get: function() {
-                    return xDomain; }, set: function(_) { xDomain = _; } },
-            yDomain: { get: function() {
-                    return yDomain; }, set: function(_) { yDomain = _; } },
-            xRange: { get: function() {
-                    return xRange; }, set: function(_) { xRange = _; } },
-            yRange: { get: function() {
-                    return yRange; }, set: function(_) { yRange = _; } },
-            valueFormat: { get: function() {
-                    return valueFormat; }, set: function(_) { valueFormat = _; } },
-            id: { get: function() {
-                    return id; }, set: function(_) { id = _; } },
-            rectClass: { get: function() {
-                    return rectClass; }, set: function(_) { rectClass = _; } },
+            width: {
+                get: function() {
+                    return width;
+                },
+                set: function(_) { width = _; }
+            },
+            height: {
+                get: function() {
+                    return height;
+                },
+                set: function(_) { height = _; }
+            },
+            forceY: {
+                get: function() {
+                    return forceY;
+                },
+                set: function(_) { forceY = _; }
+            },
+            showValues: {
+                get: function() {
+                    return showValues;
+                },
+                set: function(_) { showValues = _; }
+            },
+            x: {
+                get: function() {
+                    return getX;
+                },
+                set: function(_) { getX = _; }
+            },
+            y: {
+                get: function() {
+                    return getY;
+                },
+                set: function(_) { getY = _; }
+            },
+            xScale: {
+                get: function() {
+                    return x;
+                },
+                set: function(_) { x = _; }
+            },
+            yScale: {
+                get: function() {
+                    return y;
+                },
+                set: function(_) { y = _; }
+            },
+            xDomain: {
+                get: function() {
+                    return xDomain;
+                },
+                set: function(_) { xDomain = _; }
+            },
+            yDomain: {
+                get: function() {
+                    return yDomain;
+                },
+                set: function(_) { yDomain = _; }
+            },
+            xRange: {
+                get: function() {
+                    return xRange;
+                },
+                set: function(_) { xRange = _; }
+            },
+            yRange: {
+                get: function() {
+                    return yRange;
+                },
+                set: function(_) { yRange = _; }
+            },
+            valueFormat: {
+                get: function() {
+                    return valueFormat;
+                },
+                set: function(_) { valueFormat = _; }
+            },
+            id: {
+                get: function() {
+                    return id;
+                },
+                set: function(_) { id = _; }
+            },
+            rectClass: {
+                get: function() {
+                    return rectClass;
+                },
+                set: function(_) { rectClass = _; }
+            },
 
             // options that require extra logic in the setter
             margin: {
                 get: function() {
-                    return margin; },
+                    return margin;
+                },
                 set: function(_) {
                     margin.top = _.top !== undefined ? _.top : margin.top;
                     margin.right = _.right !== undefined ? _.right : margin.right;
@@ -4423,14 +5027,16 @@
             },
             color: {
                 get: function() {
-                    return color; },
+                    return color;
+                },
                 set: function(_) {
                     color = nv.utils.getColor(_);
                 }
             },
             duration: {
                 get: function() {
-                    return duration; },
+                    return duration;
+                },
                 set: function(_) {
                     duration = _;
                     renderWatch.reset(duration);
@@ -4475,7 +5081,8 @@
             .orient('bottom')
             .showMaxMin(false)
             .tickFormat(function(d) {
-                return d });
+                return d
+            });
         yAxis
             .orient((rightAlignYAxis) ? 'right' : 'left')
             .tickFormat(d3.format(',.1f'));
@@ -4517,7 +5124,8 @@
 
                 // Display No Data message if there's nothing to show.
                 if (!data || !data.length || !data.filter(function(d) {
-                        return d.values.length }).length) {
+                        return d.values.length
+                    }).length) {
                     nv.utils.noData(chart, container);
                     return chart;
                 } else {
@@ -4577,7 +5185,8 @@
 
                 var barsWrap = g.select('.nv-barsWrap')
                     .datum(data.filter(function(d) {
-                        return !d.disabled }));
+                        return !d.disabled
+                    }));
 
                 barsWrap.transition().call(discretebar);
 
@@ -4607,7 +5216,8 @@
                         xTicks
                             .selectAll('text')
                             .attr('transform', function(d, i, j) {
-                                return 'translate(0,' + (j % 2 == 0 ? '5' : '17') + ')' })
+                                return 'translate(0,' + (j % 2 == 0 ? '5' : '17') + ')'
+                            })
                     }
 
                     if (rotateLabels) {
@@ -4680,29 +5290,66 @@
 
         chart._options = Object.create({}, {
             // simple options, just get/set the necessary values
-            width: { get: function() {
-                    return width; }, set: function(_) { width = _; } },
-            height: { get: function() {
-                    return height; }, set: function(_) { height = _; } },
-            showLegend: { get: function() {
-                    return showLegend; }, set: function(_) { showLegend = _; } },
-            staggerLabels: { get: function() {
-                    return staggerLabels; }, set: function(_) { staggerLabels = _; } },
-            rotateLabels: { get: function() {
-                    return rotateLabels; }, set: function(_) { rotateLabels = _; } },
-            wrapLabels: { get: function() {
-                    return wrapLabels; }, set: function(_) { wrapLabels = !!_; } },
-            showXAxis: { get: function() {
-                    return showXAxis; }, set: function(_) { showXAxis = _; } },
-            showYAxis: { get: function() {
-                    return showYAxis; }, set: function(_) { showYAxis = _; } },
-            noData: { get: function() {
-                    return noData; }, set: function(_) { noData = _; } },
+            width: {
+                get: function() {
+                    return width;
+                },
+                set: function(_) { width = _; }
+            },
+            height: {
+                get: function() {
+                    return height;
+                },
+                set: function(_) { height = _; }
+            },
+            showLegend: {
+                get: function() {
+                    return showLegend;
+                },
+                set: function(_) { showLegend = _; }
+            },
+            staggerLabels: {
+                get: function() {
+                    return staggerLabels;
+                },
+                set: function(_) { staggerLabels = _; }
+            },
+            rotateLabels: {
+                get: function() {
+                    return rotateLabels;
+                },
+                set: function(_) { rotateLabels = _; }
+            },
+            wrapLabels: {
+                get: function() {
+                    return wrapLabels;
+                },
+                set: function(_) { wrapLabels = !!_; }
+            },
+            showXAxis: {
+                get: function() {
+                    return showXAxis;
+                },
+                set: function(_) { showXAxis = _; }
+            },
+            showYAxis: {
+                get: function() {
+                    return showYAxis;
+                },
+                set: function(_) { showYAxis = _; }
+            },
+            noData: {
+                get: function() {
+                    return noData;
+                },
+                set: function(_) { noData = _; }
+            },
 
             // options that require extra logic in the setter
             margin: {
                 get: function() {
-                    return margin; },
+                    return margin;
+                },
                 set: function(_) {
                     margin.top = _.top !== undefined ? _.top : margin.top;
                     margin.right = _.right !== undefined ? _.right : margin.right;
@@ -4712,7 +5359,8 @@
             },
             duration: {
                 get: function() {
-                    return duration; },
+                    return duration;
+                },
                 set: function(_) {
                     duration = _;
                     renderWatch.reset(duration);
@@ -4723,7 +5371,8 @@
             },
             color: {
                 get: function() {
-                    return color; },
+                    return color;
+                },
                 set: function(_) {
                     color = nv.utils.getColor(_);
                     discretebar.color(color);
@@ -4732,7 +5381,8 @@
             },
             rightAlignYAxis: {
                 get: function() {
-                    return rightAlignYAxis; },
+                    return rightAlignYAxis;
+                },
                 set: function(_) {
                     rightAlignYAxis = _;
                     yAxis.orient((_) ? 'right' : 'left');
@@ -4759,7 +5409,8 @@
             axis = 'x' // 'x' or 'y'... horizontal or vertical
             ,
             getData = function(d) {
-                return d[axis] } // defaults d.x or d.y
+                return d[axis]
+            } // defaults d.x or d.y
             ,
             color = nv.utils.defaultColor(),
             scale = d3.scale.linear(),
@@ -4810,43 +5461,55 @@
 
                 var distWrap = g.selectAll('g.nv-dist')
                     .data(function(d) {
-                        return d }, function(d) {
-                        return d.key });
+                        return d
+                    }, function(d) {
+                        return d.key
+                    });
 
                 distWrap.enter().append('g');
                 distWrap
                     .attr('class', function(d, i) {
-                        return 'nv-dist nv-series-' + i })
+                        return 'nv-dist nv-series-' + i
+                    })
                     .style('stroke', function(d, i) {
-                        return color(d, i) });
+                        return color(d, i)
+                    });
 
                 var dist = distWrap.selectAll('line.nv-dist' + axis)
                     .data(function(d) {
-                        return d.values })
+                        return d.values
+                    })
                 dist.enter().append('line')
                     .attr(axis + '1', function(d, i) {
-                        return scale0(getData(d, i)) })
+                        return scale0(getData(d, i))
+                    })
                     .attr(axis + '2', function(d, i) {
-                        return scale0(getData(d, i)) })
+                        return scale0(getData(d, i))
+                    })
                 renderWatch.transition(distWrap.exit().selectAll('line.nv-dist' + axis), 'dist exit')
                     // .transition()
                     .attr(axis + '1', function(d, i) {
-                        return scale(getData(d, i)) })
+                        return scale(getData(d, i))
+                    })
                     .attr(axis + '2', function(d, i) {
-                        return scale(getData(d, i)) })
+                        return scale(getData(d, i))
+                    })
                     .style('stroke-opacity', 0)
                     .remove();
                 dist
                     .attr('class', function(d, i) {
-                        return 'nv-dist' + axis + ' nv-dist' + axis + '-' + i })
+                        return 'nv-dist' + axis + ' nv-dist' + axis + '-' + i
+                    })
                     .attr(naxis + '1', 0)
                     .attr(naxis + '2', size);
                 renderWatch.transition(dist, 'dist')
                     // .transition()
                     .attr(axis + '1', function(d, i) {
-                        return scale(getData(d, i)) })
+                        return scale(getData(d, i))
+                    })
                     .attr(axis + '2', function(d, i) {
-                        return scale(getData(d, i)) })
+                        return scale(getData(d, i))
+                    })
 
 
                 scale0 = scale.copy();
@@ -4930,7 +5593,8 @@
             width = 400,
             height = 20,
             getKey = function(d) {
-                return d.key },
+                return d.key
+            },
             color = nv.utils.getColor(),
             maxKeyLength = 20 //default value for key lengths
             ,
@@ -5030,7 +5694,8 @@
                                 } else {
                                     d.disabled = !d.disabled;
                                     if (data.every(function(series) {
-                                            return series.disabled })) {
+                                            return series.disabled
+                                        })) {
                                         //the default behavior of NVD3 legends is, if every single series
                                         // is disabled, turn all series' back on.
                                         data.forEach(function(series) { series.disabled = false });
@@ -5045,9 +5710,11 @@
                                     d.disabled = !d.disabled;
                                     d.userDisabled = d.disabled;
                                     var engaged = data.filter(function(d) {
-                                        return !d.disengaged; });
+                                        return !d.disengaged;
+                                    });
                                     if (engaged.every(function(series) {
-                                            return series.userDisabled })) {
+                                            return series.userDisabled
+                                        })) {
                                         //the default behavior of NVD3 legends is, if every single series
                                         // is disabled, turn all series' back on.
                                         data.forEach(function(series) {
@@ -5058,9 +5725,11 @@
                             }
                             dispatch.stateChange({
                                 disabled: data.map(function(d) {
-                                    return !!d.disabled }),
+                                    return !!d.disabled
+                                }),
                                 disengaged: data.map(function(d) {
-                                    return !!d.disengaged })
+                                    return !!d.disengaged
+                                })
                             });
 
                         }
@@ -5081,13 +5750,15 @@
                             if (vers == 'furious') d.userDisabled = d.disabled;
                             dispatch.stateChange({
                                 disabled: data.map(function(d) {
-                                    return !!d.disabled })
+                                    return !!d.disabled
+                                })
                             });
                         }
                     });
 
                 series.classed('nv-disabled', function(d) {
-                    return d.userDisabled });
+                    return d.userDisabled
+                });
                 series.exit().remove();
 
                 seriesText
@@ -5216,7 +5887,8 @@
                 seriesShape
                     .style('fill', setBGColor)
                     .style('stroke', function(d, i) {
-                        return d.color || color(d, i) });
+                        return d.color || color(d, i)
+                    });
             });
 
             function setTextColor(d, i) {
@@ -5248,33 +5920,78 @@
 
         chart._options = Object.create({}, {
             // simple options, just get/set the necessary values
-            width: { get: function() {
-                    return width; }, set: function(_) { width = _; } },
-            height: { get: function() {
-                    return height; }, set: function(_) { height = _; } },
-            key: { get: function() {
-                    return getKey; }, set: function(_) { getKey = _; } },
-            align: { get: function() {
-                    return align; }, set: function(_) { align = _; } },
-            rightAlign: { get: function() {
-                    return rightAlign; }, set: function(_) { rightAlign = _; } },
-            maxKeyLength: { get: function() {
-                    return maxKeyLength; }, set: function(_) { maxKeyLength = _; } },
-            padding: { get: function() {
-                    return padding; }, set: function(_) { padding = _; } },
-            updateState: { get: function() {
-                    return updateState; }, set: function(_) { updateState = _; } },
-            radioButtonMode: { get: function() {
-                    return radioButtonMode; }, set: function(_) { radioButtonMode = _; } },
-            expanded: { get: function() {
-                    return expanded; }, set: function(_) { expanded = _; } },
-            vers: { get: function() {
-                    return vers; }, set: function(_) { vers = _; } },
+            width: {
+                get: function() {
+                    return width;
+                },
+                set: function(_) { width = _; }
+            },
+            height: {
+                get: function() {
+                    return height;
+                },
+                set: function(_) { height = _; }
+            },
+            key: {
+                get: function() {
+                    return getKey;
+                },
+                set: function(_) { getKey = _; }
+            },
+            align: {
+                get: function() {
+                    return align;
+                },
+                set: function(_) { align = _; }
+            },
+            rightAlign: {
+                get: function() {
+                    return rightAlign;
+                },
+                set: function(_) { rightAlign = _; }
+            },
+            maxKeyLength: {
+                get: function() {
+                    return maxKeyLength;
+                },
+                set: function(_) { maxKeyLength = _; }
+            },
+            padding: {
+                get: function() {
+                    return padding;
+                },
+                set: function(_) { padding = _; }
+            },
+            updateState: {
+                get: function() {
+                    return updateState;
+                },
+                set: function(_) { updateState = _; }
+            },
+            radioButtonMode: {
+                get: function() {
+                    return radioButtonMode;
+                },
+                set: function(_) { radioButtonMode = _; }
+            },
+            expanded: {
+                get: function() {
+                    return expanded;
+                },
+                set: function(_) { expanded = _; }
+            },
+            vers: {
+                get: function() {
+                    return vers;
+                },
+                set: function(_) { vers = _; }
+            },
 
             // options that require extra logic in the setter
             margin: {
                 get: function() {
-                    return margin; },
+                    return margin;
+                },
                 set: function(_) {
                     margin.top = _.top !== undefined ? _.top : margin.top;
                     margin.right = _.right !== undefined ? _.right : margin.right;
@@ -5284,7 +6001,8 @@
             },
             color: {
                 get: function() {
-                    return color; },
+                    return color;
+                },
                 set: function(_) {
                     color = nv.utils.getColor(_);
                 }
@@ -5312,9 +6030,11 @@
             x = d3.scale.linear(),
             y = d3.scale.linear(),
             getX = function(d) {
-                return d.x },
+                return d.x
+            },
             getY = function(d) {
-                return d.y },
+                return d.y
+            },
             forceX = [],
             forceY = [0],
             padData = false,
@@ -5387,18 +6107,23 @@
 
                 var bars = wrap.select('.nv-bars').selectAll('.nv-bar')
                     .data(function(d) {
-                        return d }, function(d, i) {
-                        return getX(d, i) });
+                        return d
+                    }, function(d, i) {
+                        return getX(d, i)
+                    });
                 bars.exit().remove();
 
                 bars.enter().append('rect')
                     .attr('x', 0)
                     .attr('y', function(d, i) {
-                        return nv.utils.NaNtoZero(y(Math.max(0, getY(d, i)))) })
+                        return nv.utils.NaNtoZero(y(Math.max(0, getY(d, i))))
+                    })
                     .attr('height', function(d, i) {
-                        return nv.utils.NaNtoZero(Math.abs(y(getY(d, i)) - y(0))) })
+                        return nv.utils.NaNtoZero(Math.abs(y(getY(d, i)) - y(0)))
+                    })
                     .attr('transform', function(d, i) {
-                        return 'translate(' + (x(getX(d, i)) - availableWidth / data[0].values.length * .45) + ',0)'; })
+                        return 'translate(' + (x(getX(d, i)) - availableWidth / data[0].values.length * .45) + ',0)';
+                    })
                     .on('mouseover', function(d, i) {
                         if (!interactive) return;
                         d3.select(this).classed('hover', true);
@@ -5447,12 +6172,15 @@
 
                 bars
                     .attr('fill', function(d, i) {
-                        return color(d, i); })
+                        return color(d, i);
+                    })
                     .attr('class', function(d, i, j) {
-                        return (getY(d, i) < 0 ? 'nv-bar negative' : 'nv-bar positive') + ' nv-bar-' + j + '-' + i })
+                        return (getY(d, i) < 0 ? 'nv-bar negative' : 'nv-bar positive') + ' nv-bar-' + j + '-' + i
+                    })
                     .watchTransition(renderWatch, 'bars')
                     .attr('transform', function(d, i) {
-                        return 'translate(' + (x(getX(d, i)) - availableWidth / data[0].values.length * .45) + ',0)'; })
+                        return 'translate(' + (x(getX(d, i)) - availableWidth / data[0].values.length * .45) + ',0)';
+                    })
                     //TODO: better width calculations that don't assume always uniform data spacing;w
                     .attr('width', (availableWidth / data[0].values.length) * .9);
 
@@ -5466,7 +6194,8 @@
                         return nv.utils.NaNtoZero(rval);
                     })
                     .attr('height', function(d, i) {
-                        return nv.utils.NaNtoZero(Math.max(Math.abs(y(getY(d, i)) - y(0)), 1)) });
+                        return nv.utils.NaNtoZero(Math.max(Math.abs(y(getY(d, i)) - y(0)), 1))
+                    });
 
             });
 
@@ -5496,43 +6225,108 @@
 
         chart._options = Object.create({}, {
             // simple options, just get/set the necessary values
-            width: { get: function() {
-                    return width; }, set: function(_) { width = _; } },
-            height: { get: function() {
-                    return height; }, set: function(_) { height = _; } },
-            forceX: { get: function() {
-                    return forceX; }, set: function(_) { forceX = _; } },
-            forceY: { get: function() {
-                    return forceY; }, set: function(_) { forceY = _; } },
-            padData: { get: function() {
-                    return padData; }, set: function(_) { padData = _; } },
-            x: { get: function() {
-                    return getX; }, set: function(_) { getX = _; } },
-            y: { get: function() {
-                    return getY; }, set: function(_) { getY = _; } },
-            xScale: { get: function() {
-                    return x; }, set: function(_) { x = _; } },
-            yScale: { get: function() {
-                    return y; }, set: function(_) { y = _; } },
-            xDomain: { get: function() {
-                    return xDomain; }, set: function(_) { xDomain = _; } },
-            yDomain: { get: function() {
-                    return yDomain; }, set: function(_) { yDomain = _; } },
-            xRange: { get: function() {
-                    return xRange; }, set: function(_) { xRange = _; } },
-            yRange: { get: function() {
-                    return yRange; }, set: function(_) { yRange = _; } },
-            clipEdge: { get: function() {
-                    return clipEdge; }, set: function(_) { clipEdge = _; } },
-            id: { get: function() {
-                    return id; }, set: function(_) { id = _; } },
-            interactive: { get: function() {
-                    return interactive; }, set: function(_) { interactive = _; } },
+            width: {
+                get: function() {
+                    return width;
+                },
+                set: function(_) { width = _; }
+            },
+            height: {
+                get: function() {
+                    return height;
+                },
+                set: function(_) { height = _; }
+            },
+            forceX: {
+                get: function() {
+                    return forceX;
+                },
+                set: function(_) { forceX = _; }
+            },
+            forceY: {
+                get: function() {
+                    return forceY;
+                },
+                set: function(_) { forceY = _; }
+            },
+            padData: {
+                get: function() {
+                    return padData;
+                },
+                set: function(_) { padData = _; }
+            },
+            x: {
+                get: function() {
+                    return getX;
+                },
+                set: function(_) { getX = _; }
+            },
+            y: {
+                get: function() {
+                    return getY;
+                },
+                set: function(_) { getY = _; }
+            },
+            xScale: {
+                get: function() {
+                    return x;
+                },
+                set: function(_) { x = _; }
+            },
+            yScale: {
+                get: function() {
+                    return y;
+                },
+                set: function(_) { y = _; }
+            },
+            xDomain: {
+                get: function() {
+                    return xDomain;
+                },
+                set: function(_) { xDomain = _; }
+            },
+            yDomain: {
+                get: function() {
+                    return yDomain;
+                },
+                set: function(_) { yDomain = _; }
+            },
+            xRange: {
+                get: function() {
+                    return xRange;
+                },
+                set: function(_) { xRange = _; }
+            },
+            yRange: {
+                get: function() {
+                    return yRange;
+                },
+                set: function(_) { yRange = _; }
+            },
+            clipEdge: {
+                get: function() {
+                    return clipEdge;
+                },
+                set: function(_) { clipEdge = _; }
+            },
+            id: {
+                get: function() {
+                    return id;
+                },
+                set: function(_) { id = _; }
+            },
+            interactive: {
+                get: function() {
+                    return interactive;
+                },
+                set: function(_) { interactive = _; }
+            },
 
             // options that require extra logic in the setter
             margin: {
                 get: function() {
-                    return margin; },
+                    return margin;
+                },
                 set: function(_) {
                     margin.top = _.top !== undefined ? _.top : margin.top;
                     margin.right = _.right !== undefined ? _.right : margin.right;
@@ -5542,7 +6336,8 @@
             },
             color: {
                 get: function() {
-                    return color; },
+                    return color;
+                },
                 set: function(_) {
                     color = nv.utils.getColor(_);
                 }
@@ -5621,7 +6416,8 @@
 
                 //set state.disabled
                 state.disabled = data.map(function(d) {
-                    return !!d.disabled });
+                    return !!d.disabled
+                });
 
                 if (!defaultState) {
                     var key;
@@ -5636,7 +6432,8 @@
 
                 // Display noData message if there's nothing to show.
                 if (!data || !data.length || !data.filter(function(d) {
-                        return d.values.length }).length) {
+                        return d.values.length
+                    }).length) {
                     nv.utils.noData(chart, container)
                     return chart;
                 } else {
@@ -5697,11 +6494,13 @@
                     .color(data.map(function(d, i) {
                         return d.color || color(d, i);
                     }).filter(function(d, i) {
-                        return !data[i].disabled }));
+                        return !data[i].disabled
+                    }));
 
                 var barsWrap = g.select('.nv-barsWrap')
                     .datum(data.filter(function(d) {
-                        return !d.disabled }));
+                        return !d.disabled
+                    }));
                 barsWrap.transition().call(bars);
 
                 // Setup Axes
@@ -5782,7 +6581,8 @@
                     d.disabled = !d.disabled;
 
                     if (!data.filter(function(d) {
-                            return !d.disabled }).length) {
+                            return !d.disabled
+                        }).length) {
                         data.map(function(d) {
                             d.disabled = false;
                             wrap.selectAll('.nv-series').classed('disabled', false);
@@ -5791,7 +6591,8 @@
                     }
 
                     state.disabled = data.map(function(d) {
-                        return !!d.disabled });
+                        return !!d.disabled
+                    });
                     dispatch.stateChange(state);
 
                     selection.transition().call(chart);
@@ -5805,7 +6606,8 @@
                     d.disabled = false;
 
                     state.disabled = data.map(function(d) {
-                        return !!d.disabled });
+                        return !!d.disabled
+                    });
                     dispatch.stateChange(state);
                     chart.update();
                 });
@@ -5865,25 +6667,54 @@
 
         chart._options = Object.create({}, {
             // simple options, just get/set the necessary values
-            width: { get: function() {
-                    return width; }, set: function(_) { width = _; } },
-            height: { get: function() {
-                    return height; }, set: function(_) { height = _; } },
-            showLegend: { get: function() {
-                    return showLegend; }, set: function(_) { showLegend = _; } },
-            showXAxis: { get: function() {
-                    return showXAxis; }, set: function(_) { showXAxis = _; } },
-            showYAxis: { get: function() {
-                    return showYAxis; }, set: function(_) { showYAxis = _; } },
-            defaultState: { get: function() {
-                    return defaultState; }, set: function(_) { defaultState = _; } },
-            noData: { get: function() {
-                    return noData; }, set: function(_) { noData = _; } },
+            width: {
+                get: function() {
+                    return width;
+                },
+                set: function(_) { width = _; }
+            },
+            height: {
+                get: function() {
+                    return height;
+                },
+                set: function(_) { height = _; }
+            },
+            showLegend: {
+                get: function() {
+                    return showLegend;
+                },
+                set: function(_) { showLegend = _; }
+            },
+            showXAxis: {
+                get: function() {
+                    return showXAxis;
+                },
+                set: function(_) { showXAxis = _; }
+            },
+            showYAxis: {
+                get: function() {
+                    return showYAxis;
+                },
+                set: function(_) { showYAxis = _; }
+            },
+            defaultState: {
+                get: function() {
+                    return defaultState;
+                },
+                set: function(_) { defaultState = _; }
+            },
+            noData: {
+                get: function() {
+                    return noData;
+                },
+                set: function(_) { noData = _; }
+            },
 
             // options that require extra logic in the setter
             margin: {
                 get: function() {
-                    return margin; },
+                    return margin;
+                },
                 set: function(_) {
                     margin.top = _.top !== undefined ? _.top : margin.top;
                     margin.right = _.right !== undefined ? _.right : margin.right;
@@ -5893,7 +6724,8 @@
             },
             color: {
                 get: function() {
-                    return color; },
+                    return color;
+                },
                 set: function(_) {
                     color = nv.utils.getColor(_);
                     legend.color(color);
@@ -5902,7 +6734,8 @@
             },
             duration: {
                 get: function() {
-                    return transitionDuration; },
+                    return transitionDuration;
+                },
                 set: function(_) {
                     transitionDuration = _;
                     renderWatch.reset(transitionDuration);
@@ -5912,7 +6745,8 @@
             },
             rightAlignYAxis: {
                 get: function() {
-                    return rightAlignYAxis; },
+                    return rightAlignYAxis;
+                },
                 set: function(_) {
                     rightAlignYAxis = _;
                     yAxis.orient((_) ? 'right' : 'left');
@@ -5920,7 +6754,8 @@
             },
             useInteractiveGuideline: {
                 get: function() {
-                    return useInteractiveGuideline; },
+                    return useInteractiveGuideline;
+                },
                 set: function(_) {
                     useInteractiveGuideline = _;
                     if (_ === true) {
@@ -5993,7 +6828,8 @@
             width = 400,
             height = 20,
             getKey = function(d) {
-                return d.key },
+                return d.key
+            },
             color = nv.utils.getColor(),
             maxKeyLength = 20 //default value for key lengths
             ,
@@ -6101,7 +6937,8 @@
                                 } else {
                                     d.disabled = !d.disabled;
                                     if (data.every(function(series) {
-                                            return series.disabled })) {
+                                            return series.disabled
+                                        })) {
                                         //the default behavior of NVD3 legends is, if every single series
                                         // is disabled, turn all series' back on.
                                         data.forEach(function(series) { series.disabled = false });
@@ -6116,9 +6953,11 @@
                                     d.disabled = !d.disabled;
                                     d.userDisabled = d.disabled;
                                     var engaged = data.filter(function(d) {
-                                        return !d.disengaged; });
+                                        return !d.disengaged;
+                                    });
                                     if (engaged.every(function(series) {
-                                            return series.userDisabled })) {
+                                            return series.userDisabled
+                                        })) {
                                         //the default behavior of NVD3 legends is, if every single series
                                         // is disabled, turn all series' back on.
                                         data.forEach(function(series) {
@@ -6129,9 +6968,11 @@
                             }
                             dispatch.stateChange({
                                 disabled: data.map(function(d) {
-                                    return !!d.disabled }),
+                                    return !!d.disabled
+                                }),
                                 disengaged: data.map(function(d) {
-                                    return !!d.disengaged })
+                                    return !!d.disengaged
+                                })
                             });
 
                         }
@@ -6152,13 +6993,15 @@
                             if (vers == 'furious') d.userDisabled = d.disabled;
                             dispatch.stateChange({
                                 disabled: data.map(function(d) {
-                                    return !!d.disabled })
+                                    return !!d.disabled
+                                })
                             });
                         }
                     });
 
                 series.classed('nv-disabled', function(d) {
-                    return d.userDisabled });
+                    return d.userDisabled
+                });
                 series.exit().remove();
 
                 seriesText
@@ -6342,33 +7185,78 @@
 
         chart._options = Object.create({}, {
             // simple options, just get/set the necessary values
-            width: { get: function() {
-                    return width; }, set: function(_) { width = _; } },
-            height: { get: function() {
-                    return height; }, set: function(_) { height = _; } },
-            key: { get: function() {
-                    return getKey; }, set: function(_) { getKey = _; } },
-            align: { get: function() {
-                    return align; }, set: function(_) { align = _; } },
-            maxKeyLength: { get: function() {
-                    return maxKeyLength; }, set: function(_) { maxKeyLength = _; } },
-            rightAlign: { get: function() {
-                    return rightAlign; }, set: function(_) { rightAlign = _; } },
-            padding: { get: function() {
-                    return padding; }, set: function(_) { padding = _; } },
-            updateState: { get: function() {
-                    return updateState; }, set: function(_) { updateState = _; } },
-            radioButtonMode: { get: function() {
-                    return radioButtonMode; }, set: function(_) { radioButtonMode = _; } },
-            expanded: { get: function() {
-                    return expanded; }, set: function(_) { expanded = _; } },
-            vers: { get: function() {
-                    return vers; }, set: function(_) { vers = _; } },
+            width: {
+                get: function() {
+                    return width;
+                },
+                set: function(_) { width = _; }
+            },
+            height: {
+                get: function() {
+                    return height;
+                },
+                set: function(_) { height = _; }
+            },
+            key: {
+                get: function() {
+                    return getKey;
+                },
+                set: function(_) { getKey = _; }
+            },
+            align: {
+                get: function() {
+                    return align;
+                },
+                set: function(_) { align = _; }
+            },
+            maxKeyLength: {
+                get: function() {
+                    return maxKeyLength;
+                },
+                set: function(_) { maxKeyLength = _; }
+            },
+            rightAlign: {
+                get: function() {
+                    return rightAlign;
+                },
+                set: function(_) { rightAlign = _; }
+            },
+            padding: {
+                get: function() {
+                    return padding;
+                },
+                set: function(_) { padding = _; }
+            },
+            updateState: {
+                get: function() {
+                    return updateState;
+                },
+                set: function(_) { updateState = _; }
+            },
+            radioButtonMode: {
+                get: function() {
+                    return radioButtonMode;
+                },
+                set: function(_) { radioButtonMode = _; }
+            },
+            expanded: {
+                get: function() {
+                    return expanded;
+                },
+                set: function(_) { expanded = _; }
+            },
+            vers: {
+                get: function() {
+                    return vers;
+                },
+                set: function(_) { vers = _; }
+            },
 
             // options that require extra logic in the setter
             margin: {
                 get: function() {
-                    return margin; },
+                    return margin;
+                },
                 set: function(_) {
                     margin.top = _.top !== undefined ? _.top : margin.top;
                     margin.right = _.right !== undefined ? _.right : margin.right;
@@ -6378,7 +7266,8 @@
             },
             color: {
                 get: function() {
-                    return color; },
+                    return color;
+                },
                 set: function(_) {
                     color = nv.utils.getColor(_);
                 }
@@ -6406,16 +7295,20 @@
             color = nv.utils.defaultColor() // a function that returns a color
             ,
             getX = function(d) {
-                return d.x } // accessor to get the x value from a data point
+                return d.x
+            } // accessor to get the x value from a data point
             ,
             getY = function(d) {
-                return d.y } // accessor to get the y value from a data point
+                return d.y
+            } // accessor to get the y value from a data point
             ,
             defined = function(d, i) {
-                return !isNaN(getY(d, i)) && getY(d, i) !== null } // allows a line to be not continuous when it is not defined
+                return !isNaN(getY(d, i)) && getY(d, i) !== null
+            } // allows a line to be not continuous when it is not defined
             ,
             isArea = function(d) {
-                return d.area } // decides if a line is an area or just a line
+                return d.area
+            } // decides if a line is an area or just a line
             ,
             clipEdge = false // if true, masks lines within x and y scale
             ,
@@ -6493,12 +7386,15 @@
 
                 var groups = wrap.select('.nv-groups').selectAll('.nv-group')
                     .data(function(d) {
-                        return d }, function(d) {
-                        return d.key });
+                        return d
+                    }, function(d) {
+                        return d.key
+                    });
                 groups.enter().append('g')
                     .style('stroke-opacity', 1e-6)
                     .style('stroke-width', function(d) {
-                        return d.strokeWidth || strokeWidth })
+                        return d.strokeWidth || strokeWidth
+                    })
                     .style('fill-opacity', 1e-6);
 
                 groups.exit().remove();
@@ -6508,19 +7404,24 @@
                         return (d.classed || '') + ' nv-group nv-series-' + i;
                     })
                     .classed('hover', function(d) {
-                        return d.hover })
+                        return d.hover
+                    })
                     .style('fill', function(d, i) {
-                        return color(d, i) })
+                        return color(d, i)
+                    })
                     .style('stroke', function(d, i) {
-                        return color(d, i) });
+                        return color(d, i)
+                    });
                 groups.watchTransition(renderWatch, 'line: groups')
                     .style('stroke-opacity', 1)
                     .style('fill-opacity', function(d) {
-                        return d.fillOpacity || .5 });
+                        return d.fillOpacity || .5
+                    });
 
                 var areaPaths = groups.selectAll('path.nv-area')
                     .data(function(d) {
-                        return isArea(d) ? [d] : [] }); // this is done differently than lines because I need to check if series is an area
+                        return isArea(d) ? [d] : []
+                    }); // this is done differently than lines because I need to check if series is an area
                 areaPaths.enter().append('path')
                     .attr('class', 'nv-area')
                     .attr('d', function(d) {
@@ -6528,11 +7429,14 @@
                             .interpolate(interpolate)
                             .defined(defined)
                             .x(function(d, i) {
-                                return nv.utils.NaNtoZero(x0(getX(d, i))) })
+                                return nv.utils.NaNtoZero(x0(getX(d, i)))
+                            })
                             .y0(function(d, i) {
-                                return nv.utils.NaNtoZero(y0(getY(d, i))) })
+                                return nv.utils.NaNtoZero(y0(getY(d, i)))
+                            })
                             .y1(function(d, i) {
-                                return y0(y.domain()[0] <= 0 ? y.domain()[1] >= 0 ? 0 : y.domain()[1] : y.domain()[0]) })
+                                return y0(y.domain()[0] <= 0 ? y.domain()[1] >= 0 ? 0 : y.domain()[1] : y.domain()[0])
+                            })
                             //.y1(function(d,i) { return y0(0) }) //assuming 0 is within y domain.. may need to tweak this
                             .apply(this, [d.values])
                     });
@@ -6545,18 +7449,22 @@
                             .interpolate(interpolate)
                             .defined(defined)
                             .x(function(d, i) {
-                                return nv.utils.NaNtoZero(x(getX(d, i))) })
+                                return nv.utils.NaNtoZero(x(getX(d, i)))
+                            })
                             .y0(function(d, i) {
-                                return nv.utils.NaNtoZero(y(getY(d, i))) })
+                                return nv.utils.NaNtoZero(y(getY(d, i)))
+                            })
                             .y1(function(d, i) {
-                                return y(y.domain()[0] <= 0 ? y.domain()[1] >= 0 ? 0 : y.domain()[1] : y.domain()[0]) })
+                                return y(y.domain()[0] <= 0 ? y.domain()[1] >= 0 ? 0 : y.domain()[1] : y.domain()[0])
+                            })
                             //.y1(function(d,i) { return y0(0) }) //assuming 0 is within y domain.. may need to tweak this
                             .apply(this, [d.values])
                     });
 
                 var linePaths = groups.selectAll('path.nv-line')
                     .data(function(d) {
-                        return [d.values] });
+                        return [d.values]
+                    });
 
                 linePaths.enter().append('path')
                     .attr('class', 'nv-line')
@@ -6565,9 +7473,11 @@
                         .interpolate(interpolate)
                         .defined(defined)
                         .x(function(d, i) {
-                            return nv.utils.NaNtoZero(x0(getX(d, i))) })
+                            return nv.utils.NaNtoZero(x0(getX(d, i)))
+                        })
                         .y(function(d, i) {
-                            return nv.utils.NaNtoZero(y0(getY(d, i))) })
+                            return nv.utils.NaNtoZero(y0(getY(d, i)))
+                        })
                     );
 
                 linePaths.watchTransition(renderWatch, 'line: linePaths')
@@ -6576,9 +7486,11 @@
                         .interpolate(interpolate)
                         .defined(defined)
                         .x(function(d, i) {
-                            return nv.utils.NaNtoZero(x(getX(d, i))) })
+                            return nv.utils.NaNtoZero(x(getX(d, i)))
+                        })
                         .y(function(d, i) {
-                            return nv.utils.NaNtoZero(y(getY(d, i))) })
+                            return nv.utils.NaNtoZero(y(getY(d, i)))
+                        })
                     );
 
                 //store old scales for use in transitions on update
@@ -6605,21 +7517,42 @@
 
         chart._options = Object.create({}, {
             // simple options, just get/set the necessary values
-            width: { get: function() {
-                    return width; }, set: function(_) { width = _; } },
-            height: { get: function() {
-                    return height; }, set: function(_) { height = _; } },
-            defined: { get: function() {
-                    return defined; }, set: function(_) { defined = _; } },
-            interpolate: { get: function() {
-                    return interpolate; }, set: function(_) { interpolate = _; } },
-            clipEdge: { get: function() {
-                    return clipEdge; }, set: function(_) { clipEdge = _; } },
+            width: {
+                get: function() {
+                    return width;
+                },
+                set: function(_) { width = _; }
+            },
+            height: {
+                get: function() {
+                    return height;
+                },
+                set: function(_) { height = _; }
+            },
+            defined: {
+                get: function() {
+                    return defined;
+                },
+                set: function(_) { defined = _; }
+            },
+            interpolate: {
+                get: function() {
+                    return interpolate;
+                },
+                set: function(_) { interpolate = _; }
+            },
+            clipEdge: {
+                get: function() {
+                    return clipEdge;
+                },
+                set: function(_) { clipEdge = _; }
+            },
 
             // options that require extra logic in the setter
             margin: {
                 get: function() {
-                    return margin; },
+                    return margin;
+                },
                 set: function(_) {
                     margin.top = _.top !== undefined ? _.top : margin.top;
                     margin.right = _.right !== undefined ? _.right : margin.right;
@@ -6629,7 +7562,8 @@
             },
             duration: {
                 get: function() {
-                    return duration; },
+                    return duration;
+                },
                 set: function(_) {
                     duration = _;
                     renderWatch.reset(duration);
@@ -6638,14 +7572,16 @@
             },
             isArea: {
                 get: function() {
-                    return isArea; },
+                    return isArea;
+                },
                 set: function(_) {
                     isArea = d3.functor(_);
                 }
             },
             x: {
                 get: function() {
-                    return getX; },
+                    return getX;
+                },
                 set: function(_) {
                     getX = _;
                     scatter.x(_);
@@ -6653,7 +7589,8 @@
             },
             y: {
                 get: function() {
-                    return getY; },
+                    return getY;
+                },
                 set: function(_) {
                     getY = _;
                     scatter.y(_);
@@ -6661,7 +7598,8 @@
             },
             color: {
                 get: function() {
-                    return color; },
+                    return color;
+                },
                 set: function(_) {
                     color = nv.utils.getColor(_);
                     scatter.color(color);
@@ -6721,7 +7659,8 @@
         lines2.interactive(false);
         // We don't want any points emitted for the focus chart's scatter graph.
         lines2.pointActive(function(d) {
-            return false; });
+            return false;
+        });
 
         x2Axis.orient('bottom').tickPadding(5);
         y2Axis.orient(rightAlignYAxis ? 'right' : 'left');
@@ -6749,7 +7688,8 @@
             return function() {
                 return {
                     active: data.map(function(d) {
-                        return !d.disabled; })
+                        return !d.disabled;
+                    })
                 };
             };
         };
@@ -6795,7 +7735,8 @@
 
                 // DEPRECATED set state.disabled
                 state.disabled = data.map(function(d) {
-                    return !!d.disabled; });
+                    return !!d.disabled;
+                });
 
                 if (!defaultState) {
                     var key;
@@ -6810,7 +7751,8 @@
 
                 // Display noData message if there's nothing to show.
                 if (!data || !data.length || !data.filter(function(d) {
-                        return d.values.length; }).length) {
+                        return d.values.length;
+                    }).length) {
                     nv.utils.noData(chart, container);
                     return chart;
                 } else {
@@ -6892,11 +7834,13 @@
                         return d.color || color(d, i);
 
                     }).filter(function(d, i) {
-                        return !data[i].disabled; }));
+                        return !data[i].disabled;
+                    }));
 
                 var linesWrap = g.select('.nv-linesWrap')
                     .datum(data.filter(function(d) {
-                        return !d.disabled; }));
+                        return !d.disabled;
+                    }));
 
 
                 // Setup Main (Focus) Axes
@@ -6951,7 +7895,8 @@
                         .color(data.map(function(d, i) {
                             return d.color || color(d, i);
                         }).filter(function(d, i) {
-                            return !data[i].disabled; }));
+                            return !data[i].disabled;
+                        }));
 
                     g.select('.nv-context')
                         .attr('transform', 'translate(0,' + (availableHeight1 + margin.bottom + margin2.top) + ')')
@@ -6959,7 +7904,8 @@
 
                     var contextLinesWrap = g.select('.nv-context .nv-linesWrap')
                         .datum(data.filter(function(d) {
-                            return !d.disabled; }));
+                            return !d.disabled;
+                        }));
 
                     d3.transition(contextLinesWrap).call(lines2);
 
@@ -7077,7 +8023,8 @@
                         var domainExtent = Math.abs(chart.yScale().domain()[0] - chart.yScale().domain()[1]);
                         var threshold = 0.03 * domainExtent;
                         var indexToHighlight = nv.nearestValueIndex(allData.map(function(d) {
-                            return d.value; }), yValue, threshold);
+                            return d.value;
+                        }), yValue, threshold);
                         if (indexToHighlight !== null)
                             allData[indexToHighlight].highlight = true;
                     }
@@ -7186,7 +8133,8 @@
                         .datum(
                             data
                             .filter(function(d) {
-                                return !d.disabled; })
+                                return !d.disabled;
+                            })
                             .map(function(d, i) {
                                 return {
                                     key: d.key,
@@ -7250,35 +8198,84 @@
 
         chart._options = Object.create({}, {
             // simple options, just get/set the necessary values
-            width: { get: function() {
-                    return width; }, set: function(_) { width = _; } },
-            height: { get: function() {
-                    return height; }, set: function(_) { height = _; } },
-            showLegend: { get: function() {
-                    return showLegend; }, set: function(_) { showLegend = _; } },
-            showXAxis: { get: function() {
-                    return showXAxis; }, set: function(_) { showXAxis = _; } },
-            showYAxis: { get: function() {
-                    return showYAxis; }, set: function(_) { showYAxis = _; } },
-            focusEnable: { get: function() {
-                    return focusEnable; }, set: function(_) { focusEnable = _; } },
-            focusHeight: { get: function() {
-                    return height2; }, set: function(_) { focusHeight = _; } },
-            focusShowAxisX: { get: function() {
-                    return focusShowAxisX; }, set: function(_) { focusShowAxisX = _; } },
-            focusShowAxisY: { get: function() {
-                    return focusShowAxisY; }, set: function(_) { focusShowAxisY = _; } },
-            brushExtent: { get: function() {
-                    return brushExtent; }, set: function(_) { brushExtent = _; } },
-            defaultState: { get: function() {
-                    return defaultState; }, set: function(_) { defaultState = _; } },
-            noData: { get: function() {
-                    return noData; }, set: function(_) { noData = _; } },
+            width: {
+                get: function() {
+                    return width;
+                },
+                set: function(_) { width = _; }
+            },
+            height: {
+                get: function() {
+                    return height;
+                },
+                set: function(_) { height = _; }
+            },
+            showLegend: {
+                get: function() {
+                    return showLegend;
+                },
+                set: function(_) { showLegend = _; }
+            },
+            showXAxis: {
+                get: function() {
+                    return showXAxis;
+                },
+                set: function(_) { showXAxis = _; }
+            },
+            showYAxis: {
+                get: function() {
+                    return showYAxis;
+                },
+                set: function(_) { showYAxis = _; }
+            },
+            focusEnable: {
+                get: function() {
+                    return focusEnable;
+                },
+                set: function(_) { focusEnable = _; }
+            },
+            focusHeight: {
+                get: function() {
+                    return height2;
+                },
+                set: function(_) { focusHeight = _; }
+            },
+            focusShowAxisX: {
+                get: function() {
+                    return focusShowAxisX;
+                },
+                set: function(_) { focusShowAxisX = _; }
+            },
+            focusShowAxisY: {
+                get: function() {
+                    return focusShowAxisY;
+                },
+                set: function(_) { focusShowAxisY = _; }
+            },
+            brushExtent: {
+                get: function() {
+                    return brushExtent;
+                },
+                set: function(_) { brushExtent = _; }
+            },
+            defaultState: {
+                get: function() {
+                    return defaultState;
+                },
+                set: function(_) { defaultState = _; }
+            },
+            noData: {
+                get: function() {
+                    return noData;
+                },
+                set: function(_) { noData = _; }
+            },
 
             // options that require extra logic in the setter
             margin: {
                 get: function() {
-                    return margin; },
+                    return margin;
+                },
                 set: function(_) {
                     margin.top = _.top !== undefined ? _.top : margin.top;
                     margin.right = _.right !== undefined ? _.right : margin.right;
@@ -7288,7 +8285,8 @@
             },
             duration: {
                 get: function() {
-                    return duration; },
+                    return duration;
+                },
                 set: function(_) {
                     duration = _;
                     renderWatch.reset(duration);
@@ -7301,7 +8299,8 @@
             },
             focusMargin: {
                 get: function() {
-                    return margin2; },
+                    return margin2;
+                },
                 set: function(_) {
                     margin2.top = _.top !== undefined ? _.top : margin2.top;
                     margin2.right = _.right !== undefined ? _.right : margin2.right;
@@ -7311,7 +8310,8 @@
             },
             color: {
                 get: function() {
-                    return color; },
+                    return color;
+                },
                 set: function(_) {
                     color = nv.utils.getColor(_);
                     legend.color(color);
@@ -7320,7 +8320,8 @@
             },
             interpolate: {
                 get: function() {
-                    return lines.interpolate(); },
+                    return lines.interpolate();
+                },
                 set: function(_) {
                     lines.interpolate(_);
                     lines2.interpolate(_);
@@ -7328,7 +8329,8 @@
             },
             xTickFormat: {
                 get: function() {
-                    return xAxis.tickFormat(); },
+                    return xAxis.tickFormat();
+                },
                 set: function(_) {
                     xAxis.tickFormat(_);
                     x2Axis.tickFormat(_);
@@ -7336,7 +8338,8 @@
             },
             yTickFormat: {
                 get: function() {
-                    return yAxis.tickFormat(); },
+                    return yAxis.tickFormat();
+                },
                 set: function(_) {
                     yAxis.tickFormat(_);
                     y2Axis.tickFormat(_);
@@ -7344,7 +8347,8 @@
             },
             x: {
                 get: function() {
-                    return lines.x(); },
+                    return lines.x();
+                },
                 set: function(_) {
                     lines.x(_);
                     lines2.x(_);
@@ -7352,7 +8356,8 @@
             },
             y: {
                 get: function() {
-                    return lines.y(); },
+                    return lines.y();
+                },
                 set: function(_) {
                     lines.y(_);
                     lines2.y(_);
@@ -7360,7 +8365,8 @@
             },
             rightAlignYAxis: {
                 get: function() {
-                    return rightAlignYAxis; },
+                    return rightAlignYAxis;
+                },
                 set: function(_) {
                     rightAlignYAxis = _;
                     yAxis.orient(rightAlignYAxis ? 'right' : 'left');
@@ -7368,7 +8374,8 @@
             },
             useInteractiveGuideline: {
                 get: function() {
-                    return useInteractiveGuideline; },
+                    return useInteractiveGuideline;
+                },
                 set: function(_) {
                     useInteractiveGuideline = _;
                     if (useInteractiveGuideline) {
@@ -7416,9 +8423,11 @@
             width = null,
             height = null,
             getX = function(d) {
-                return d.x },
+                return d.x
+            },
             getY = function(d) {
-                return d.y },
+                return d.y
+            },
             color = nv.utils.defaultColor(),
             showLegend = true,
             focusEnable = true,
@@ -7439,7 +8448,8 @@
         lines2.interactive(false);
         // We don't want any points emitted for the focus chart's scatter graph.
         lines2.pointActive(function(d) {
-            return false });
+            return false
+        });
         xAxis.orient('bottom').tickPadding(5);
         y1Axis.orient('left');
         y2Axis.orient('right');
@@ -7467,7 +8477,8 @@
             return function() {
                 return {
                     active: data.map(function(d) {
-                        return !d.disabled })
+                        return !d.disabled
+                    })
                 };
             }
         };
@@ -7506,7 +8517,8 @@
 
                 // DEPRECATED set state.disableddisabled
                 state.disabled = data.map(function(d) {
-                    return !!d.disabled });
+                    return !!d.disabled
+                });
 
                 if (!defaultState) {
                     var key;
@@ -7521,7 +8533,8 @@
 
                 // Display No Data message if there's nothing to show.
                 if (!data || !data.length || !data.filter(function(d) {
-                        return d.values.length }).length) {
+                        return d.values.length
+                    }).length) {
                     nv.utils.noData(chart, container)
                     return chart;
                 } else {
@@ -7530,9 +8543,11 @@
 
                 // Setup Scales
                 var dataBars = data.filter(function(d) {
-                    return !d.disabled && d.bar });
+                    return !d.disabled && d.bar
+                });
                 var dataLines = data.filter(function(d) {
-                    return !d.bar }); // removed the !d.disabled clause here to fix Issue #240
+                    return !d.bar
+                }); // removed the !d.disabled clause here to fix Issue #240
 
                 x = bars.xScale();
                 x2 = x2Axis.scale();
@@ -7545,7 +8560,8 @@
 
                 var series1 = data
                     .filter(function(d) {
-                        return !d.disabled && (switchYAxisOrder ? !d.bar : d.bar) })
+                        return !d.disabled && (switchYAxisOrder ? !d.bar : d.bar)
+                    })
                     .map(function(d) {
                         return d.values.map(function(d, i) {
                             return { x: getX(d, i), y: getY(d, i) }
@@ -7554,7 +8570,8 @@
 
                 var series2 = data
                     .filter(function(d) {
-                        return !d.disabled && (switchYAxisOrder ? d.bar : !d.bar) })
+                        return !d.disabled && (switchYAxisOrder ? d.bar : !d.bar)
+                    })
                     .map(function(d) {
                         return d.values.map(function(d, i) {
                             return { x: getX(d, i), y: getY(d, i) }
@@ -7564,7 +8581,8 @@
                 x.range([0, availableWidth]);
 
                 x2.domain(d3.extent(d3.merge(series1.concat(series2)), function(d) {
-                        return d.x }))
+                        return d.x
+                    }))
                     .range([0, availableWidth]);
 
                 // Setup containers and skeleton of chart
@@ -7794,7 +8812,8 @@
                         .color(data.map(function(d, i) {
                             return d.color || color(d, i);
                         }).filter(function(d, i) {
-                            return !data[i].disabled && data[i].bar }));
+                            return !data[i].disabled && data[i].bar
+                        }));
 
                     lines
                         .width(availableWidth)
@@ -7802,7 +8821,8 @@
                         .color(data.map(function(d, i) {
                             return d.color || color(d, i);
                         }).filter(function(d, i) {
-                            return !data[i].disabled && !data[i].bar }));
+                            return !data[i].disabled && !data[i].bar
+                        }));
 
                     var focusBarsWrap = g.select('.nv-focus .nv-barsWrap')
                         .datum(!dataBars.length ? [{ values: [] }] :
@@ -7821,7 +8841,8 @@
                         .datum(allDisabled(dataLines) ? [{ values: [] }] :
                             dataLines
                             .filter(function(dataLine) {
-                                return !dataLine.disabled; })
+                                return !dataLine.disabled;
+                            })
                             .map(function(d, i) {
                                 return {
                                     area: d.area,
@@ -7961,33 +8982,78 @@
 
         chart._options = Object.create({}, {
             // simple options, just get/set the necessary values
-            width: { get: function() {
-                    return width; }, set: function(_) { width = _; } },
-            height: { get: function() {
-                    return height; }, set: function(_) { height = _; } },
-            showLegend: { get: function() {
-                    return showLegend; }, set: function(_) { showLegend = _; } },
-            brushExtent: { get: function() {
-                    return brushExtent; }, set: function(_) { brushExtent = _; } },
-            noData: { get: function() {
-                    return noData; }, set: function(_) { noData = _; } },
-            focusEnable: { get: function() {
-                    return focusEnable; }, set: function(_) { focusEnable = _; } },
-            focusHeight: { get: function() {
-                    return focusHeight; }, set: function(_) { focusHeight = _; } },
-            focusShowAxisX: { get: function() {
-                    return focusShowAxisX; }, set: function(_) { focusShowAxisX = _; } },
-            focusShowAxisY: { get: function() {
-                    return focusShowAxisY; }, set: function(_) { focusShowAxisY = _; } },
-            legendLeftAxisHint: { get: function() {
-                    return legendLeftAxisHint; }, set: function(_) { legendLeftAxisHint = _; } },
-            legendRightAxisHint: { get: function() {
-                    return legendRightAxisHint; }, set: function(_) { legendRightAxisHint = _; } },
+            width: {
+                get: function() {
+                    return width;
+                },
+                set: function(_) { width = _; }
+            },
+            height: {
+                get: function() {
+                    return height;
+                },
+                set: function(_) { height = _; }
+            },
+            showLegend: {
+                get: function() {
+                    return showLegend;
+                },
+                set: function(_) { showLegend = _; }
+            },
+            brushExtent: {
+                get: function() {
+                    return brushExtent;
+                },
+                set: function(_) { brushExtent = _; }
+            },
+            noData: {
+                get: function() {
+                    return noData;
+                },
+                set: function(_) { noData = _; }
+            },
+            focusEnable: {
+                get: function() {
+                    return focusEnable;
+                },
+                set: function(_) { focusEnable = _; }
+            },
+            focusHeight: {
+                get: function() {
+                    return focusHeight;
+                },
+                set: function(_) { focusHeight = _; }
+            },
+            focusShowAxisX: {
+                get: function() {
+                    return focusShowAxisX;
+                },
+                set: function(_) { focusShowAxisX = _; }
+            },
+            focusShowAxisY: {
+                get: function() {
+                    return focusShowAxisY;
+                },
+                set: function(_) { focusShowAxisY = _; }
+            },
+            legendLeftAxisHint: {
+                get: function() {
+                    return legendLeftAxisHint;
+                },
+                set: function(_) { legendLeftAxisHint = _; }
+            },
+            legendRightAxisHint: {
+                get: function() {
+                    return legendRightAxisHint;
+                },
+                set: function(_) { legendRightAxisHint = _; }
+            },
 
             // options that require extra logic in the setter
             margin: {
                 get: function() {
-                    return margin; },
+                    return margin;
+                },
                 set: function(_) {
                     margin.top = _.top !== undefined ? _.top : margin.top;
                     margin.right = _.right !== undefined ? _.right : margin.right;
@@ -7997,7 +9063,8 @@
             },
             focusMargin: {
                 get: function() {
-                    return margin2; },
+                    return margin2;
+                },
                 set: function(_) {
                     margin2.top = _.top !== undefined ? _.top : margin2.top;
                     margin2.right = _.right !== undefined ? _.right : margin2.right;
@@ -8007,14 +9074,16 @@
             },
             duration: {
                 get: function() {
-                    return transitionDuration; },
+                    return transitionDuration;
+                },
                 set: function(_) {
                     transitionDuration = _;
                 }
             },
             color: {
                 get: function() {
-                    return color; },
+                    return color;
+                },
                 set: function(_) {
                     color = nv.utils.getColor(_);
                     legend.color(color);
@@ -8022,7 +9091,8 @@
             },
             x: {
                 get: function() {
-                    return getX; },
+                    return getX;
+                },
                 set: function(_) {
                     getX = _;
                     lines.x(_);
@@ -8033,7 +9103,8 @@
             },
             y: {
                 get: function() {
-                    return getY; },
+                    return getY;
+                },
                 set: function(_) {
                     getY = _;
                     lines.y(_);
@@ -8044,7 +9115,8 @@
             },
             switchYAxisOrder: {
                 get: function() {
-                    return switchYAxisOrder; },
+                    return switchYAxisOrder;
+                },
                 set: function(_) {
                     // Switch the tick format for the yAxis
                     if (switchYAxisOrder !== _) {
@@ -8079,9 +9151,11 @@
             ,
             container = null,
             getX = function(d) {
-                return d.x },
+                return d.x
+            },
             getY = function(d) {
-                return d.y },
+                return d.y
+            },
             forceY = [0] // 0 is forced by default.. this makes sense for the majority of bar graphs... user can always do chart.forceY([]) to remove
             ,
             clipEdge = true,
@@ -8137,7 +9211,8 @@
                     var parsed = d3.layout.stack()
                         .offset(stackOffset)
                         .values(function(d) {
-                            return d.values })
+                            return d.values
+                        })
                         .y(getY)
                         (!data.length && hideable ? hideable : data);
 
@@ -8197,7 +9272,8 @@
                     });
 
                 x.domain(xDomain || d3.merge(seriesData).map(function(d) {
-                        return d.x }))
+                        return d.x
+                    }))
                     .rangeBands(xRange || [0, availableWidth], groupSpacing);
 
                 y.domain(yDomain || d3.extent(d3.merge(seriesData).map(function(d) {
@@ -8247,8 +9323,10 @@
 
                 var groups = wrap.select('.nv-groups').selectAll('.nv-group')
                     .data(function(d) {
-                        return d }, function(d, i) {
-                        return i });
+                        return d
+                    }, function(d, i) {
+                        return i
+                    });
                 groups.enter().append('g')
                     .style('stroke-opacity', 1e-6)
                     .style('fill-opacity', 1e-6);
@@ -8273,40 +9351,51 @@
                     });
                 groups
                     .attr('class', function(d, i) {
-                        return 'nv-group nv-series-' + i })
+                        return 'nv-group nv-series-' + i
+                    })
                     .classed('hover', function(d) {
-                        return d.hover })
+                        return d.hover
+                    })
                     .style('fill', function(d, i) {
-                        return color(d, i) })
+                        return color(d, i)
+                    })
                     .style('stroke', function(d, i) {
-                        return color(d, i) });
+                        return color(d, i)
+                    });
                 groups
                     .style('stroke-opacity', 1)
                     .style('fill-opacity', 0.75);
 
                 var bars = groups.selectAll('rect.nv-bar')
                     .data(function(d) {
-                        return (hideable && !data.length) ? hideable.values : d.values });
+                        return (hideable && !data.length) ? hideable.values : d.values
+                    });
                 bars.exit().remove();
 
                 var barsEnter = bars.enter().append('rect')
                     .attr('class', function(d, i) {
-                        return getY(d, i) < 0 ? 'nv-bar negative' : 'nv-bar positive' })
+                        return getY(d, i) < 0 ? 'nv-bar negative' : 'nv-bar positive'
+                    })
                     .attr('x', function(d, i, j) {
                         return stacked && !data[j].nonStackable ? 0 : (j * x.rangeBand() / data.length)
                     })
                     .attr('y', function(d, i, j) {
-                        return y0(stacked && !data[j].nonStackable ? d.y0 : 0) || 0 })
+                        return y0(stacked && !data[j].nonStackable ? d.y0 : 0) || 0
+                    })
                     .attr('height', 0)
                     .attr('width', function(d, i, j) {
-                        return x.rangeBand() / (stacked && !data[j].nonStackable ? 1 : data.length) })
+                        return x.rangeBand() / (stacked && !data[j].nonStackable ? 1 : data.length)
+                    })
                     .attr('transform', function(d, i) {
-                        return 'translate(' + x(getX(d, i)) + ',0)'; });
+                        return 'translate(' + x(getX(d, i)) + ',0)';
+                    });
                 bars
                     .style('fill', function(d, i, j) {
-                        return color(d, j, i); })
+                        return color(d, j, i);
+                    })
                     .style('stroke', function(d, i, j) {
-                        return color(d, j, i); })
+                        return color(d, j, i);
+                    })
                     .on('mouseover', function(d, i) { //TODO: figure out why j works above, but not here
                         d3.select(this).classed('hover', true);
                         dispatch.elementMouseover({
@@ -8351,22 +9440,31 @@
                     });
                 bars
                     .attr('class', function(d, i) {
-                        return getY(d, i) < 0 ? 'nv-bar negative' : 'nv-bar positive' })
+                        return getY(d, i) < 0 ? 'nv-bar negative' : 'nv-bar positive'
+                    })
                     .attr('transform', function(d, i) {
-                        return 'translate(' + x(getX(d, i)) + ',0)'; })
+                        return 'translate(' + x(getX(d, i)) + ',0)';
+                    })
 
                 if (barColor) {
                     if (!disabled) disabled = data.map(function() {
-                        return true });
+                        return true
+                    });
                     bars
                         .style('fill', function(d, i, j) {
                             return d3.rgb(barColor(d, i)).darker(disabled.map(function(d, i) {
-                                return i }).filter(function(d, i) {
-                                return !disabled[i] })[j]).toString(); })
+                                return i
+                            }).filter(function(d, i) {
+                                return !disabled[i]
+                            })[j]).toString();
+                        })
                         .style('stroke', function(d, i, j) {
                             return d3.rgb(barColor(d, i)).darker(disabled.map(function(d, i) {
-                                return i }).filter(function(d, i) {
-                                return !disabled[i] })[j]).toString(); });
+                                return i
+                            }).filter(function(d, i) {
+                                return !disabled[i]
+                            })[j]).toString();
+                        });
                 }
 
                 var barSelection =
@@ -8469,47 +9567,120 @@
 
         chart._options = Object.create({}, {
             // simple options, just get/set the necessary values
-            width: { get: function() {
-                    return width; }, set: function(_) { width = _; } },
-            height: { get: function() {
-                    return height; }, set: function(_) { height = _; } },
-            x: { get: function() {
-                    return getX; }, set: function(_) { getX = _; } },
-            y: { get: function() {
-                    return getY; }, set: function(_) { getY = _; } },
-            xScale: { get: function() {
-                    return x; }, set: function(_) { x = _; } },
-            yScale: { get: function() {
-                    return y; }, set: function(_) { y = _; } },
-            xDomain: { get: function() {
-                    return xDomain; }, set: function(_) { xDomain = _; } },
-            yDomain: { get: function() {
-                    return yDomain; }, set: function(_) { yDomain = _; } },
-            xRange: { get: function() {
-                    return xRange; }, set: function(_) { xRange = _; } },
-            yRange: { get: function() {
-                    return yRange; }, set: function(_) { yRange = _; } },
-            forceY: { get: function() {
-                    return forceY; }, set: function(_) { forceY = _; } },
-            stacked: { get: function() {
-                    return stacked; }, set: function(_) { stacked = _; } },
-            stackOffset: { get: function() {
-                    return stackOffset; }, set: function(_) { stackOffset = _; } },
-            clipEdge: { get: function() {
-                    return clipEdge; }, set: function(_) { clipEdge = _; } },
-            disabled: { get: function() {
-                    return disabled; }, set: function(_) { disabled = _; } },
-            id: { get: function() {
-                    return id; }, set: function(_) { id = _; } },
-            hideable: { get: function() {
-                    return hideable; }, set: function(_) { hideable = _; } },
-            groupSpacing: { get: function() {
-                    return groupSpacing; }, set: function(_) { groupSpacing = _; } },
+            width: {
+                get: function() {
+                    return width;
+                },
+                set: function(_) { width = _; }
+            },
+            height: {
+                get: function() {
+                    return height;
+                },
+                set: function(_) { height = _; }
+            },
+            x: {
+                get: function() {
+                    return getX;
+                },
+                set: function(_) { getX = _; }
+            },
+            y: {
+                get: function() {
+                    return getY;
+                },
+                set: function(_) { getY = _; }
+            },
+            xScale: {
+                get: function() {
+                    return x;
+                },
+                set: function(_) { x = _; }
+            },
+            yScale: {
+                get: function() {
+                    return y;
+                },
+                set: function(_) { y = _; }
+            },
+            xDomain: {
+                get: function() {
+                    return xDomain;
+                },
+                set: function(_) { xDomain = _; }
+            },
+            yDomain: {
+                get: function() {
+                    return yDomain;
+                },
+                set: function(_) { yDomain = _; }
+            },
+            xRange: {
+                get: function() {
+                    return xRange;
+                },
+                set: function(_) { xRange = _; }
+            },
+            yRange: {
+                get: function() {
+                    return yRange;
+                },
+                set: function(_) { yRange = _; }
+            },
+            forceY: {
+                get: function() {
+                    return forceY;
+                },
+                set: function(_) { forceY = _; }
+            },
+            stacked: {
+                get: function() {
+                    return stacked;
+                },
+                set: function(_) { stacked = _; }
+            },
+            stackOffset: {
+                get: function() {
+                    return stackOffset;
+                },
+                set: function(_) { stackOffset = _; }
+            },
+            clipEdge: {
+                get: function() {
+                    return clipEdge;
+                },
+                set: function(_) { clipEdge = _; }
+            },
+            disabled: {
+                get: function() {
+                    return disabled;
+                },
+                set: function(_) { disabled = _; }
+            },
+            id: {
+                get: function() {
+                    return id;
+                },
+                set: function(_) { id = _; }
+            },
+            hideable: {
+                get: function() {
+                    return hideable;
+                },
+                set: function(_) { hideable = _; }
+            },
+            groupSpacing: {
+                get: function() {
+                    return groupSpacing;
+                },
+                set: function(_) { groupSpacing = _; }
+            },
 
             // options that require extra logic in the setter
             margin: {
                 get: function() {
-                    return margin; },
+                    return margin;
+                },
                 set: function(_) {
                     margin.top = _.top !== undefined ? _.top : margin.top;
                     margin.right = _.right !== undefined ? _.right : margin.right;
@@ -8519,7 +9690,8 @@
             },
             duration: {
                 get: function() {
-                    return duration; },
+                    return duration;
+                },
                 set: function(_) {
                     duration = _;
                     renderWatch.reset(duration);
@@ -8527,14 +9699,16 @@
             },
             color: {
                 get: function() {
-                    return color; },
+                    return color;
+                },
                 set: function(_) {
                     color = nv.utils.getColor(_);
                 }
             },
             barColor: {
                 get: function() {
-                    return barColor; },
+                    return barColor;
+                },
                 set: function(_) {
                     barColor = _ ? nv.utils.getColor(_) : null;
                 }
@@ -8582,7 +9756,8 @@
             noData = null,
             dispatch = d3.dispatch('stateChange', 'changeState', 'renderEnd'),
             controlWidth = function() {
-                return showControls ? 180 : 0 },
+                return showControls ? 180 : 0
+            },
             duration = 250,
             useInteractiveGuideline = false;
 
@@ -8594,7 +9769,8 @@
             .tickPadding(7)
             .showMaxMin(false)
             .tickFormat(function(d) {
-                return d });
+                return d
+            });
         yAxis
             .orient((rightAlignYAxis) ? 'right' : 'left')
             .tickFormat(d3.format(',.1f'));
@@ -8621,7 +9797,8 @@
             return function() {
                 return {
                     active: data.map(function(d) {
-                        return !d.disabled }),
+                        return !d.disabled
+                    }),
                     stacked: stacked
                 };
             }
@@ -8668,7 +9845,8 @@
 
                 // DEPRECATED set state.disableddisabled
                 state.disabled = data.map(function(d) {
-                    return !!d.disabled });
+                    return !!d.disabled
+                });
 
                 if (!defaultState) {
                     var key;
@@ -8683,7 +9861,8 @@
 
                 // Display noData message if there's nothing to show.
                 if (!data || !data.length || !data.filter(function(d) {
-                        return d.values.length }).length) {
+                        return d.values.length
+                    }).length) {
                     nv.utils.noData(chart, container)
                     return chart;
                 } else {
@@ -8746,18 +9925,21 @@
                 // Main Chart Component(s)
                 multibar
                     .disabled(data.map(function(series) {
-                        return series.disabled }))
+                        return series.disabled
+                    }))
                     .width(availableWidth)
                     .height(availableHeight)
                     .color(data.map(function(d, i) {
                         return d.color || color(d, i);
                     }).filter(function(d, i) {
-                        return !data[i].disabled }));
+                        return !data[i].disabled
+                    }));
 
 
                 var barsWrap = g.select('.nv-barsWrap')
                     .datum(data.filter(function(d) {
-                        return !d.disabled }));
+                        return !d.disabled
+                    }));
 
                 barsWrap.call(multibar);
 
@@ -8980,37 +10162,90 @@
 
         chart._options = Object.create({}, {
             // simple options, just get/set the necessary values
-            width: { get: function() {
-                    return width; }, set: function(_) { width = _; } },
-            height: { get: function() {
-                    return height; }, set: function(_) { height = _; } },
-            showLegend: { get: function() {
-                    return showLegend; }, set: function(_) { showLegend = _; } },
-            showControls: { get: function() {
-                    return showControls; }, set: function(_) { showControls = _; } },
-            controlLabels: { get: function() {
-                    return controlLabels; }, set: function(_) { controlLabels = _; } },
-            showXAxis: { get: function() {
-                    return showXAxis; }, set: function(_) { showXAxis = _; } },
-            showYAxis: { get: function() {
-                    return showYAxis; }, set: function(_) { showYAxis = _; } },
-            defaultState: { get: function() {
-                    return defaultState; }, set: function(_) { defaultState = _; } },
-            noData: { get: function() {
-                    return noData; }, set: function(_) { noData = _; } },
-            reduceXTicks: { get: function() {
-                    return reduceXTicks; }, set: function(_) { reduceXTicks = _; } },
-            rotateLabels: { get: function() {
-                    return rotateLabels; }, set: function(_) { rotateLabels = _; } },
-            staggerLabels: { get: function() {
-                    return staggerLabels; }, set: function(_) { staggerLabels = _; } },
-            wrapLabels: { get: function() {
-                    return wrapLabels; }, set: function(_) { wrapLabels = !!_; } },
+            width: {
+                get: function() {
+                    return width;
+                },
+                set: function(_) { width = _; }
+            },
+            height: {
+                get: function() {
+                    return height;
+                },
+                set: function(_) { height = _; }
+            },
+            showLegend: {
+                get: function() {
+                    return showLegend;
+                },
+                set: function(_) { showLegend = _; }
+            },
+            showControls: {
+                get: function() {
+                    return showControls;
+                },
+                set: function(_) { showControls = _; }
+            },
+            controlLabels: {
+                get: function() {
+                    return controlLabels;
+                },
+                set: function(_) { controlLabels = _; }
+            },
+            showXAxis: {
+                get: function() {
+                    return showXAxis;
+                },
+                set: function(_) { showXAxis = _; }
+            },
+            showYAxis: {
+                get: function() {
+                    return showYAxis;
+                },
+                set: function(_) { showYAxis = _; }
+            },
+            defaultState: {
+                get: function() {
+                    return defaultState;
+                },
+                set: function(_) { defaultState = _; }
+            },
+            noData: {
+                get: function() {
+                    return noData;
+                },
+                set: function(_) { noData = _; }
+            },
+            reduceXTicks: {
+                get: function() {
+                    return reduceXTicks;
+                },
+                set: function(_) { reduceXTicks = _; }
+            },
+            rotateLabels: {
+                get: function() {
+                    return rotateLabels;
+                },
+                set: function(_) { rotateLabels = _; }
+            },
+            staggerLabels: {
+                get: function() {
+                    return staggerLabels;
+                },
+                set: function(_) { staggerLabels = _; }
+            },
+            wrapLabels: {
+                get: function() {
+                    return wrapLabels;
+                },
+                set: function(_) { wrapLabels = !!_; }
+            },
 
             // options that require extra logic in the setter
             margin: {
                 get: function() {
-                    return margin; },
+                    return margin;
+                },
                 set: function(_) {
                     margin.top = _.top !== undefined ? _.top : margin.top;
                     margin.right = _.right !== undefined ? _.right : margin.right;
@@ -9020,7 +10255,8 @@
             },
             duration: {
                 get: function() {
-                    return duration; },
+                    return duration;
+                },
                 set: function(_) {
                     duration = _;
                     multibar.duration(duration);
@@ -9031,7 +10267,8 @@
             },
             color: {
                 get: function() {
-                    return color; },
+                    return color;
+                },
                 set: function(_) {
                     color = nv.utils.getColor(_);
                     legend.color(color);
@@ -9039,7 +10276,8 @@
             },
             rightAlignYAxis: {
                 get: function() {
-                    return rightAlignYAxis; },
+                    return rightAlignYAxis;
+                },
                 set: function(_) {
                     rightAlignYAxis = _;
                     yAxis.orient(rightAlignYAxis ? 'right' : 'left');
@@ -9047,18 +10285,21 @@
             },
             useInteractiveGuideline: {
                 get: function() {
-                    return useInteractiveGuideline; },
+                    return useInteractiveGuideline;
+                },
                 set: function(_) {
                     useInteractiveGuideline = _;
                 }
             },
             barColor: {
                 get: function() {
-                    return multibar.barColor; },
+                    return multibar.barColor;
+                },
                 set: function(_) {
                     multibar.barColor(_);
                     legend.color(function(d, i) {
-                        return d3.rgb('#ccc').darker(i * 1.5).toString(); })
+                        return d3.rgb('#ccc').darker(i * 1.5).toString();
+                    })
                 }
             }
         });
@@ -9085,11 +10326,14 @@
             x = d3.scale.ordinal(),
             y = d3.scale.linear(),
             getX = function(d) {
-                return d.x },
+                return d.x
+            },
             getY = function(d) {
-                return d.y },
+                return d.y
+            },
             getYerr = function(d) {
-                return d.yErr },
+                return d.yErr
+            },
             forceY = [0] // 0 is forced by default.. this makes sense for the majority of bar graphs... user can always do chart.forceY([]) to remove
             ,
             color = nv.utils.defaultColor(),
@@ -9126,7 +10370,8 @@
                     data = d3.layout.stack()
                     .offset('zero')
                     .values(function(d) {
-                        return d.values })
+                        return d.values
+                    })
                     .y(getY)
                     (data);
 
@@ -9166,11 +10411,13 @@
                     });
 
                 x.domain(xDomain || d3.merge(seriesData).map(function(d) {
-                        return d.x }))
+                        return d.x
+                    }))
                     .rangeBands(xRange || [0, availableHeight], groupSpacing);
 
                 y.domain(yDomain || d3.extent(d3.merge(seriesData).map(function(d) {
-                    return stacked ? (d.y > 0 ? d.y1 + d.y : d.y1) : d.y }).concat(forceY)))
+                    return stacked ? (d.y > 0 ? d.y1 + d.y : d.y1) : d.y
+                }).concat(forceY)))
 
                 if (showValues && !stacked)
                     y.range(yRange || [(y.domain()[0] < 0 ? valuePadding : 0), availableWidth - (y.domain()[1] > 0 ? valuePadding : 0)]);
@@ -9192,8 +10439,10 @@
 
                 var groups = wrap.select('.nv-groups').selectAll('.nv-group')
                     .data(function(d) {
-                        return d }, function(d, i) {
-                        return i });
+                        return d
+                    }, function(d, i) {
+                        return i
+                    });
                 groups.enter().append('g')
                     .style('stroke-opacity', 1e-6)
                     .style('fill-opacity', 1e-6);
@@ -9203,20 +10452,25 @@
                     .remove();
                 groups
                     .attr('class', function(d, i) {
-                        return 'nv-group nv-series-' + i })
+                        return 'nv-group nv-series-' + i
+                    })
                     .classed('hover', function(d) {
-                        return d.hover })
+                        return d.hover
+                    })
                     .style('fill', function(d, i) {
-                        return color(d, i) })
+                        return color(d, i)
+                    })
                     .style('stroke', function(d, i) {
-                        return color(d, i) });
+                        return color(d, i)
+                    });
                 groups.watchTransition(renderWatch, 'multibarhorizontal: groups')
                     .style('stroke-opacity', 1)
                     .style('fill-opacity', .75);
 
                 var bars = groups.selectAll('g.nv-bar')
                     .data(function(d) {
-                        return d.values });
+                        return d.values
+                    });
                 bars.exit().remove();
 
                 var barsEnter = bars.enter().append('g')
@@ -9286,7 +10540,8 @@
                                 mid = 0.8 * x.rangeBand() / ((stacked ? 1 : data.length) * 2);
                             xerr = xerr.length ? xerr : [-Math.abs(xerr), Math.abs(xerr)];
                             xerr = xerr.map(function(e) {
-                                return y(e) - y(0); });
+                                return y(e) - y(0);
+                            });
                             var a = [
                                 [xerr[0], -mid],
                                 [xerr[0], mid],
@@ -9296,7 +10551,8 @@
                                 [xerr[1], mid]
                             ];
                             return a.map(function(path) {
-                                return path.join(',') }).join(' ');
+                                return path.join(',')
+                            }).join(' ');
                         })
                         .attr('transform', function(d, i) {
                             var mid = x.rangeBand() / ((stacked ? 1 : data.length) * 2);
@@ -9309,7 +10565,8 @@
                 if (showValues && !stacked) {
                     bars.select('text')
                         .attr('text-anchor', function(d, i) {
-                            return getY(d, i) < 0 ? 'end' : 'start' })
+                            return getY(d, i) < 0 ? 'end' : 'start'
+                        })
                         .attr('y', x.rangeBand() / (data.length * 2))
                         .attr('dy', '.32em')
                         .text(function(d, i) {
@@ -9324,7 +10581,8 @@
                     bars.watchTransition(renderWatch, 'multibarhorizontal: bars')
                         .select('text')
                         .attr('x', function(d, i) {
-                            return getY(d, i) < 0 ? -4 : y(getY(d, i)) - y(0) + 4 })
+                            return getY(d, i) < 0 ? -4 : y(getY(d, i)) - y(0) + 4
+                        })
                 } else {
                     bars.selectAll('text').text('');
                 }
@@ -9333,35 +10591,46 @@
                     barsEnter.append('text').classed('nv-bar-label', true);
                     bars.select('text.nv-bar-label')
                         .attr('text-anchor', function(d, i) {
-                            return getY(d, i) < 0 ? 'start' : 'end' })
+                            return getY(d, i) < 0 ? 'start' : 'end'
+                        })
                         .attr('y', x.rangeBand() / (data.length * 2))
                         .attr('dy', '.32em')
                         .text(function(d, i) {
-                            return getX(d, i) });
+                            return getX(d, i)
+                        });
                     bars.watchTransition(renderWatch, 'multibarhorizontal: bars')
                         .select('text.nv-bar-label')
                         .attr('x', function(d, i) {
-                            return getY(d, i) < 0 ? y(0) - y(getY(d, i)) + 4 : -4 });
+                            return getY(d, i) < 0 ? y(0) - y(getY(d, i)) + 4 : -4
+                        });
                 } else {
                     bars.selectAll('text.nv-bar-label').text('');
                 }
 
                 bars
                     .attr('class', function(d, i) {
-                        return getY(d, i) < 0 ? 'nv-bar negative' : 'nv-bar positive' })
+                        return getY(d, i) < 0 ? 'nv-bar negative' : 'nv-bar positive'
+                    })
 
                 if (barColor) {
                     if (!disabled) disabled = data.map(function() {
-                        return true });
+                        return true
+                    });
                     bars
                         .style('fill', function(d, i, j) {
                             return d3.rgb(barColor(d, i)).darker(disabled.map(function(d, i) {
-                                return i }).filter(function(d, i) {
-                                return !disabled[i] })[j]).toString(); })
+                                return i
+                            }).filter(function(d, i) {
+                                return !disabled[i]
+                            })[j]).toString();
+                        })
                         .style('stroke', function(d, i, j) {
                             return d3.rgb(barColor(d, i)).darker(disabled.map(function(d, i) {
-                                return i }).filter(function(d, i) {
-                                return !disabled[i] })[j]).toString(); });
+                                return i
+                            }).filter(function(d, i) {
+                                return !disabled[i]
+                            })[j]).toString();
+                        });
                 }
 
                 if (stacked)
@@ -9409,51 +10678,128 @@
 
         chart._options = Object.create({}, {
             // simple options, just get/set the necessary values
-            width: { get: function() {
-                    return width; }, set: function(_) { width = _; } },
-            height: { get: function() {
-                    return height; }, set: function(_) { height = _; } },
-            x: { get: function() {
-                    return getX; }, set: function(_) { getX = _; } },
-            y: { get: function() {
-                    return getY; }, set: function(_) { getY = _; } },
-            yErr: { get: function() {
-                    return getYerr; }, set: function(_) { getYerr = _; } },
-            xScale: { get: function() {
-                    return x; }, set: function(_) { x = _; } },
-            yScale: { get: function() {
-                    return y; }, set: function(_) { y = _; } },
-            xDomain: { get: function() {
-                    return xDomain; }, set: function(_) { xDomain = _; } },
-            yDomain: { get: function() {
-                    return yDomain; }, set: function(_) { yDomain = _; } },
-            xRange: { get: function() {
-                    return xRange; }, set: function(_) { xRange = _; } },
-            yRange: { get: function() {
-                    return yRange; }, set: function(_) { yRange = _; } },
-            forceY: { get: function() {
-                    return forceY; }, set: function(_) { forceY = _; } },
-            stacked: { get: function() {
-                    return stacked; }, set: function(_) { stacked = _; } },
-            showValues: { get: function() {
-                    return showValues; }, set: function(_) { showValues = _; } },
+            width: {
+                get: function() {
+                    return width;
+                },
+                set: function(_) { width = _; }
+            },
+            height: {
+                get: function() {
+                    return height;
+                },
+                set: function(_) { height = _; }
+            },
+            x: {
+                get: function() {
+                    return getX;
+                },
+                set: function(_) { getX = _; }
+            },
+            y: {
+                get: function() {
+                    return getY;
+                },
+                set: function(_) { getY = _; }
+            },
+            yErr: {
+                get: function() {
+                    return getYerr;
+                },
+                set: function(_) { getYerr = _; }
+            },
+            xScale: {
+                get: function() {
+                    return x;
+                },
+                set: function(_) { x = _; }
+            },
+            yScale: {
+                get: function() {
+                    return y;
+                },
+                set: function(_) { y = _; }
+            },
+            xDomain: {
+                get: function() {
+                    return xDomain;
+                },
+                set: function(_) { xDomain = _; }
+            },
+            yDomain: {
+                get: function() {
+                    return yDomain;
+                },
+                set: function(_) { yDomain = _; }
+            },
+            xRange: {
+                get: function() {
+                    return xRange;
+                },
+                set: function(_) { xRange = _; }
+            },
+            yRange: {
+                get: function() {
+                    return yRange;
+                },
+                set: function(_) { yRange = _; }
+            },
+            forceY: {
+                get: function() {
+                    return forceY;
+                },
+                set: function(_) { forceY = _; }
+            },
+            stacked: {
+                get: function() {
+                    return stacked;
+                },
+                set: function(_) { stacked = _; }
+            },
+            showValues: {
+                get: function() {
+                    return showValues;
+                },
+                set: function(_) { showValues = _; }
+            },
             // this shows the group name, seems pointless?
             //showBarLabels:    {get: function(){return showBarLabels;}, set: function(_){showBarLabels=_;}},
-            disabled: { get: function() {
-                    return disabled; }, set: function(_) { disabled = _; } },
-            id: { get: function() {
-                    return id; }, set: function(_) { id = _; } },
-            valueFormat: { get: function() {
-                    return valueFormat; }, set: function(_) { valueFormat = _; } },
-            valuePadding: { get: function() {
-                    return valuePadding; }, set: function(_) { valuePadding = _; } },
-            groupSpacing: { get: function() {
-                    return groupSpacing; }, set: function(_) { groupSpacing = _; } },
+            disabled: {
+                get: function() {
+                    return disabled;
+                },
+                set: function(_) { disabled = _; }
+            },
+            id: {
+                get: function() {
+                    return id;
+                },
+                set: function(_) { id = _; }
+            },
+            valueFormat: {
+                get: function() {
+                    return valueFormat;
+                },
+                set: function(_) { valueFormat = _; }
+            },
+            valuePadding: {
+                get: function() {
+                    return valuePadding;
+                },
+                set: function(_) { valuePadding = _; }
+            },
+            groupSpacing: {
+                get: function() {
+                    return groupSpacing;
+                },
+                set: function(_) { groupSpacing = _; }
+            },
 
             // options that require extra logic in the setter
             margin: {
                 get: function() {
-                    return margin; },
+                    return margin;
+                },
                 set: function(_) {
                     margin.top = _.top !== undefined ? _.top : margin.top;
                     margin.right = _.right !== undefined ? _.right : margin.right;
@@ -9463,7 +10809,8 @@
             },
             duration: {
                 get: function() {
-                    return duration; },
+                    return duration;
+                },
                 set: function(_) {
                     duration = _;
                     renderWatch.reset(duration);
@@ -9471,14 +10818,16 @@
             },
             color: {
                 get: function() {
-                    return color; },
+                    return color;
+                },
                 set: function(_) {
                     color = nv.utils.getColor(_);
                 }
             },
             barColor: {
                 get: function() {
-                    return barColor; },
+                    return barColor;
+                },
                 set: function(_) {
                     barColor = _ ? nv.utils.getColor(_) : null;
                 }
@@ -9521,7 +10870,8 @@
             noData = null,
             dispatch = d3.dispatch('stateChange', 'changeState', 'renderEnd'),
             controlWidth = function() {
-                return showControls ? 180 : 0 },
+                return showControls ? 180 : 0
+            },
             duration = 250;
 
         state.stacked = false; // DEPRECATED Maintained for backward compatibility
@@ -9533,7 +10883,8 @@
             .tickPadding(5)
             .showMaxMin(false)
             .tickFormat(function(d) {
-                return d });
+                return d
+            });
         yAxis
             .orient('bottom')
             .tickFormat(d3.format(',.1f'));
@@ -9557,7 +10908,8 @@
             return function() {
                 return {
                     active: data.map(function(d) {
-                        return !d.disabled }),
+                        return !d.disabled
+                    }),
                     stacked: stacked
                 };
             }
@@ -9601,7 +10953,8 @@
 
                 // DEPRECATED set state.disableddisabled
                 state.disabled = data.map(function(d) {
-                    return !!d.disabled });
+                    return !!d.disabled
+                });
 
                 if (!defaultState) {
                     var key;
@@ -9616,7 +10969,8 @@
 
                 // Display No Data message if there's nothing to show.
                 if (!data || !data.length || !data.filter(function(d) {
-                        return d.values.length }).length) {
+                        return d.values.length
+                    }).length) {
                     nv.utils.noData(chart, container)
                     return chart;
                 } else {
@@ -9676,17 +11030,20 @@
                 // Main Chart Component(s)
                 multibar
                     .disabled(data.map(function(series) {
-                        return series.disabled }))
+                        return series.disabled
+                    }))
                     .width(availableWidth)
                     .height(availableHeight)
                     .color(data.map(function(d, i) {
                         return d.color || color(d, i);
                     }).filter(function(d, i) {
-                        return !data[i].disabled }));
+                        return !data[i].disabled
+                    }));
 
                 var barsWrap = g.select('.nv-barsWrap')
                     .datum(data.filter(function(d) {
-                        return !d.disabled }));
+                        return !d.disabled
+                    }));
 
                 barsWrap.transition().call(multibar);
 
@@ -9824,29 +11181,66 @@
 
         chart._options = Object.create({}, {
             // simple options, just get/set the necessary values
-            width: { get: function() {
-                    return width; }, set: function(_) { width = _; } },
-            height: { get: function() {
-                    return height; }, set: function(_) { height = _; } },
-            showLegend: { get: function() {
-                    return showLegend; }, set: function(_) { showLegend = _; } },
-            showControls: { get: function() {
-                    return showControls; }, set: function(_) { showControls = _; } },
-            controlLabels: { get: function() {
-                    return controlLabels; }, set: function(_) { controlLabels = _; } },
-            showXAxis: { get: function() {
-                    return showXAxis; }, set: function(_) { showXAxis = _; } },
-            showYAxis: { get: function() {
-                    return showYAxis; }, set: function(_) { showYAxis = _; } },
-            defaultState: { get: function() {
-                    return defaultState; }, set: function(_) { defaultState = _; } },
-            noData: { get: function() {
-                    return noData; }, set: function(_) { noData = _; } },
+            width: {
+                get: function() {
+                    return width;
+                },
+                set: function(_) { width = _; }
+            },
+            height: {
+                get: function() {
+                    return height;
+                },
+                set: function(_) { height = _; }
+            },
+            showLegend: {
+                get: function() {
+                    return showLegend;
+                },
+                set: function(_) { showLegend = _; }
+            },
+            showControls: {
+                get: function() {
+                    return showControls;
+                },
+                set: function(_) { showControls = _; }
+            },
+            controlLabels: {
+                get: function() {
+                    return controlLabels;
+                },
+                set: function(_) { controlLabels = _; }
+            },
+            showXAxis: {
+                get: function() {
+                    return showXAxis;
+                },
+                set: function(_) { showXAxis = _; }
+            },
+            showYAxis: {
+                get: function() {
+                    return showYAxis;
+                },
+                set: function(_) { showYAxis = _; }
+            },
+            defaultState: {
+                get: function() {
+                    return defaultState;
+                },
+                set: function(_) { defaultState = _; }
+            },
+            noData: {
+                get: function() {
+                    return noData;
+                },
+                set: function(_) { noData = _; }
+            },
 
             // options that require extra logic in the setter
             margin: {
                 get: function() {
-                    return margin; },
+                    return margin;
+                },
                 set: function(_) {
                     margin.top = _.top !== undefined ? _.top : margin.top;
                     margin.right = _.right !== undefined ? _.right : margin.right;
@@ -9856,7 +11250,8 @@
             },
             duration: {
                 get: function() {
-                    return duration; },
+                    return duration;
+                },
                 set: function(_) {
                     duration = _;
                     renderWatch.reset(duration);
@@ -9867,7 +11262,8 @@
             },
             color: {
                 get: function() {
-                    return color; },
+                    return color;
+                },
                 set: function(_) {
                     color = nv.utils.getColor(_);
                     legend.color(color);
@@ -9875,11 +11271,13 @@
             },
             barColor: {
                 get: function() {
-                    return multibar.barColor; },
+                    return multibar.barColor;
+                },
                 set: function(_) {
                     multibar.barColor(_);
                     legend.color(function(d, i) {
-                        return d3.rgb('#ccc').darker(i * 1.5).toString(); })
+                        return d3.rgb('#ccc').darker(i * 1.5).toString();
+                    })
                 }
             }
         });
@@ -9905,9 +11303,11 @@
             yDomain1,
             yDomain2,
             getX = function(d) {
-                return d.x },
+                return d.x
+            },
             getY = function(d) {
-                return d.y },
+                return d.y
+            },
             interpolate = 'monotone',
             useVoronoi = true,
             interactiveLayer = nv.interactiveGuideline(),
@@ -9957,25 +11357,34 @@
                     availableHeight = nv.utils.availableHeight(height, container, margin);
 
                 var dataLines1 = data.filter(function(d) {
-                    return d.type == 'line' && d.yAxis == 1 });
+                    return d.type == 'line' && d.yAxis == 1
+                });
                 var dataLines2 = data.filter(function(d) {
-                    return d.type == 'line' && d.yAxis == 2 });
+                    return d.type == 'line' && d.yAxis == 2
+                });
                 var dataScatters1 = data.filter(function(d) {
-                    return d.type == 'scatter' && d.yAxis == 1 });
+                    return d.type == 'scatter' && d.yAxis == 1
+                });
                 var dataScatters2 = data.filter(function(d) {
-                    return d.type == 'scatter' && d.yAxis == 2 });
+                    return d.type == 'scatter' && d.yAxis == 2
+                });
                 var dataBars1 = data.filter(function(d) {
-                    return d.type == 'bar' && d.yAxis == 1 });
+                    return d.type == 'bar' && d.yAxis == 1
+                });
                 var dataBars2 = data.filter(function(d) {
-                    return d.type == 'bar' && d.yAxis == 2 });
+                    return d.type == 'bar' && d.yAxis == 2
+                });
                 var dataStack1 = data.filter(function(d) {
-                    return d.type == 'area' && d.yAxis == 1 });
+                    return d.type == 'area' && d.yAxis == 1
+                });
                 var dataStack2 = data.filter(function(d) {
-                    return d.type == 'area' && d.yAxis == 2 });
+                    return d.type == 'area' && d.yAxis == 2
+                });
 
                 // Display noData message if there's nothing to show.
                 if (!data || !data.length || !data.filter(function(d) {
-                        return d.values.length }).length) {
+                        return d.values.length
+                    }).length) {
                     nv.utils.noData(chart, container);
                     return chart;
                 } else {
@@ -9983,7 +11392,8 @@
                 }
 
                 var series1 = data.filter(function(d) {
-                        return !d.disabled && d.yAxis == 1 })
+                        return !d.disabled && d.yAxis == 1
+                    })
                     .map(function(d) {
                         return d.values.map(function(d, i) {
                             return { x: getX(d), y: getY(d) }
@@ -9991,7 +11401,8 @@
                     });
 
                 var series2 = data.filter(function(d) {
-                        return !d.disabled && d.yAxis == 2 })
+                        return !d.disabled && d.yAxis == 2
+                    })
                     .map(function(d) {
                         return d.values.map(function(d, i) {
                             return { x: getX(d), y: getY(d) }
@@ -9999,7 +11410,8 @@
                     });
 
                 x.domain(d3.extent(d3.merge(series1.concat(series2)), function(d) {
-                        return getX(d) }))
+                        return getX(d)
+                    }))
                     .range([0, availableWidth]);
 
                 var wrap = container.selectAll('g.wrap.multiChart').data([data]);
@@ -10054,88 +11466,110 @@
                     .height(availableHeight)
                     .interpolate(interpolate)
                     .color(color_array.filter(function(d, i) {
-                        return !data[i].disabled && data[i].yAxis == 1 && data[i].type == 'line' }));
+                        return !data[i].disabled && data[i].yAxis == 1 && data[i].type == 'line'
+                    }));
                 lines2
                     .width(availableWidth)
                     .height(availableHeight)
                     .interpolate(interpolate)
                     .color(color_array.filter(function(d, i) {
-                        return !data[i].disabled && data[i].yAxis == 2 && data[i].type == 'line' }));
+                        return !data[i].disabled && data[i].yAxis == 2 && data[i].type == 'line'
+                    }));
                 scatters1
                     .width(availableWidth)
                     .height(availableHeight)
                     .color(color_array.filter(function(d, i) {
-                        return !data[i].disabled && data[i].yAxis == 1 && data[i].type == 'scatter' }));
+                        return !data[i].disabled && data[i].yAxis == 1 && data[i].type == 'scatter'
+                    }));
                 scatters2
                     .width(availableWidth)
                     .height(availableHeight)
                     .color(color_array.filter(function(d, i) {
-                        return !data[i].disabled && data[i].yAxis == 2 && data[i].type == 'scatter' }));
+                        return !data[i].disabled && data[i].yAxis == 2 && data[i].type == 'scatter'
+                    }));
                 bars1
                     .width(availableWidth)
                     .height(availableHeight)
                     .color(color_array.filter(function(d, i) {
-                        return !data[i].disabled && data[i].yAxis == 1 && data[i].type == 'bar' }));
+                        return !data[i].disabled && data[i].yAxis == 1 && data[i].type == 'bar'
+                    }));
                 bars2
                     .width(availableWidth)
                     .height(availableHeight)
                     .color(color_array.filter(function(d, i) {
-                        return !data[i].disabled && data[i].yAxis == 2 && data[i].type == 'bar' }));
+                        return !data[i].disabled && data[i].yAxis == 2 && data[i].type == 'bar'
+                    }));
                 stack1
                     .width(availableWidth)
                     .height(availableHeight)
                     .color(color_array.filter(function(d, i) {
-                        return !data[i].disabled && data[i].yAxis == 1 && data[i].type == 'area' }));
+                        return !data[i].disabled && data[i].yAxis == 1 && data[i].type == 'area'
+                    }));
                 stack2
                     .width(availableWidth)
                     .height(availableHeight)
                     .color(color_array.filter(function(d, i) {
-                        return !data[i].disabled && data[i].yAxis == 2 && data[i].type == 'area' }));
+                        return !data[i].disabled && data[i].yAxis == 2 && data[i].type == 'area'
+                    }));
 
                 g.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
                 var lines1Wrap = g.select('.lines1Wrap')
                     .datum(dataLines1.filter(function(d) {
-                        return !d.disabled }));
+                        return !d.disabled
+                    }));
                 var scatters1Wrap = g.select('.scatters1Wrap')
                     .datum(dataScatters1.filter(function(d) {
-                        return !d.disabled }));
+                        return !d.disabled
+                    }));
                 var bars1Wrap = g.select('.bars1Wrap')
                     .datum(dataBars1.filter(function(d) {
-                        return !d.disabled }));
+                        return !d.disabled
+                    }));
                 var stack1Wrap = g.select('.stack1Wrap')
                     .datum(dataStack1.filter(function(d) {
-                        return !d.disabled }));
+                        return !d.disabled
+                    }));
                 var lines2Wrap = g.select('.lines2Wrap')
                     .datum(dataLines2.filter(function(d) {
-                        return !d.disabled }));
+                        return !d.disabled
+                    }));
                 var scatters2Wrap = g.select('.scatters2Wrap')
                     .datum(dataScatters2.filter(function(d) {
-                        return !d.disabled }));
+                        return !d.disabled
+                    }));
                 var bars2Wrap = g.select('.bars2Wrap')
                     .datum(dataBars2.filter(function(d) {
-                        return !d.disabled }));
+                        return !d.disabled
+                    }));
                 var stack2Wrap = g.select('.stack2Wrap')
                     .datum(dataStack2.filter(function(d) {
-                        return !d.disabled }));
+                        return !d.disabled
+                    }));
 
                 var extraValue1 = dataStack1.length ? dataStack1.map(function(a) {
-                    return a.values }).reduce(function(a, b) {
+                    return a.values
+                }).reduce(function(a, b) {
                     return a.map(function(aVal, i) {
-                        return { x: aVal.x, y: aVal.y + b[i].y } })
+                        return { x: aVal.x, y: aVal.y + b[i].y }
+                    })
                 }).concat([{ x: 0, y: 0 }]) : [];
                 var extraValue2 = dataStack2.length ? dataStack2.map(function(a) {
-                    return a.values }).reduce(function(a, b) {
+                    return a.values
+                }).reduce(function(a, b) {
                     return a.map(function(aVal, i) {
-                        return { x: aVal.x, y: aVal.y + b[i].y } })
+                        return { x: aVal.x, y: aVal.y + b[i].y }
+                    })
                 }).concat([{ x: 0, y: 0 }]) : [];
 
                 yScale1.domain(yDomain1 || d3.extent(d3.merge(series1).concat(extraValue1), function(d) {
-                        return d.y }))
+                        return d.y
+                    }))
                     .range([0, availableHeight]);
 
                 yScale2.domain(yDomain2 || d3.extent(d3.merge(series2).concat(extraValue2), function(d) {
-                        return d.y }))
+                        return d.y
+                    }))
                     .range([0, availableHeight]);
 
                 lines1.yDomain(yScale1.domain());
@@ -10419,27 +11853,60 @@
 
         chart._options = Object.create({}, {
             // simple options, just get/set the necessary values
-            width: { get: function() {
-                    return width; }, set: function(_) { width = _; } },
-            height: { get: function() {
-                    return height; }, set: function(_) { height = _; } },
-            showLegend: { get: function() {
-                    return showLegend; }, set: function(_) { showLegend = _; } },
-            yDomain1: { get: function() {
-                    return yDomain1; }, set: function(_) { yDomain1 = _; } },
-            yDomain2: { get: function() {
-                    return yDomain2; }, set: function(_) { yDomain2 = _; } },
-            noData: { get: function() {
-                    return noData; }, set: function(_) { noData = _; } },
-            interpolate: { get: function() {
-                    return interpolate; }, set: function(_) { interpolate = _; } },
-            legendRightAxisHint: { get: function() {
-                    return legendRightAxisHint; }, set: function(_) { legendRightAxisHint = _; } },
+            width: {
+                get: function() {
+                    return width;
+                },
+                set: function(_) { width = _; }
+            },
+            height: {
+                get: function() {
+                    return height;
+                },
+                set: function(_) { height = _; }
+            },
+            showLegend: {
+                get: function() {
+                    return showLegend;
+                },
+                set: function(_) { showLegend = _; }
+            },
+            yDomain1: {
+                get: function() {
+                    return yDomain1;
+                },
+                set: function(_) { yDomain1 = _; }
+            },
+            yDomain2: {
+                get: function() {
+                    return yDomain2;
+                },
+                set: function(_) { yDomain2 = _; }
+            },
+            noData: {
+                get: function() {
+                    return noData;
+                },
+                set: function(_) { noData = _; }
+            },
+            interpolate: {
+                get: function() {
+                    return interpolate;
+                },
+                set: function(_) { interpolate = _; }
+            },
+            legendRightAxisHint: {
+                get: function() {
+                    return legendRightAxisHint;
+                },
+                set: function(_) { legendRightAxisHint = _; }
+            },
 
             // options that require extra logic in the setter
             margin: {
                 get: function() {
-                    return margin; },
+                    return margin;
+                },
                 set: function(_) {
                     margin.top = _.top !== undefined ? _.top : margin.top;
                     margin.right = _.right !== undefined ? _.right : margin.right;
@@ -10449,14 +11916,16 @@
             },
             color: {
                 get: function() {
-                    return color; },
+                    return color;
+                },
                 set: function(_) {
                     color = nv.utils.getColor(_);
                 }
             },
             x: {
                 get: function() {
-                    return getX; },
+                    return getX;
+                },
                 set: function(_) {
                     getX = _;
                     lines1.x(_);
@@ -10471,7 +11940,8 @@
             },
             y: {
                 get: function() {
-                    return getY; },
+                    return getY;
+                },
                 set: function(_) {
                     getY = _;
                     lines1.y(_);
@@ -10486,7 +11956,8 @@
             },
             useVoronoi: {
                 get: function() {
-                    return useVoronoi; },
+                    return useVoronoi;
+                },
                 set: function(_) {
                     useVoronoi = _;
                     lines1.useVoronoi(_);
@@ -10498,7 +11969,8 @@
 
             useInteractiveGuideline: {
                 get: function() {
-                    return useInteractiveGuideline; },
+                    return useInteractiveGuideline;
+                },
                 set: function(_) {
                     useInteractiveGuideline = _;
                     if (useInteractiveGuideline) {
@@ -10538,17 +12010,23 @@
             x = d3.scale.linear(),
             y = d3.scale.linear(),
             getX = function(d) {
-                return d.x },
+                return d.x
+            },
             getY = function(d) {
-                return d.y },
+                return d.y
+            },
             getOpen = function(d) {
-                return d.open },
+                return d.open
+            },
             getClose = function(d) {
-                return d.close },
+                return d.close
+            },
             getHigh = function(d) {
-                return d.high },
+                return d.high
+            },
             getLow = function(d) {
-                return d.low },
+                return d.low
+            },
             forceX = [],
             forceY = [],
             padData = false // If true, adds half a data points width to front and back, for lining up a line chart with a bar chart
@@ -10628,26 +12106,33 @@
 
                 var ticks = wrap.select('.nv-ticks').selectAll('.nv-tick')
                     .data(function(d) {
-                        return d });
+                        return d
+                    });
                 ticks.exit().remove();
 
                 ticks.enter().append('path')
                     .attr('class', function(d, i, j) {
-                        return (getOpen(d, i) > getClose(d, i) ? 'nv-tick negative' : 'nv-tick positive') + ' nv-tick-' + j + '-' + i })
+                        return (getOpen(d, i) > getClose(d, i) ? 'nv-tick negative' : 'nv-tick positive') + ' nv-tick-' + j + '-' + i
+                    })
                     .attr('d', function(d, i) {
                         return 'm0,0l0,' + (y(getOpen(d, i)) - y(getHigh(d, i))) + 'l' + (-w / 2) + ',0l' + (w / 2) + ',0l0,' + (y(getLow(d, i)) - y(getOpen(d, i))) + 'l0,' + (y(getClose(d, i)) - y(getLow(d, i))) + 'l' + (w / 2) + ',0l' + (-w / 2) + ',0z';
                     })
                     .attr('transform', function(d, i) {
-                        return 'translate(' + x(getX(d, i)) + ',' + y(getHigh(d, i)) + ')'; })
+                        return 'translate(' + x(getX(d, i)) + ',' + y(getHigh(d, i)) + ')';
+                    })
                     .attr('fill', function(d, i) {
-                        return color[0]; })
+                        return color[0];
+                    })
                     .attr('stroke', function(d, i) {
-                        return color[0]; })
+                        return color[0];
+                    })
                     .attr('x', 0)
                     .attr('y', function(d, i) {
-                        return y(Math.max(0, getY(d, i))) })
+                        return y(Math.max(0, getY(d, i)))
+                    })
                     .attr('height', function(d, i) {
-                        return Math.abs(y(getY(d, i)) - y(0)) });
+                        return Math.abs(y(getY(d, i)) - y(0))
+                    });
 
                 // the bar colors are controlled by CSS currently
                 ticks.attr('class', function(d, i, j) {
@@ -10656,7 +12141,8 @@
 
                 d3.transition(ticks)
                     .attr('transform', function(d, i) {
-                        return 'translate(' + x(getX(d, i)) + ',' + y(getHigh(d, i)) + ')'; })
+                        return 'translate(' + x(getX(d, i)) + ',' + y(getHigh(d, i)) + ')';
+                    })
                     .attr('d', function(d, i) {
                         var w = (availableWidth / data[0].values.length) * .9;
                         return 'm0,0l0,' + (y(getOpen(d, i)) - y(getHigh(d, i))) + 'l' + (-w / 2) + ',0l' + (w / 2) + ',0l0,' + (y(getLow(d, i)) - y(getOpen(d, i))) + 'l0,' + (y(getClose(d, i)) - y(getLow(d, i))) + 'l' + (w / 2) + ',0l' + (-w / 2) + ',0z';
@@ -10688,52 +12174,133 @@
 
         chart._options = Object.create({}, {
             // simple options, just get/set the necessary values
-            width: { get: function() {
-                    return width; }, set: function(_) { width = _; } },
-            height: { get: function() {
-                    return height; }, set: function(_) { height = _; } },
-            xScale: { get: function() {
-                    return x; }, set: function(_) { x = _; } },
-            yScale: { get: function() {
-                    return y; }, set: function(_) { y = _; } },
-            xDomain: { get: function() {
-                    return xDomain; }, set: function(_) { xDomain = _; } },
-            yDomain: { get: function() {
-                    return yDomain; }, set: function(_) { yDomain = _; } },
-            xRange: { get: function() {
-                    return xRange; }, set: function(_) { xRange = _; } },
-            yRange: { get: function() {
-                    return yRange; }, set: function(_) { yRange = _; } },
-            forceX: { get: function() {
-                    return forceX; }, set: function(_) { forceX = _; } },
-            forceY: { get: function() {
-                    return forceY; }, set: function(_) { forceY = _; } },
-            padData: { get: function() {
-                    return padData; }, set: function(_) { padData = _; } },
-            clipEdge: { get: function() {
-                    return clipEdge; }, set: function(_) { clipEdge = _; } },
-            id: { get: function() {
-                    return id; }, set: function(_) { id = _; } },
-            interactive: { get: function() {
-                    return interactive; }, set: function(_) { interactive = _; } },
+            width: {
+                get: function() {
+                    return width;
+                },
+                set: function(_) { width = _; }
+            },
+            height: {
+                get: function() {
+                    return height;
+                },
+                set: function(_) { height = _; }
+            },
+            xScale: {
+                get: function() {
+                    return x;
+                },
+                set: function(_) { x = _; }
+            },
+            yScale: {
+                get: function() {
+                    return y;
+                },
+                set: function(_) { y = _; }
+            },
+            xDomain: {
+                get: function() {
+                    return xDomain;
+                },
+                set: function(_) { xDomain = _; }
+            },
+            yDomain: {
+                get: function() {
+                    return yDomain;
+                },
+                set: function(_) { yDomain = _; }
+            },
+            xRange: {
+                get: function() {
+                    return xRange;
+                },
+                set: function(_) { xRange = _; }
+            },
+            yRange: {
+                get: function() {
+                    return yRange;
+                },
+                set: function(_) { yRange = _; }
+            },
+            forceX: {
+                get: function() {
+                    return forceX;
+                },
+                set: function(_) { forceX = _; }
+            },
+            forceY: {
+                get: function() {
+                    return forceY;
+                },
+                set: function(_) { forceY = _; }
+            },
+            padData: {
+                get: function() {
+                    return padData;
+                },
+                set: function(_) { padData = _; }
+            },
+            clipEdge: {
+                get: function() {
+                    return clipEdge;
+                },
+                set: function(_) { clipEdge = _; }
+            },
+            id: {
+                get: function() {
+                    return id;
+                },
+                set: function(_) { id = _; }
+            },
+            interactive: {
+                get: function() {
+                    return interactive;
+                },
+                set: function(_) { interactive = _; }
+            },
 
-            x: { get: function() {
-                    return getX; }, set: function(_) { getX = _; } },
-            y: { get: function() {
-                    return getY; }, set: function(_) { getY = _; } },
-            open: { get: function() {
-                    return getOpen(); }, set: function(_) { getOpen = _; } },
-            close: { get: function() {
-                    return getClose(); }, set: function(_) { getClose = _; } },
-            high: { get: function() {
-                    return getHigh; }, set: function(_) { getHigh = _; } },
-            low: { get: function() {
-                    return getLow; }, set: function(_) { getLow = _; } },
+            x: {
+                get: function() {
+                    return getX;
+                },
+                set: function(_) { getX = _; }
+            },
+            y: {
+                get: function() {
+                    return getY;
+                },
+                set: function(_) { getY = _; }
+            },
+            open: {
+                get: function() {
+                    return getOpen();
+                },
+                set: function(_) { getOpen = _; }
+            },
+            close: {
+                get: function() {
+                    return getClose();
+                },
+                set: function(_) { getClose = _; }
+            },
+            high: {
+                get: function() {
+                    return getHigh;
+                },
+                set: function(_) { getHigh = _; }
+            },
+            low: {
+                get: function() {
+                    return getLow;
+                },
+                set: function(_) { getLow = _; }
+            },
 
             // options that require extra logic in the setter
             margin: {
                 get: function() {
-                    return margin; },
+                    return margin;
+                },
                 set: function(_) {
                     margin.top = _.top != undefined ? _.top : margin.top;
                     margin.right = _.right != undefined ? _.right : margin.right;
@@ -10743,7 +12310,8 @@
             },
             color: {
                 get: function() {
-                    return color; },
+                    return color;
+                },
                 set: function(_) {
                     color = nv.utils.getColor(_);
                 }
@@ -10805,28 +12373,34 @@
                         var val = {};
                         var key = Object.keys(d);
                         key.forEach(function(k) {
-                            if (k !== "name") val[k] = d[k] });
+                            if (k !== "name") val[k] = d[k]
+                        });
                         newData.push({ key: d.name, values: val });
                     });
                     data = newData;
                 }
 
                 var dataValues = data.map(function(d) {
-                    return d.values });
+                    return d.values
+                });
                 if (active.length === 0) {
                     active = data;
                 }; //set all active before first brush call
 
                 dimensionNames = dimensionData.sort(function(a, b) {
-                    return a.currentPosition - b.currentPosition; }).map(function(d) {
-                    return d.key });
+                    return a.currentPosition - b.currentPosition;
+                }).map(function(d) {
+                    return d.key
+                });
                 enabledDimensions = dimensionData.filter(function(d) {
-                    return !d.disabled; });
+                    return !d.disabled;
+                });
 
 
                 // Setup Scales
                 x.rangePoints([0, availableWidth], 1).domain(enabledDimensions.map(function(d) {
-                    return d.key; }));
+                    return d.key;
+                }));
 
                 //Set as true if all values on an axis are missing.
                 // Extract the list of dimensions and create a scale for each.
@@ -10835,7 +12409,8 @@
 
                 dimensionNames.forEach(function(d) {
                     var extent = d3.extent(dataValues, function(p) {
-                        return +p[d]; });
+                        return +p[d];
+                    });
                     var min = extent[0];
                     var max = extent[1];
                     var onlyUndefinedValues = false;
@@ -10851,7 +12426,8 @@
                         max = max + 1;
                     }
                     var f = filters.filter(function(k) {
-                        return k.dimension == d; });
+                        return k.dimension == d;
+                    });
                     if (f.length !== 0) {
                         //If there is only NaN values, keep the existing domain.
                         if (onlyUndefinedValues) {
@@ -10909,13 +12485,17 @@
                     missingValuesline.enter().append('line');
                     missingValuesline.exit().remove();
                     missingValuesline.attr("x1", function(d) {
-                            return d[0]; })
+                            return d[0];
+                        })
                         .attr("y1", function(d) {
-                            return d[1]; })
+                            return d[1];
+                        })
                         .attr("x2", function(d) {
-                            return d[2]; })
+                            return d[2];
+                        })
                         .attr("y2", function(d) {
-                            return d[3]; });
+                            return d[3];
+                        });
 
                     //Add the text "undefined values" under the missing value line
                     missingValueslineText = wrap.select('.missingValuesline').selectAll('text').data(["undefined values"]);
@@ -10926,7 +12506,8 @@
                         //To have the text right align with the missingValues line, substract 92 representing the text size.
                         .attr("x", availableWidth - 92 - step / 2)
                         .text(function(d) {
-                            return d; });
+                            return d;
+                        });
                 }
                 // Add grey background lines for context.
                 background = wrap.select('.background').selectAll('path').data(data);
@@ -10944,7 +12525,8 @@
                         return d.strokeWidth;
                     })
                     .attr('stroke', function(d, i) {
-                        return d.color || color(d, i); });
+                        return d.color || color(d, i);
+                    });
                 foreground.on("mouseover", function(d, i) {
                     d3.select(this).classed('hover', true).style("stroke-width", d.strokeWidth + 2 + "px").style("stroke-opacity", 1);
                     dispatch.elementMouseover({
@@ -10973,7 +12555,8 @@
                 var dimensionsEnter = dimensions.enter().append('g').attr('class', 'nv-parallelCoordinates dimension');
 
                 dimensions.attr('transform', function(d) {
-                    return 'translate(' + x(d.key) + ',0)'; });
+                    return 'translate(' + x(d.key) + ',0)';
+                });
                 dimensionsEnter.append('g').attr('class', 'nv-axis');
 
                 // Add an axis and title.
@@ -11004,7 +12587,8 @@
                 dimensionsEnter.append('g').attr('class', 'nv-brushBackground');
                 dimensions.exit().remove();
                 dimensions.select('.nv-label').text(function(d) {
-                    return d.key });
+                    return d.key
+                });
                 dimensions.select('.nv-axis')
                     .each(function(d, i) {
                         d3.select(this).call(axis.scale(y[d.key]).tickFormat(d3.format(d.format)));
@@ -11014,9 +12598,11 @@
                 restoreBrush(displayBrush);
 
                 var actives = dimensionNames.filter(function(p) {
-                        return !y[p].brush.empty(); }),
+                        return !y[p].brush.empty();
+                    }),
                     extents = actives.map(function(p) {
-                        return y[p].brush.extent(); });
+                        return y[p].brush.extent();
+                    });
                 var formerActive = active.slice(0);
 
                 //Restore active values
@@ -11108,9 +12694,11 @@
                 // Handles a brush event, toggling the display of foreground lines.
                 function brush() {
                     actives = dimensionNames.filter(function(p) {
-                            return !y[p].brush.empty(); }),
+                            return !y[p].brush.empty();
+                        }),
                         extents = actives.map(function(p) {
-                            return y[p].brush.extent(); });
+                            return y[p].brush.extent();
+                        });
 
                     filters = []; //erase current filters
                     actives.forEach(function(d, i) {
@@ -11159,13 +12747,17 @@
                     dragging[d.key] = Math.min(availableWidth, Math.max(0, this.parentNode.__origin__ += d3.event.x));
                     foreground.attr("d", path);
                     enabledDimensions.sort(function(a, b) {
-                        return dimensionPosition(a.key) - dimensionPosition(b.key); });
+                        return dimensionPosition(a.key) - dimensionPosition(b.key);
+                    });
                     enabledDimensions.forEach(function(d, i) {
-                        return d.currentPosition = i; });
+                        return d.currentPosition = i;
+                    });
                     x.domain(enabledDimensions.map(function(d) {
-                        return d.key; }));
+                        return d.key;
+                    }));
                     dimensions.attr("transform", function(d) {
-                        return "translate(" + dimensionPosition(d.key) + ")"; });
+                        return "translate(" + dimensionPosition(d.key) + ")";
+                    });
                 }
 
                 function dragEnd(d, i) {
@@ -11189,7 +12781,8 @@
 
                 function resetDrag() {
                     dimensionName.map(function(d, i) {
-                        return d.currentPosition = d.originalPosition; });
+                        return d.currentPosition = d.originalPosition;
+                    });
                     dispatch.stateChange();
                 }
 
@@ -11211,26 +12804,56 @@
 
         chart._options = Object.create({}, {
             // simple options, just get/set the necessary values
-            width: { get: function() {
-                    return width; }, set: function(_) { width = _; } },
-            height: { get: function() {
-                    return height; }, set: function(_) { height = _; } },
-            dimensionData: { get: function() {
-                    return dimensionData; }, set: function(_) { dimensionData = _; } },
-            displayBrush: { get: function() {
-                    return displayBrush; }, set: function(_) { displayBrush = _; } },
-            filters: { get: function() {
-                    return filters; }, set: function(_) { filters = _; } },
-            active: { get: function() {
-                    return active; }, set: function(_) { active = _; } },
-            lineTension: { get: function() {
-                    return lineTension; }, set: function(_) { lineTension = _; } },
+            width: {
+                get: function() {
+                    return width;
+                },
+                set: function(_) { width = _; }
+            },
+            height: {
+                get: function() {
+                    return height;
+                },
+                set: function(_) { height = _; }
+            },
+            dimensionData: {
+                get: function() {
+                    return dimensionData;
+                },
+                set: function(_) { dimensionData = _; }
+            },
+            displayBrush: {
+                get: function() {
+                    return displayBrush;
+                },
+                set: function(_) { displayBrush = _; }
+            },
+            filters: {
+                get: function() {
+                    return filters;
+                },
+                set: function(_) { filters = _; }
+            },
+            active: {
+                get: function() {
+                    return active;
+                },
+                set: function(_) { active = _; }
+            },
+            lineTension: {
+                get: function() {
+                    return lineTension;
+                },
+                set: function(_) { lineTension = _; }
+            },
 
             // deprecated options
             dimensions: {
                 get: function() {
                     return dimensionData.map(function(d) {
-                        return d.key }); },
+                        return d.key
+                    });
+                },
                 set: function(_) {
                     // deprecated after 1.8.1
                     nv.deprecated('dimensions', 'use dimensionData instead');
@@ -11244,7 +12867,9 @@
             dimensionNames: {
                 get: function() {
                     return dimensionData.map(function(d) {
-                        return d.key }); },
+                        return d.key
+                    });
+                },
                 set: function(_) {
                     // deprecated after 1.8.1
                     nv.deprecated('dimensionNames', 'use dimensionData instead');
@@ -11260,7 +12885,9 @@
             dimensionFormats: {
                 get: function() {
                     return dimensionData.map(function(d) {
-                        return d.format }); },
+                        return d.format
+                    });
+                },
                 set: function(_) {
                     // deprecated after 1.8.1
                     nv.deprecated('dimensionFormats', 'use dimensionData instead');
@@ -11276,7 +12903,8 @@
             // options that require extra logic in the setter
             margin: {
                 get: function() {
-                    return margin; },
+                    return margin;
+                },
                 set: function(_) {
                     margin.top = _.top !== undefined ? _.top : margin.top;
                     margin.right = _.right !== undefined ? _.right : margin.right;
@@ -11286,7 +12914,8 @@
             },
             color: {
                 get: function() {
-                    return color; },
+                    return color;
+                },
                 set: function(_) {
                     color = nv.utils.getColor(_);
                 }
@@ -11320,7 +12949,8 @@
             noData = null,
             dispatch = d3.dispatch('dimensionsOrder', 'brushEnd', 'stateChange', 'changeState', 'renderEnd'),
             controlWidth = function() {
-                return showControls ? 180 : 0 };
+                return showControls ? 180 : 0
+            };
 
         //============================================================
 
@@ -11334,7 +12964,8 @@
             return function() {
                 return {
                     active: data.map(function(d) {
-                        return !d.disabled })
+                        return !d.disabled
+                    })
                 };
             }
         };
@@ -11375,20 +13006,25 @@
 
                 //set state.disabled
                 state.disabled = dimensionData.map(function(d) {
-                    return !!d.disabled });
+                    return !!d.disabled
+                });
 
                 //Keep dimensions position in memory
-                dimensionData = dimensionData.map(function(d) { d.disabled = !!d.disabled;
-                    return d });
+                dimensionData = dimensionData.map(function(d) {
+                    d.disabled = !!d.disabled;
+                    return d
+                });
                 dimensionData.forEach(function(d, i) {
                     d.originalPosition = isNaN(d.originalPosition) ? i : d.originalPosition;
                     d.currentPosition = isNaN(d.currentPosition) ? i : d.currentPosition;
                 });
 
                 var currentDimensions = dimensionNames.map(function(d) {
-                    return d.key; });
+                    return d.key;
+                });
                 var newDimensions = dimensionData.map(function(d) {
-                    return d.key; });
+                    return d.key;
+                });
                 dimensionData.forEach(function(k, i) {
                     var idx = currentDimensions.indexOf(k.key);
                     if (idx < 0) {
@@ -11401,7 +13037,8 @@
                 });
                 //Remove old dimensions
                 dimensionNames = dimensionNames.filter(function(d) {
-                    return newDimensions.indexOf(d.key) >= 0; });
+                    return newDimensions.indexOf(d.key) >= 0;
+                });
 
                 if (!defaultState) {
                     var key;
@@ -11441,11 +13078,13 @@
                 if (showLegend) {
                     legend.width(availableWidth)
                         .color(function(d) {
-                            return "rgb(188,190,192)"; });
+                            return "rgb(188,190,192)";
+                        });
 
                     g.select('.nv-legendWrap')
                         .datum(dimensionNames.sort(function(a, b) {
-                            return a.originalPosition - b.originalPosition; }))
+                            return a.originalPosition - b.originalPosition;
+                        }))
                         .call(legend);
 
                     if (margin.top != legend.height()) {
@@ -11497,7 +13136,8 @@
                 //Update dimensions order and display reset sorting button
                 parallelCoordinates.dispatch.on('dimensionsOrder', function(e) {
                     dimensionNames.sort(function(a, b) {
-                        return a.currentPosition - b.currentPosition; });
+                        return a.currentPosition - b.currentPosition;
+                    });
                     var isSorted = false;
                     dimensionNames.forEach(function(d, i) {
                         d.currentPosition = i;
@@ -11557,25 +13197,54 @@
 
         chart._options = Object.create({}, {
             // simple options, just get/set the necessary values
-            width: { get: function() {
-                    return width; }, set: function(_) { width = _; } },
-            height: { get: function() {
-                    return height; }, set: function(_) { height = _; } },
-            showLegend: { get: function() {
-                    return showLegend; }, set: function(_) { showLegend = _; } },
-            defaultState: { get: function() {
-                    return defaultState; }, set: function(_) { defaultState = _; } },
-            dimensionData: { get: function() {
-                    return dimensionData; }, set: function(_) { dimensionData = _; } },
-            displayBrush: { get: function() {
-                    return displayBrush; }, set: function(_) { displayBrush = _; } },
-            noData: { get: function() {
-                    return noData; }, set: function(_) { noData = _; } },
+            width: {
+                get: function() {
+                    return width;
+                },
+                set: function(_) { width = _; }
+            },
+            height: {
+                get: function() {
+                    return height;
+                },
+                set: function(_) { height = _; }
+            },
+            showLegend: {
+                get: function() {
+                    return showLegend;
+                },
+                set: function(_) { showLegend = _; }
+            },
+            defaultState: {
+                get: function() {
+                    return defaultState;
+                },
+                set: function(_) { defaultState = _; }
+            },
+            dimensionData: {
+                get: function() {
+                    return dimensionData;
+                },
+                set: function(_) { dimensionData = _; }
+            },
+            displayBrush: {
+                get: function() {
+                    return displayBrush;
+                },
+                set: function(_) { displayBrush = _; }
+            },
+            noData: {
+                get: function() {
+                    return noData;
+                },
+                set: function(_) { noData = _; }
+            },
 
             // options that require extra logic in the setter
             margin: {
                 get: function() {
-                    return margin; },
+                    return margin;
+                },
                 set: function(_) {
                     margin.top = _.top !== undefined ? _.top : margin.top;
                     margin.right = _.right !== undefined ? _.right : margin.right;
@@ -11585,7 +13254,8 @@
             },
             color: {
                 get: function() {
-                    return color; },
+                    return color;
+                },
                 set: function(_) {
                     color = nv.utils.getColor(_);
                     legend.color(color);
@@ -11610,9 +13280,11 @@
             width = 500,
             height = 500,
             getX = function(d) {
-                return d.x },
+                return d.x
+            },
             getY = function(d) {
-                return d.y },
+                return d.y
+            },
             id = Math.floor(Math.random() * 10000) //Create semi-unique ID in case user doesn't select one
             ,
             container = null,
@@ -11664,11 +13336,14 @@
                     }
                 } else {
                     arcsRadiusOuter = arcsRadius.map(function(d) {
-                        return (d.outer - d.outer / 5) * radius; });
+                        return (d.outer - d.outer / 5) * radius;
+                    });
                     arcsRadiusInner = arcsRadius.map(function(d) {
-                        return (d.inner - d.inner / 5) * radius; });
+                        return (d.inner - d.inner / 5) * radius;
+                    });
                     donutRatio = d3.min(arcsRadius.map(function(d) {
-                        return (d.inner - d.inner / 5); }));
+                        return (d.inner - d.inner / 5);
+                    }));
                 }
                 nv.utils.initSVG(container);
 
@@ -11727,7 +13402,8 @@
                 var pie = d3.layout.pie()
                     .sort(null)
                     .value(function(d) {
-                        return d.disabled ? 0 : getY(d) });
+                        return d.disabled ? 0 : getY(d)
+                    });
 
                 // padAngle added in d3 3.5
                 if (pie.padAngle && padAngle) {
@@ -11802,9 +13478,11 @@
                 });
 
                 slices.attr('fill', function(d, i) {
-                    return color(d.data, i); });
+                    return color(d.data, i);
+                });
                 slices.attr('stroke', function(d, i) {
-                    return color(d.data, i); });
+                    return color(d.data, i);
+                });
 
                 var paths = ae.append('path').each(function(d) {
                     this._current = d;
@@ -11813,7 +13491,8 @@
                 slices.select('path')
                     .transition()
                     .attr('d', function(d, i) {
-                        return arcs[i](d); })
+                        return arcs[i](d);
+                    })
                     .attrTween('d', arcTween);
 
                 if (showLabels) {
@@ -11973,49 +13652,126 @@
 
         chart._options = Object.create({}, {
             // simple options, just get/set the necessary values
-            arcsRadius: { get: function() {
-                    return arcsRadius; }, set: function(_) { arcsRadius = _; } },
-            width: { get: function() {
-                    return width; }, set: function(_) { width = _; } },
-            height: { get: function() {
-                    return height; }, set: function(_) { height = _; } },
-            showLabels: { get: function() {
-                    return showLabels; }, set: function(_) { showLabels = _; } },
-            title: { get: function() {
-                    return title; }, set: function(_) { title = _; } },
-            titleOffset: { get: function() {
-                    return titleOffset; }, set: function(_) { titleOffset = _; } },
-            labelThreshold: { get: function() {
-                    return labelThreshold; }, set: function(_) { labelThreshold = _; } },
-            valueFormat: { get: function() {
-                    return valueFormat; }, set: function(_) { valueFormat = _; } },
-            x: { get: function() {
-                    return getX; }, set: function(_) { getX = _; } },
-            id: { get: function() {
-                    return id; }, set: function(_) { id = _; } },
-            endAngle: { get: function() {
-                    return endAngle; }, set: function(_) { endAngle = _; } },
-            startAngle: { get: function() {
-                    return startAngle; }, set: function(_) { startAngle = _; } },
-            padAngle: { get: function() {
-                    return padAngle; }, set: function(_) { padAngle = _; } },
-            cornerRadius: { get: function() {
-                    return cornerRadius; }, set: function(_) { cornerRadius = _; } },
-            donutRatio: { get: function() {
-                    return donutRatio; }, set: function(_) { donutRatio = _; } },
-            labelsOutside: { get: function() {
-                    return labelsOutside; }, set: function(_) { labelsOutside = _; } },
-            labelSunbeamLayout: { get: function() {
-                    return labelSunbeamLayout; }, set: function(_) { labelSunbeamLayout = _; } },
-            donut: { get: function() {
-                    return donut; }, set: function(_) { donut = _; } },
-            growOnHover: { get: function() {
-                    return growOnHover; }, set: function(_) { growOnHover = _; } },
+            arcsRadius: {
+                get: function() {
+                    return arcsRadius;
+                },
+                set: function(_) { arcsRadius = _; }
+            },
+            width: {
+                get: function() {
+                    return width;
+                },
+                set: function(_) { width = _; }
+            },
+            height: {
+                get: function() {
+                    return height;
+                },
+                set: function(_) { height = _; }
+            },
+            showLabels: {
+                get: function() {
+                    return showLabels;
+                },
+                set: function(_) { showLabels = _; }
+            },
+            title: {
+                get: function() {
+                    return title;
+                },
+                set: function(_) { title = _; }
+            },
+            titleOffset: {
+                get: function() {
+                    return titleOffset;
+                },
+                set: function(_) { titleOffset = _; }
+            },
+            labelThreshold: {
+                get: function() {
+                    return labelThreshold;
+                },
+                set: function(_) { labelThreshold = _; }
+            },
+            valueFormat: {
+                get: function() {
+                    return valueFormat;
+                },
+                set: function(_) { valueFormat = _; }
+            },
+            x: {
+                get: function() {
+                    return getX;
+                },
+                set: function(_) { getX = _; }
+            },
+            id: {
+                get: function() {
+                    return id;
+                },
+                set: function(_) { id = _; }
+            },
+            endAngle: {
+                get: function() {
+                    return endAngle;
+                },
+                set: function(_) { endAngle = _; }
+            },
+            startAngle: {
+                get: function() {
+                    return startAngle;
+                },
+                set: function(_) { startAngle = _; }
+            },
+            padAngle: {
+                get: function() {
+                    return padAngle;
+                },
+                set: function(_) { padAngle = _; }
+            },
+            cornerRadius: {
+                get: function() {
+                    return cornerRadius;
+                },
+                set: function(_) { cornerRadius = _; }
+            },
+            donutRatio: {
+                get: function() {
+                    return donutRatio;
+                },
+                set: function(_) { donutRatio = _; }
+            },
+            labelsOutside: {
+                get: function() {
+                    return labelsOutside;
+                },
+                set: function(_) { labelsOutside = _; }
+            },
+            labelSunbeamLayout: {
+                get: function() {
+                    return labelSunbeamLayout;
+                },
+                set: function(_) { labelSunbeamLayout = _; }
+            },
+            donut: {
+                get: function() {
+                    return donut;
+                },
+                set: function(_) { donut = _; }
+            },
+            growOnHover: {
+                get: function() {
+                    return growOnHover;
+                },
+                set: function(_) { growOnHover = _; }
+            },
 
             // depreciated after 1.7.1
             pieLabelsOutside: {
                 get: function() {
-                    return labelsOutside; },
+                    return labelsOutside;
+                },
                 set: function(_) {
                     labelsOutside = _;
                     nv.deprecated('pieLabelsOutside', 'use labelsOutside instead');
@@ -12024,7 +13780,8 @@
             // depreciated after 1.7.1
             donutLabelsOutside: {
                 get: function() {
-                    return labelsOutside; },
+                    return labelsOutside;
+                },
                 set: function(_) {
                     labelsOutside = _;
                     nv.deprecated('donutLabelsOutside', 'use labelsOutside instead');
@@ -12033,7 +13790,8 @@
             // deprecated after 1.7.1
             labelFormat: {
                 get: function() {
-                    return valueFormat; },
+                    return valueFormat;
+                },
                 set: function(_) {
                     valueFormat = _;
                     nv.deprecated('labelFormat', 'use valueFormat instead');
@@ -12043,7 +13801,8 @@
             // options that require extra logic in the setter
             margin: {
                 get: function() {
-                    return margin; },
+                    return margin;
+                },
                 set: function(_) {
                     margin.top = typeof _.top != 'undefined' ? _.top : margin.top;
                     margin.right = typeof _.right != 'undefined' ? _.right : margin.right;
@@ -12053,21 +13812,24 @@
             },
             y: {
                 get: function() {
-                    return getY; },
+                    return getY;
+                },
                 set: function(_) {
                     getY = d3.functor(_);
                 }
             },
             color: {
                 get: function() {
-                    return color; },
+                    return color;
+                },
                 set: function(_) {
                     color = nv.utils.getColor(_);
                 }
             },
             labelType: {
                 get: function() {
-                    return labelType; },
+                    return labelType;
+                },
                 set: function(_) {
                     labelType = _ || 'key';
                 }
@@ -12117,7 +13879,8 @@
             return function() {
                 return {
                     active: data.map(function(d) {
-                        return !d.disabled })
+                        return !d.disabled
+                    })
                 };
             }
         };
@@ -12157,7 +13920,8 @@
 
                 //set state.disabled
                 state.disabled = data.map(function(d) {
-                    return !!d.disabled });
+                    return !!d.disabled
+                });
 
                 if (!defaultState) {
                     var key;
@@ -12287,19 +14051,36 @@
         // use Object get/set functionality to map between vars and chart functions
         chart._options = Object.create({}, {
             // simple options, just get/set the necessary values
-            noData: { get: function() {
-                    return noData; }, set: function(_) { noData = _; } },
-            showLegend: { get: function() {
-                    return showLegend; }, set: function(_) { showLegend = _; } },
-            legendPosition: { get: function() {
-                    return legendPosition; }, set: function(_) { legendPosition = _; } },
-            defaultState: { get: function() {
-                    return defaultState; }, set: function(_) { defaultState = _; } },
+            noData: {
+                get: function() {
+                    return noData;
+                },
+                set: function(_) { noData = _; }
+            },
+            showLegend: {
+                get: function() {
+                    return showLegend;
+                },
+                set: function(_) { showLegend = _; }
+            },
+            legendPosition: {
+                get: function() {
+                    return legendPosition;
+                },
+                set: function(_) { legendPosition = _; }
+            },
+            defaultState: {
+                get: function() {
+                    return defaultState;
+                },
+                set: function(_) { defaultState = _; }
+            },
 
             // options that require extra logic in the setter
             color: {
                 get: function() {
-                    return color; },
+                    return color;
+                },
                 set: function(_) {
                     color = _;
                     legend.color(color);
@@ -12308,7 +14089,8 @@
             },
             duration: {
                 get: function() {
-                    return duration; },
+                    return duration;
+                },
                 set: function(_) {
                     duration = _;
                     renderWatch.reset(duration);
@@ -12316,7 +14098,8 @@
             },
             margin: {
                 get: function() {
-                    return margin; },
+                    return margin;
+                },
                 set: function(_) {
                     margin.top = _.top !== undefined ? _.top : margin.top;
                     margin.right = _.right !== undefined ? _.right : margin.right;
@@ -12350,16 +14133,20 @@
             z = d3.scale.linear() //linear because d3.svg.shape.size is treated as area
             ,
             getX = function(d) {
-                return d.x } // accessor to get the x value
+                return d.x
+            } // accessor to get the x value
             ,
             getY = function(d) {
-                return d.y } // accessor to get the y value
+                return d.y
+            } // accessor to get the y value
             ,
             getSize = function(d) {
-                return d.size || 1 } // accessor to get the point size
+                return d.size || 1
+            } // accessor to get the point size
             ,
             getShape = function(d) {
-                return d.shape || 'circle' } // accessor to get point shape
+                return d.shape || 'circle'
+            } // accessor to get point shape
             ,
             forceX = [] // List of numbers to Force into the X scale (ie. 0, or a max / min, etc.)
             ,
@@ -12370,7 +14157,8 @@
             interactive = true // If true, plots a voronoi overlay for advanced point intersection
             ,
             pointActive = function(d) {
-                return !d.notActive } // any points that return false will be filtered out
+                return !d.notActive
+            } // any points that return false will be filtered out
             ,
             padData = false // If true, adds half a data points width to front and back, for lining up a line chart with a bar chart
             ,
@@ -12383,7 +14171,8 @@
             showVoronoi = false // display the voronoi areas
             ,
             clipRadius = function() {
-                return 25 } // function to get the radius for voronoi point clips
+                return 25
+            } // function to get the radius for voronoi point clips
             ,
             xDomain = null // Override x domain (skips the calculation from data)
             ,
@@ -12441,7 +14230,8 @@
                     );
 
                 x.domain(xDomain || d3.extent(seriesData.map(function(d) {
-                    return d.x; }).concat(forceX)))
+                    return d.x;
+                }).concat(forceX)))
 
                 if (padData && data[0])
                     x.range(xRange || [(availableWidth * padDataOuter + availableWidth) / (2 * data[0].values.length), availableWidth - availableWidth * (1 + padDataOuter) / (2 * data[0].values.length)]);
@@ -12451,7 +14241,8 @@
 
                 if (chart.yScale().name === "o") {
                     var min = d3.min(seriesData.map(function(d) {
-                        if (d.y !== 0) return d.y; }));
+                        if (d.y !== 0) return d.y;
+                    }));
                     y.clamp(true)
                         .domain(yDomain || d3.extent(seriesData.map(function(d) {
                             if (d.y !== 0) return d.y;
@@ -12460,12 +14251,14 @@
                         .range(yRange || [availableHeight, 0]);
                 } else {
                     y.domain(yDomain || d3.extent(seriesData.map(function(d) {
-                            return d.y; }).concat(forceY)))
+                            return d.y;
+                        }).concat(forceY)))
                         .range(yRange || [availableHeight, 0]);
                 }
 
                 z.domain(sizeDomain || d3.extent(seriesData.map(function(d) {
-                        return d.size }).concat(forceSize)))
+                        return d.size
+                    }).concat(forceSize)))
                     .range(sizeRange || _sizeRange_def);
 
                 // If scale's domain don't have a range, slightly adjust to make one... so a chart can show a single data point
@@ -12586,7 +14379,8 @@
                                 return "nv-path-" + i;
                             })
                             .attr("clip-path", function(d, i) {
-                                return "url(#nv-clip-" + id + "-" + i + ")"; });
+                                return "url(#nv-clip-" + id + "-" + i + ")";
+                            });
 
                         // good for debugging point hover issues
                         if (showVoronoi) {
@@ -12604,12 +14398,15 @@
                             var vPointClips = pointClips
                                 .enter().append("svg:clipPath")
                                 .attr("id", function(d, i) {
-                                    return "nv-clip-" + id + "-" + i; })
+                                    return "nv-clip-" + id + "-" + i;
+                                })
                                 .append("svg:circle")
                                 .attr('cx', function(d) {
-                                    return d[0]; })
+                                    return d[0];
+                                })
                                 .attr('cy', function(d) {
-                                    return d[1]; })
+                                    return d[1];
+                                })
                                 .attr('r', clipRadius);
                         }
 
@@ -12729,8 +14526,10 @@
                 needsUpdate = true;
                 var groups = wrap.select('.nv-groups').selectAll('.nv-group')
                     .data(function(d) {
-                        return d }, function(d) {
-                        return d.key });
+                        return d
+                    }, function(d) {
+                        return d.key
+                    });
                 groups.enter().append('g')
                     .style('stroke-opacity', 1e-6)
                     .style('fill-opacity', 1e-6);
@@ -12741,12 +14540,15 @@
                         return (d.classed || '') + ' nv-group nv-series-' + i;
                     })
                     .classed('hover', function(d) {
-                        return d.hover });
+                        return d.hover
+                    });
                 groups.watchTransition(renderWatch, 'scatter: groups')
                     .style('fill', function(d, i) {
-                        return color(d, i) })
+                        return color(d, i)
+                    })
                     .style('stroke', function(d, i) {
-                        return color(d, i) })
+                        return color(d, i)
+                    })
                     .style('stroke-opacity', 1)
                     .style('fill-opacity', .5);
 
@@ -12763,18 +14565,22 @@
                     });
                 points.enter().append('path')
                     .style('fill', function(d) {
-                        return d.color })
+                        return d.color
+                    })
                     .style('stroke', function(d) {
-                        return d.color })
+                        return d.color
+                    })
                     .attr('transform', function(d) {
                         return 'translate(' + nv.utils.NaNtoZero(x0(getX(d[0], d[1]))) + ',' + nv.utils.NaNtoZero(y0(getY(d[0], d[1]))) + ')'
                     })
                     .attr('d',
                         nv.utils.symbol()
                         .type(function(d) {
-                            return getShape(d[0]); })
+                            return getShape(d[0]);
+                        })
                         .size(function(d) {
-                            return z(getSize(d[0], d[1])) })
+                            return z(getSize(d[0], d[1]))
+                        })
                     );
                 points.exit().remove();
                 groups.exit().selectAll('path.nv-point')
@@ -12799,9 +14605,11 @@
                     .attr('d',
                         nv.utils.symbol()
                         .type(function(d) {
-                            return getShape(d[0]); })
+                            return getShape(d[0]);
+                        })
                         .size(function(d) {
-                            return z(getSize(d[0], d[1])) })
+                            return z(getSize(d[0], d[1]))
+                        })
                     );
 
                 // Delay updating the invisible interactive layer for smoother animation
@@ -12858,70 +14666,183 @@
 
         chart._options = Object.create({}, {
             // simple options, just get/set the necessary values
-            width: { get: function() {
-                    return width; }, set: function(_) { width = _; } },
-            height: { get: function() {
-                    return height; }, set: function(_) { height = _; } },
-            xScale: { get: function() {
-                    return x; }, set: function(_) { x = _; } },
-            yScale: { get: function() {
-                    return y; }, set: function(_) { y = _; } },
-            pointScale: { get: function() {
-                    return z; }, set: function(_) { z = _; } },
-            xDomain: { get: function() {
-                    return xDomain; }, set: function(_) { xDomain = _; } },
-            yDomain: { get: function() {
-                    return yDomain; }, set: function(_) { yDomain = _; } },
-            pointDomain: { get: function() {
-                    return sizeDomain; }, set: function(_) { sizeDomain = _; } },
-            xRange: { get: function() {
-                    return xRange; }, set: function(_) { xRange = _; } },
-            yRange: { get: function() {
-                    return yRange; }, set: function(_) { yRange = _; } },
-            pointRange: { get: function() {
-                    return sizeRange; }, set: function(_) { sizeRange = _; } },
-            forceX: { get: function() {
-                    return forceX; }, set: function(_) { forceX = _; } },
-            forceY: { get: function() {
-                    return forceY; }, set: function(_) { forceY = _; } },
-            forcePoint: { get: function() {
-                    return forceSize; }, set: function(_) { forceSize = _; } },
-            interactive: { get: function() {
-                    return interactive; }, set: function(_) { interactive = _; } },
-            pointActive: { get: function() {
-                    return pointActive; }, set: function(_) { pointActive = _; } },
-            padDataOuter: { get: function() {
-                    return padDataOuter; }, set: function(_) { padDataOuter = _; } },
-            padData: { get: function() {
-                    return padData; }, set: function(_) { padData = _; } },
-            clipEdge: { get: function() {
-                    return clipEdge; }, set: function(_) { clipEdge = _; } },
-            clipVoronoi: { get: function() {
-                    return clipVoronoi; }, set: function(_) { clipVoronoi = _; } },
-            clipRadius: { get: function() {
-                    return clipRadius; }, set: function(_) { clipRadius = _; } },
-            showVoronoi: { get: function() {
-                    return showVoronoi; }, set: function(_) { showVoronoi = _; } },
-            id: { get: function() {
-                    return id; }, set: function(_) { id = _; } },
-            interactiveUpdateDelay: { get: function() {
-                    return interactiveUpdateDelay; }, set: function(_) { interactiveUpdateDelay = _; } },
+            width: {
+                get: function() {
+                    return width;
+                },
+                set: function(_) { width = _; }
+            },
+            height: {
+                get: function() {
+                    return height;
+                },
+                set: function(_) { height = _; }
+            },
+            xScale: {
+                get: function() {
+                    return x;
+                },
+                set: function(_) { x = _; }
+            },
+            yScale: {
+                get: function() {
+                    return y;
+                },
+                set: function(_) { y = _; }
+            },
+            pointScale: {
+                get: function() {
+                    return z;
+                },
+                set: function(_) { z = _; }
+            },
+            xDomain: {
+                get: function() {
+                    return xDomain;
+                },
+                set: function(_) { xDomain = _; }
+            },
+            yDomain: {
+                get: function() {
+                    return yDomain;
+                },
+                set: function(_) { yDomain = _; }
+            },
+            pointDomain: {
+                get: function() {
+                    return sizeDomain;
+                },
+                set: function(_) { sizeDomain = _; }
+            },
+            xRange: {
+                get: function() {
+                    return xRange;
+                },
+                set: function(_) { xRange = _; }
+            },
+            yRange: {
+                get: function() {
+                    return yRange;
+                },
+                set: function(_) { yRange = _; }
+            },
+            pointRange: {
+                get: function() {
+                    return sizeRange;
+                },
+                set: function(_) { sizeRange = _; }
+            },
+            forceX: {
+                get: function() {
+                    return forceX;
+                },
+                set: function(_) { forceX = _; }
+            },
+            forceY: {
+                get: function() {
+                    return forceY;
+                },
+                set: function(_) { forceY = _; }
+            },
+            forcePoint: {
+                get: function() {
+                    return forceSize;
+                },
+                set: function(_) { forceSize = _; }
+            },
+            interactive: {
+                get: function() {
+                    return interactive;
+                },
+                set: function(_) { interactive = _; }
+            },
+            pointActive: {
+                get: function() {
+                    return pointActive;
+                },
+                set: function(_) { pointActive = _; }
+            },
+            padDataOuter: {
+                get: function() {
+                    return padDataOuter;
+                },
+                set: function(_) { padDataOuter = _; }
+            },
+            padData: {
+                get: function() {
+                    return padData;
+                },
+                set: function(_) { padData = _; }
+            },
+            clipEdge: {
+                get: function() {
+                    return clipEdge;
+                },
+                set: function(_) { clipEdge = _; }
+            },
+            clipVoronoi: {
+                get: function() {
+                    return clipVoronoi;
+                },
+                set: function(_) { clipVoronoi = _; }
+            },
+            clipRadius: {
+                get: function() {
+                    return clipRadius;
+                },
+                set: function(_) { clipRadius = _; }
+            },
+            showVoronoi: {
+                get: function() {
+                    return showVoronoi;
+                },
+                set: function(_) { showVoronoi = _; }
+            },
+            id: {
+                get: function() {
+                    return id;
+                },
+                set: function(_) { id = _; }
+            },
+            interactiveUpdateDelay: {
+                get: function() {
+                    return interactiveUpdateDelay;
+                },
+                set: function(_) { interactiveUpdateDelay = _; }
+            },
 
 
             // simple functor options
-            x: { get: function() {
-                    return getX; }, set: function(_) { getX = d3.functor(_); } },
-            y: { get: function() {
-                    return getY; }, set: function(_) { getY = d3.functor(_); } },
-            pointSize: { get: function() {
-                    return getSize; }, set: function(_) { getSize = d3.functor(_); } },
-            pointShape: { get: function() {
-                    return getShape; }, set: function(_) { getShape = d3.functor(_); } },
+            x: {
+                get: function() {
+                    return getX;
+                },
+                set: function(_) { getX = d3.functor(_); }
+            },
+            y: {
+                get: function() {
+                    return getY;
+                },
+                set: function(_) { getY = d3.functor(_); }
+            },
+            pointSize: {
+                get: function() {
+                    return getSize;
+                },
+                set: function(_) { getSize = d3.functor(_); }
+            },
+            pointShape: {
+                get: function() {
+                    return getShape;
+                },
+                set: function(_) { getShape = d3.functor(_); }
+            },
 
             // options that require extra logic in the setter
             margin: {
                 get: function() {
-                    return margin; },
+                    return margin;
+                },
                 set: function(_) {
                     margin.top = _.top !== undefined ? _.top : margin.top;
                     margin.right = _.right !== undefined ? _.right : margin.right;
@@ -12931,7 +14852,8 @@
             },
             duration: {
                 get: function() {
-                    return duration; },
+                    return duration;
+                },
                 set: function(_) {
                     duration = _;
                     renderWatch.reset(duration);
@@ -12939,14 +14861,16 @@
             },
             color: {
                 get: function() {
-                    return color; },
+                    return color;
+                },
                 set: function(_) {
                     color = nv.utils.getColor(_);
                 }
             },
             useVoronoi: {
                 get: function() {
-                    return useVoronoi; },
+                    return useVoronoi;
+                },
                 set: function(_) {
                     useVoronoi = _;
                     if (useVoronoi === false) {
@@ -13019,7 +14943,8 @@
             return function() {
                 return {
                     active: data.map(function(d) {
-                        return !d.disabled })
+                        return !d.disabled
+                    })
                 };
             }
         };
@@ -13065,7 +14990,8 @@
 
                 // DEPRECATED set state.disableddisabled
                 state.disabled = data.map(function(d) {
-                    return !!d.disabled });
+                    return !!d.disabled
+                });
 
                 if (!defaultState) {
                     var key;
@@ -13080,7 +15006,8 @@
 
                 // Display noData message if there's nothing to show.
                 if (!data || !data.length || !data.filter(function(d) {
-                        return d.values.length }).length) {
+                        return d.values.length
+                    }).length) {
                     nv.utils.noData(chart, container);
                     renderWatch.renderEnd('scatter immediate');
                     return chart;
@@ -13141,11 +15068,13 @@
                         d.color = d.color || color(d, i);
                         return d.color;
                     }).filter(function(d, i) {
-                        return !data[i].disabled }));
+                        return !data[i].disabled
+                    }));
 
                 wrap.select('.nv-scatterWrap')
                     .datum(data.filter(function(d) {
-                        return !d.disabled }))
+                        return !d.disabled
+                    }))
                     .call(scatter);
 
 
@@ -13219,13 +15148,15 @@
                         .color(data.map(function(d, i) {
                             return d.color || color(d, i);
                         }).filter(function(d, i) {
-                            return !data[i].disabled }));
+                            return !data[i].disabled
+                        }));
                     gEnter.select('.nv-distWrap').append('g')
                         .attr('class', 'nv-distributionX');
                     g.select('.nv-distributionX')
                         .attr('transform', 'translate(0,' + y.range()[0] + ')')
                         .datum(data.filter(function(d) {
-                            return !d.disabled }))
+                            return !d.disabled
+                        }))
                         .call(distX);
                 }
 
@@ -13237,13 +15168,15 @@
                         .color(data.map(function(d, i) {
                             return d.color || color(d, i);
                         }).filter(function(d, i) {
-                            return !data[i].disabled }));
+                            return !data[i].disabled
+                        }));
                     gEnter.select('.nv-distWrap').append('g')
                         .attr('class', 'nv-distributionY');
                     g.select('.nv-distributionY')
                         .attr('transform', 'translate(' + (rightAlignYAxis ? availableWidth : -distY.size()) + ',0)')
                         .datum(data.filter(function(d) {
-                            return !d.disabled }))
+                            return !d.disabled
+                        }))
                         .call(distY);
                 }
 
@@ -13313,33 +15246,78 @@
         chart.options = nv.utils.optionsFunc.bind(chart);
         chart._options = Object.create({}, {
             // simple options, just get/set the necessary values
-            width: { get: function() {
-                    return width; }, set: function(_) { width = _; } },
-            height: { get: function() {
-                    return height; }, set: function(_) { height = _; } },
-            container: { get: function() {
-                    return container; }, set: function(_) { container = _; } },
-            showDistX: { get: function() {
-                    return showDistX; }, set: function(_) { showDistX = _; } },
-            showDistY: { get: function() {
-                    return showDistY; }, set: function(_) { showDistY = _; } },
-            showLegend: { get: function() {
-                    return showLegend; }, set: function(_) { showLegend = _; } },
-            showXAxis: { get: function() {
-                    return showXAxis; }, set: function(_) { showXAxis = _; } },
-            showYAxis: { get: function() {
-                    return showYAxis; }, set: function(_) { showYAxis = _; } },
-            defaultState: { get: function() {
-                    return defaultState; }, set: function(_) { defaultState = _; } },
-            noData: { get: function() {
-                    return noData; }, set: function(_) { noData = _; } },
-            duration: { get: function() {
-                    return duration; }, set: function(_) { duration = _; } },
+            width: {
+                get: function() {
+                    return width;
+                },
+                set: function(_) { width = _; }
+            },
+            height: {
+                get: function() {
+                    return height;
+                },
+                set: function(_) { height = _; }
+            },
+            container: {
+                get: function() {
+                    return container;
+                },
+                set: function(_) { container = _; }
+            },
+            showDistX: {
+                get: function() {
+                    return showDistX;
+                },
+                set: function(_) { showDistX = _; }
+            },
+            showDistY: {
+                get: function() {
+                    return showDistY;
+                },
+                set: function(_) { showDistY = _; }
+            },
+            showLegend: {
+                get: function() {
+                    return showLegend;
+                },
+                set: function(_) { showLegend = _; }
+            },
+            showXAxis: {
+                get: function() {
+                    return showXAxis;
+                },
+                set: function(_) { showXAxis = _; }
+            },
+            showYAxis: {
+                get: function() {
+                    return showYAxis;
+                },
+                set: function(_) { showYAxis = _; }
+            },
+            defaultState: {
+                get: function() {
+                    return defaultState;
+                },
+                set: function(_) { defaultState = _; }
+            },
+            noData: {
+                get: function() {
+                    return noData;
+                },
+                set: function(_) { noData = _; }
+            },
+            duration: {
+                get: function() {
+                    return duration;
+                },
+                set: function(_) { duration = _; }
+            },
 
             // options that require extra logic in the setter
             margin: {
                 get: function() {
-                    return margin; },
+                    return margin;
+                },
                 set: function(_) {
                     margin.top = _.top !== undefined ? _.top : margin.top;
                     margin.right = _.right !== undefined ? _.right : margin.right;
@@ -13349,7 +15327,8 @@
             },
             rightAlignYAxis: {
                 get: function() {
-                    return rightAlignYAxis; },
+                    return rightAlignYAxis;
+                },
                 set: function(_) {
                     rightAlignYAxis = _;
                     yAxis.orient((_) ? 'right' : 'left');
@@ -13357,7 +15336,8 @@
             },
             color: {
                 get: function() {
-                    return color; },
+                    return color;
+                },
                 set: function(_) {
                     color = nv.utils.getColor(_);
                     legend.color(color);
@@ -13387,9 +15367,11 @@
             x = d3.scale.linear(),
             y = d3.scale.linear(),
             getX = function(d) {
-                return d.x },
+                return d.x
+            },
             getY = function(d) {
-                return d.y },
+                return d.y
+            },
             color = nv.utils.getColor(['#000']),
             xDomain, yDomain, xRange, yRange, dispatch = d3.dispatch('renderEnd');
 
@@ -13425,24 +15407,29 @@
 
                 var paths = wrap.selectAll('path')
                     .data(function(d) {
-                        return [d] });
+                        return [d]
+                    });
                 paths.enter().append('path');
                 paths.exit().remove();
                 paths
                     .style('stroke', function(d, i) {
-                        return d.color || color(d, i) })
+                        return d.color || color(d, i)
+                    })
                     .attr('d', d3.svg.line()
                         .x(function(d, i) {
-                            return x(getX(d, i)) })
+                            return x(getX(d, i))
+                        })
                         .y(function(d, i) {
-                            return y(getY(d, i)) })
+                            return y(getY(d, i))
+                        })
                     );
 
                 // TODO: Add CURRENT data point (Need Min, Mac, Current / Most recent)
                 var points = wrap.selectAll('circle.nv-point')
                     .data(function(data) {
                         var yValues = data.map(function(d, i) {
-                            return getY(d, i); });
+                            return getY(d, i);
+                        });
 
                         function pointIndex(index) {
                             if (index != -1) {
@@ -13457,15 +15444,18 @@
                             minPoint = pointIndex(yValues.indexOf(y.domain()[0])),
                             currentPoint = pointIndex(yValues.length - 1);
                         return [minPoint, maxPoint, currentPoint].filter(function(d) {
-                            return d != null; });
+                            return d != null;
+                        });
                     });
                 points.enter().append('circle');
                 points.exit().remove();
                 points
                     .attr('cx', function(d, i) {
-                        return x(getX(d, d.pointIndex)) })
+                        return x(getX(d, d.pointIndex))
+                    })
                     .attr('cy', function(d, i) {
-                        return y(getY(d, d.pointIndex)) })
+                        return y(getY(d, d.pointIndex))
+                    })
                     .attr('r', 2)
                     .attr('class', function(d, i) {
                         return getX(d, d.pointIndex) == x.domain()[1] ? 'nv-point nv-currentValue' :
@@ -13485,35 +15475,80 @@
 
         chart._options = Object.create({}, {
             // simple options, just get/set the necessary values
-            width: { get: function() {
-                    return width; }, set: function(_) { width = _; } },
-            height: { get: function() {
-                    return height; }, set: function(_) { height = _; } },
-            xDomain: { get: function() {
-                    return xDomain; }, set: function(_) { xDomain = _; } },
-            yDomain: { get: function() {
-                    return yDomain; }, set: function(_) { yDomain = _; } },
-            xRange: { get: function() {
-                    return xRange; }, set: function(_) { xRange = _; } },
-            yRange: { get: function() {
-                    return yRange; }, set: function(_) { yRange = _; } },
-            xScale: { get: function() {
-                    return x; }, set: function(_) { x = _; } },
-            yScale: { get: function() {
-                    return y; }, set: function(_) { y = _; } },
-            animate: { get: function() {
-                    return animate; }, set: function(_) { animate = _; } },
+            width: {
+                get: function() {
+                    return width;
+                },
+                set: function(_) { width = _; }
+            },
+            height: {
+                get: function() {
+                    return height;
+                },
+                set: function(_) { height = _; }
+            },
+            xDomain: {
+                get: function() {
+                    return xDomain;
+                },
+                set: function(_) { xDomain = _; }
+            },
+            yDomain: {
+                get: function() {
+                    return yDomain;
+                },
+                set: function(_) { yDomain = _; }
+            },
+            xRange: {
+                get: function() {
+                    return xRange;
+                },
+                set: function(_) { xRange = _; }
+            },
+            yRange: {
+                get: function() {
+                    return yRange;
+                },
+                set: function(_) { yRange = _; }
+            },
+            xScale: {
+                get: function() {
+                    return x;
+                },
+                set: function(_) { x = _; }
+            },
+            yScale: {
+                get: function() {
+                    return y;
+                },
+                set: function(_) { y = _; }
+            },
+            animate: {
+                get: function() {
+                    return animate;
+                },
+                set: function(_) { animate = _; }
+            },
 
             //functor options
-            x: { get: function() {
-                    return getX; }, set: function(_) { getX = d3.functor(_); } },
-            y: { get: function() {
-                    return getY; }, set: function(_) { getY = d3.functor(_); } },
+            x: {
+                get: function() {
+                    return getX;
+                },
+                set: function(_) { getX = d3.functor(_); }
+            },
+            y: {
+                get: function() {
+                    return getY;
+                },
+                set: function(_) { getY = d3.functor(_); }
+            },
 
             // options that require extra logic in the setter
             margin: {
                 get: function() {
-                    return margin; },
+                    return margin;
+                },
                 set: function(_) {
                     margin.top = _.top !== undefined ? _.top : margin.top;
                     margin.right = _.right !== undefined ? _.right : margin.right;
@@ -13523,7 +15558,8 @@
             },
             color: {
                 get: function() {
-                    return color; },
+                    return color;
+                },
                 set: function(_) {
                     color = nv.utils.getColor(_);
                 }
@@ -13630,12 +15666,15 @@
                 gEnter.select('.nv-hoverArea').append('rect')
                     .on('mousemove', sparklineHover)
                     .on('click', function() { paused = !paused })
-                    .on('mouseout', function() { index = [];
-                        updateValueLine(); });
+                    .on('mouseout', function() {
+                        index = [];
+                        updateValueLine();
+                    });
 
                 g.select('.nv-hoverArea rect')
                     .attr('transform', function(d) {
-                        return 'translate(' + -margin.left + ',' + -margin.top + ')' })
+                        return 'translate(' + -margin.left + ',' + -margin.top + ')'
+                    })
                     .attr('width', availableWidth + margin.left + margin.right)
                     .attr('height', availableHeight + margin.top);
 
@@ -13658,7 +15697,8 @@
 
                     hoverValue
                         .attr('transform', function(d) {
-                            return 'translate(' + x(sparkline.x()(data[d], d)) + ',0)' })
+                            return 'translate(' + x(sparkline.x()(data[d], d)) + ',0)'
+                        })
                         .transition().duration(250)
                         .style('stroke-opacity', 1)
                         .style('fill-opacity', 1);
@@ -13728,27 +15768,60 @@
 
         chart._options = Object.create({}, {
             // simple options, just get/set the necessary values
-            width: { get: function() {
-                    return width; }, set: function(_) { width = _; } },
-            height: { get: function() {
-                    return height; }, set: function(_) { height = _; } },
-            xTickFormat: { get: function() {
-                    return xTickFormat; }, set: function(_) { xTickFormat = _; } },
-            yTickFormat: { get: function() {
-                    return yTickFormat; }, set: function(_) { yTickFormat = _; } },
-            showLastValue: { get: function() {
-                    return showLastValue; }, set: function(_) { showLastValue = _; } },
-            alignValue: { get: function() {
-                    return alignValue; }, set: function(_) { alignValue = _; } },
-            rightAlignValue: { get: function() {
-                    return rightAlignValue; }, set: function(_) { rightAlignValue = _; } },
-            noData: { get: function() {
-                    return noData; }, set: function(_) { noData = _; } },
+            width: {
+                get: function() {
+                    return width;
+                },
+                set: function(_) { width = _; }
+            },
+            height: {
+                get: function() {
+                    return height;
+                },
+                set: function(_) { height = _; }
+            },
+            xTickFormat: {
+                get: function() {
+                    return xTickFormat;
+                },
+                set: function(_) { xTickFormat = _; }
+            },
+            yTickFormat: {
+                get: function() {
+                    return yTickFormat;
+                },
+                set: function(_) { yTickFormat = _; }
+            },
+            showLastValue: {
+                get: function() {
+                    return showLastValue;
+                },
+                set: function(_) { showLastValue = _; }
+            },
+            alignValue: {
+                get: function() {
+                    return alignValue;
+                },
+                set: function(_) { alignValue = _; }
+            },
+            rightAlignValue: {
+                get: function() {
+                    return rightAlignValue;
+                },
+                set: function(_) { rightAlignValue = _; }
+            },
+            noData: {
+                get: function() {
+                    return noData;
+                },
+                set: function(_) { noData = _; }
+            },
 
             // options that require extra logic in the setter
             margin: {
                 get: function() {
-                    return margin; },
+                    return margin;
+                },
                 set: function(_) {
                     margin.top = _.top !== undefined ? _.top : margin.top;
                     margin.right = _.right !== undefined ? _.right : margin.right;
@@ -13780,13 +15853,16 @@
             ,
             container = null,
             getX = function(d) {
-                return d.x } // accessor to get the x value from a data point
+                return d.x
+            } // accessor to get the x value from a data point
             ,
             getY = function(d) {
-                return d.y } // accessor to get the y value from a data point
+                return d.y
+            } // accessor to get the y value from a data point
             ,
             defined = function(d, i) {
-                return !isNaN(getY(d, i)) && getY(d, i) !== null } // allows a line to be not continuous when it is not defined
+                return !isNaN(getY(d, i)) && getY(d, i) !== null
+            } // allows a line to be not continuous when it is not defined
             ,
             style = 'stack',
             offset = 'zero',
@@ -13853,7 +15929,8 @@
                     .order(order)
                     .offset(offset)
                     .values(function(d) {
-                        return d.values }) //TODO: make values customizeable in EVERY model in this fashion
+                        return d.values
+                    }) //TODO: make values customizeable in EVERY model in this fashion
                     .x(getX)
                     .y(getY)
                     .out(function(d, y0, y) {
@@ -13888,7 +15965,8 @@
                     .x(getX)
                     .y(function(d) {
                         if (d.display !== undefined) {
-                            return d.display.y + d.display.y0; }
+                            return d.display.y + d.display.y0;
+                        }
                     })
                     .forceY([0])
                     .color(data.map(function(d, i) {
@@ -13914,7 +15992,8 @@
                 var area = d3.svg.area()
                     .defined(defined)
                     .x(function(d, i) {
-                        return x(getX(d, i)) })
+                        return x(getX(d, i))
+                    })
                     .y0(function(d) {
                         return y(d.display.y0)
                     })
@@ -13926,18 +16005,23 @@
                 var zeroArea = d3.svg.area()
                     .defined(defined)
                     .x(function(d, i) {
-                        return x(getX(d, i)) })
+                        return x(getX(d, i))
+                    })
                     .y0(function(d) {
-                        return y(d.display.y0) })
+                        return y(d.display.y0)
+                    })
                     .y1(function(d) {
-                        return y(d.display.y0) });
+                        return y(d.display.y0)
+                    });
 
                 var path = g.select('.nv-areaWrap').selectAll('path.nv-area')
                     .data(function(d) {
-                        return d });
+                        return d
+                    });
 
                 path.enter().append('path').attr('class', function(d, i) {
-                        return 'nv-area nv-area-' + i })
+                        return 'nv-area nv-area-' + i
+                    })
                     .attr('d', function(d, i) {
                         return zeroArea(d.values, d.seriesIndex);
                     })
@@ -13974,7 +16058,8 @@
                         return d.color || color(d, d.seriesIndex)
                     })
                     .style('stroke', function(d, i) {
-                        return d.color || color(d, d.seriesIndex) });
+                        return d.color || color(d, d.seriesIndex)
+                    });
                 path.watchTransition(renderWatch, 'stackedArea path')
                     .attr('d', function(d, i) {
                         return area(d.values, i)
@@ -14055,31 +16140,68 @@
 
         chart._options = Object.create({}, {
             // simple options, just get/set the necessary values
-            width: { get: function() {
-                    return width; }, set: function(_) { width = _; } },
-            height: { get: function() {
-                    return height; }, set: function(_) { height = _; } },
-            defined: { get: function() {
-                    return defined; }, set: function(_) { defined = _; } },
-            clipEdge: { get: function() {
-                    return clipEdge; }, set: function(_) { clipEdge = _; } },
-            offset: { get: function() {
-                    return offset; }, set: function(_) { offset = _; } },
-            order: { get: function() {
-                    return order; }, set: function(_) { order = _; } },
-            interpolate: { get: function() {
-                    return interpolate; }, set: function(_) { interpolate = _; } },
+            width: {
+                get: function() {
+                    return width;
+                },
+                set: function(_) { width = _; }
+            },
+            height: {
+                get: function() {
+                    return height;
+                },
+                set: function(_) { height = _; }
+            },
+            defined: {
+                get: function() {
+                    return defined;
+                },
+                set: function(_) { defined = _; }
+            },
+            clipEdge: {
+                get: function() {
+                    return clipEdge;
+                },
+                set: function(_) { clipEdge = _; }
+            },
+            offset: {
+                get: function() {
+                    return offset;
+                },
+                set: function(_) { offset = _; }
+            },
+            order: {
+                get: function() {
+                    return order;
+                },
+                set: function(_) { order = _; }
+            },
+            interpolate: {
+                get: function() {
+                    return interpolate;
+                },
+                set: function(_) { interpolate = _; }
+            },
 
             // simple functor options
-            x: { get: function() {
-                    return getX; }, set: function(_) { getX = d3.functor(_); } },
-            y: { get: function() {
-                    return getY; }, set: function(_) { getY = d3.functor(_); } },
+            x: {
+                get: function() {
+                    return getX;
+                },
+                set: function(_) { getX = d3.functor(_); }
+            },
+            y: {
+                get: function() {
+                    return getY;
+                },
+                set: function(_) { getY = d3.functor(_); }
+            },
 
             // options that require extra logic in the setter
             margin: {
                 get: function() {
-                    return margin; },
+                    return margin;
+                },
                 set: function(_) {
                     margin.top = _.top !== undefined ? _.top : margin.top;
                     margin.right = _.right !== undefined ? _.right : margin.right;
@@ -14089,14 +16211,16 @@
             },
             color: {
                 get: function() {
-                    return color; },
+                    return color;
+                },
                 set: function(_) {
                     color = nv.utils.getColor(_);
                 }
             },
             style: {
                 get: function() {
-                    return style; },
+                    return style;
+                },
                 set: function(_) {
                     style = _;
                     switch (style) {
@@ -14125,7 +16249,8 @@
             },
             duration: {
                 get: function() {
-                    return duration; },
+                    return duration;
+                },
                 set: function(_) {
                     duration = _;
                     renderWatch.reset(duration);
@@ -14214,7 +16339,8 @@
             return function() {
                 return {
                     active: data.map(function(d) {
-                        return !d.disabled }),
+                        return !d.disabled
+                    }),
                     style: stacked.style()
                 };
             }
@@ -14257,7 +16383,8 @@
 
                 // DEPRECATED set state.disabled
                 state.disabled = data.map(function(d) {
-                    return !!d.disabled });
+                    return !!d.disabled
+                });
 
                 if (!defaultState) {
                     var key;
@@ -14272,7 +16399,8 @@
 
                 // Display No Data message if there's nothing to show.
                 if (!data || !data.length || !data.filter(function(d) {
-                        return d.values.length }).length) {
+                        return d.values.length
+                    }).length) {
                     nv.utils.noData(chart, container)
                     return chart;
                 } else {
@@ -14438,7 +16566,8 @@
 
                 stacked.dispatch.on('areaClick.toggle', function(e) {
                     if (data.filter(function(d) {
-                            return !d.disabled }).length === 1)
+                            return !d.disabled
+                        }).length === 1)
                         data.forEach(function(d) {
                             d.disabled = false;
                         });
@@ -14448,7 +16577,8 @@
                         });
 
                     state.disabled = data.map(function(d) {
-                        return !!d.disabled });
+                        return !!d.disabled
+                    });
                     dispatch.stateChange(state);
 
                     chart.update();
@@ -14636,35 +16766,84 @@
 
         chart._options = Object.create({}, {
             // simple options, just get/set the necessary values
-            width: { get: function() {
-                    return width; }, set: function(_) { width = _; } },
-            height: { get: function() {
-                    return height; }, set: function(_) { height = _; } },
-            showLegend: { get: function() {
-                    return showLegend; }, set: function(_) { showLegend = _; } },
-            showXAxis: { get: function() {
-                    return showXAxis; }, set: function(_) { showXAxis = _; } },
-            showYAxis: { get: function() {
-                    return showYAxis; }, set: function(_) { showYAxis = _; } },
-            defaultState: { get: function() {
-                    return defaultState; }, set: function(_) { defaultState = _; } },
-            noData: { get: function() {
-                    return noData; }, set: function(_) { noData = _; } },
-            showControls: { get: function() {
-                    return showControls; }, set: function(_) { showControls = _; } },
-            controlLabels: { get: function() {
-                    return controlLabels; }, set: function(_) { controlLabels = _; } },
-            controlOptions: { get: function() {
-                    return controlOptions; }, set: function(_) { controlOptions = _; } },
-            showTotalInTooltip: { get: function() {
-                    return showTotalInTooltip; }, set: function(_) { showTotalInTooltip = _; } },
-            totalLabel: { get: function() {
-                    return totalLabel; }, set: function(_) { totalLabel = _; } },
+            width: {
+                get: function() {
+                    return width;
+                },
+                set: function(_) { width = _; }
+            },
+            height: {
+                get: function() {
+                    return height;
+                },
+                set: function(_) { height = _; }
+            },
+            showLegend: {
+                get: function() {
+                    return showLegend;
+                },
+                set: function(_) { showLegend = _; }
+            },
+            showXAxis: {
+                get: function() {
+                    return showXAxis;
+                },
+                set: function(_) { showXAxis = _; }
+            },
+            showYAxis: {
+                get: function() {
+                    return showYAxis;
+                },
+                set: function(_) { showYAxis = _; }
+            },
+            defaultState: {
+                get: function() {
+                    return defaultState;
+                },
+                set: function(_) { defaultState = _; }
+            },
+            noData: {
+                get: function() {
+                    return noData;
+                },
+                set: function(_) { noData = _; }
+            },
+            showControls: {
+                get: function() {
+                    return showControls;
+                },
+                set: function(_) { showControls = _; }
+            },
+            controlLabels: {
+                get: function() {
+                    return controlLabels;
+                },
+                set: function(_) { controlLabels = _; }
+            },
+            controlOptions: {
+                get: function() {
+                    return controlOptions;
+                },
+                set: function(_) { controlOptions = _; }
+            },
+            showTotalInTooltip: {
+                get: function() {
+                    return showTotalInTooltip;
+                },
+                set: function(_) { showTotalInTooltip = _; }
+            },
+            totalLabel: {
+                get: function() {
+                    return totalLabel;
+                },
+                set: function(_) { totalLabel = _; }
+            },
 
             // options that require extra logic in the setter
             margin: {
                 get: function() {
-                    return margin; },
+                    return margin;
+                },
                 set: function(_) {
                     margin.top = _.top !== undefined ? _.top : margin.top;
                     margin.right = _.right !== undefined ? _.right : margin.right;
@@ -14674,7 +16853,8 @@
             },
             duration: {
                 get: function() {
-                    return duration; },
+                    return duration;
+                },
                 set: function(_) {
                     duration = _;
                     renderWatch.reset(duration);
@@ -14685,7 +16865,8 @@
             },
             color: {
                 get: function() {
-                    return color; },
+                    return color;
+                },
                 set: function(_) {
                     color = nv.utils.getColor(_);
                     legend.color(color);
@@ -14694,7 +16875,8 @@
             },
             rightAlignYAxis: {
                 get: function() {
-                    return rightAlignYAxis; },
+                    return rightAlignYAxis;
+                },
                 set: function(_) {
                     rightAlignYAxis = _;
                     yAxis.orient(rightAlignYAxis ? 'right' : 'left');
@@ -14702,7 +16884,8 @@
             },
             useInteractiveGuideline: {
                 get: function() {
-                    return useInteractiveGuideline; },
+                    return useInteractiveGuideline;
+                },
                 set: function(_) {
                     useInteractiveGuideline = !!_;
                     chart.interactive(!_);
@@ -14729,9 +16912,14 @@
             width = null,
             height = null,
             mode = "count",
-            modes = { count: function(d) {
-                    return 1; }, size: function(d) {
-                    return d.size } },
+            modes = {
+                count: function(d) {
+                    return 1;
+                },
+                size: function(d) {
+                    return d.size
+                }
+            },
             id = Math.floor(Math.random() * 10000) //Create semi-unique ID in case user doesn't select one
             ,
             container = null,
@@ -14746,17 +16934,22 @@
         var partition = d3.layout.partition()
             .sort(null)
             .value(function(d) {
-                return 1; });
+                return 1;
+            });
 
         var arc = d3.svg.arc()
             .startAngle(function(d) {
-                return Math.max(0, Math.min(2 * Math.PI, x(d.x))); })
+                return Math.max(0, Math.min(2 * Math.PI, x(d.x)));
+            })
             .endAngle(function(d) {
-                return Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx))); })
+                return Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx)));
+            })
             .innerRadius(function(d) {
-                return Math.max(0, y(d.y)); })
+                return Math.max(0, y(d.y));
+            })
             .outerRadius(function(d) {
-                return Math.max(0, y(d.y + d.dy)); });
+                return Math.max(0, y(d.y + d.dy));
+            });
 
         // Keep track of the current and previous node being displayed as the root.
         var node, prevNode;
@@ -14923,23 +17116,48 @@
 
         chart._options = Object.create({}, {
             // simple options, just get/set the necessary values
-            width: { get: function() {
-                    return width; }, set: function(_) { width = _; } },
-            height: { get: function() {
-                    return height; }, set: function(_) { height = _; } },
-            mode: { get: function() {
-                    return mode; }, set: function(_) { mode = _; } },
-            id: { get: function() {
-                    return id; }, set: function(_) { id = _; } },
-            duration: { get: function() {
-                    return duration; }, set: function(_) { duration = _; } },
-            groupColorByParent: { get: function() {
-                    return groupColorByParent; }, set: function(_) { groupColorByParent = !!_; } },
+            width: {
+                get: function() {
+                    return width;
+                },
+                set: function(_) { width = _; }
+            },
+            height: {
+                get: function() {
+                    return height;
+                },
+                set: function(_) { height = _; }
+            },
+            mode: {
+                get: function() {
+                    return mode;
+                },
+                set: function(_) { mode = _; }
+            },
+            id: {
+                get: function() {
+                    return id;
+                },
+                set: function(_) { id = _; }
+            },
+            duration: {
+                get: function() {
+                    return duration;
+                },
+                set: function(_) { duration = _; }
+            },
+            groupColorByParent: {
+                get: function() {
+                    return groupColorByParent;
+                },
+                set: function(_) { groupColorByParent = !!_; }
+            },
 
             // options that require extra logic in the setter
             margin: {
                 get: function() {
-                    return margin; },
+                    return margin;
+                },
                 set: function(_) {
                     margin.top = _.top != undefined ? _.top : margin.top;
                     margin.right = _.right != undefined ? _.right : margin.right;
@@ -14949,7 +17167,8 @@
             },
             color: {
                 get: function() {
-                    return color; },
+                    return color;
+                },
                 set: function(_) {
                     color = nv.utils.getColor(_);
                 }
@@ -15079,15 +17298,24 @@
         // use Object get/set functionality to map between vars and chart functions
         chart._options = Object.create({}, {
             // simple options, just get/set the necessary values
-            noData: { get: function() {
-                    return noData; }, set: function(_) { noData = _; } },
-            defaultState: { get: function() {
-                    return defaultState; }, set: function(_) { defaultState = _; } },
+            noData: {
+                get: function() {
+                    return noData;
+                },
+                set: function(_) { noData = _; }
+            },
+            defaultState: {
+                get: function() {
+                    return defaultState;
+                },
+                set: function(_) { defaultState = _; }
+            },
 
             // options that require extra logic in the setter
             color: {
                 get: function() {
-                    return color; },
+                    return color;
+                },
                 set: function(_) {
                     color = _;
                     sunburst.color(color);
@@ -15095,7 +17323,8 @@
             },
             duration: {
                 get: function() {
-                    return duration; },
+                    return duration;
+                },
                 set: function(_) {
                     duration = _;
                     renderWatch.reset(duration);
@@ -15104,7 +17333,8 @@
             },
             margin: {
                 get: function() {
-                    return margin; },
+                    return margin;
+                },
                 set: function(_) {
                     margin.top = _.top !== undefined ? _.top : margin.top;
                     margin.right = _.right !== undefined ? _.right : margin.right;

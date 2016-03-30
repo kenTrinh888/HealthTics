@@ -76,9 +76,10 @@ function loadResultTableDataWithIndexes() {
         finalRequirements = addAndTableToFinalRequirements(finalRequirements, fileIndexes);
         finalRequirements.kpiName = kpiName;
         finalRequirements.targetKPI = targetKPI;
+
         $.ajaxSetup({ async: false });
         var fileExists = $.get('checkFileExists/' + kpiName).responseText;
-        $.ajaxSetup({ async: false });
+        $.ajaxSetup({ async: true });
         if (fileExists == 'true') {
             var confirmed = confirm("File already exists. Overwrite file?");
             if (confirmed) {
@@ -106,12 +107,16 @@ function loadResultTableDataWithIndexes() {
 function addAndTableToFinalRequirements(requirements, fileIndexes) {
     var finalRequirements = requirements;
     finalRequirements.andTable = [];
+    var targetKPI = 90;
     var andTable = JSON.parse($('.modifiedRequirements').text());
     andTable.forEach(function(element, index) {
         if (fileIndexes.indexOf(String(index + 1)) != -1) {
             finalRequirements.andTable.push(element);
+            finalRequirements.andTable[index].targetKPI = targetKPI;
         }
     })
+    
+    console.log(finalRequirements.andTable);
     return finalRequirements;
 }
 
@@ -147,6 +152,7 @@ function getResultRequirements(HDBData) {
         requirements.reqData.push(reqObject);
     });
     requirements.reqFinal.success_HDB_JSONs = success_HDB_JSONs;
+    requirements.reqFinal.failed_HDB_JSONs = failedArr;
     return requirements;
 }
 

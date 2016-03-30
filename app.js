@@ -1177,5 +1177,41 @@ app.post('/getHexbinContainHDBs', function(req, res) {
     //ken modify from here
 })
 
+app.post('/getBulletChartJson', function(req, res) {
+    var bulletChartJson = req.body;
+
+    var nameOfFinalResult = bulletChartJson.kpiName + ".geojson";;
+    var folderDestination = globalurl + "/FinalResult/";
+    folderDestination = folderDestination.replace('\\', '/');
+    var urlDestination = folderDestination + nameOfFinalResult;
+    var kpiJson = fs.readFileSync(urlDestination);
+    kpiJson = (JSON.parse(kpiJson));
+    if(bulletChartJson.andTableIndex != -2){ //modifying andtable in the kpijson
+        kpiJson.andTable[bulletChartJson.andTableIndex].targetKPI = bulletChartJson.targetKpi;
+    }else{
+        kpiJson.targetKPI = bulletChartJson.targetKpi;
+    }
+    
+    fs.writeFile(urlDestination, JSON.stringify(kpiJson), function(err) {        
+        if (err) {
+            res.send('write targetKPI error: ' + err);
+            // return console.log(err);
+        }else{
+            res.send('write targetKPI successful');
+        }
+    });
+    
+});
+
+app.get('/getCurrentKPI/:kpiName',function(req,res){
+    var nameOfFinalResult = req.params.kpiName + ".geojson";
+    var folderDestination = globalurl + "/FinalResult/";
+    folderDestination = folderDestination.replace('\\', '/');
+    var urlDestination = folderDestination + nameOfFinalResult;
+    var kpiJson = fs.readFileSync(urlDestination);
+    kpiJson = JSON.parse(kpiJson);
+    res.send(kpiJson);
+})
+
 app.listen(3000);
 console.log("Running at Port 3000");
