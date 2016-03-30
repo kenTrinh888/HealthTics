@@ -63,6 +63,7 @@ var CartoDB_DarkMatter = L.tileLayer('http://{s}.basemaps.cartocdn.com/dark_all/
     subdomains: 'abcd',
     maxZoom: 19
 });
+
 var map = L.map('map', {
     center: [1.35, 103.8],
     zoom: 11,
@@ -103,17 +104,9 @@ function GetHexbinVisualisation(KPIJson, colors, method) {
         layerGroup.clearLayers();
         layerGroup = false;
     }
-    // $('#map').attr('name', KPIname)
-    // console.log(KPIJson);
     if (hasLegend === true) {
         legend.removeFrom(map);
     }
-    // var controlOnject = layerControl._layers
-    // for (var key in controlOnject) {
-    //     if (controlOnject.hasOwnProperty(key)) {
-    //         delete controlOnject[key];
-    //     }
-    // }
     if (colors === null) {
         colors = "OrRd";
     }
@@ -156,6 +149,7 @@ function GetHexbinVisualisation(KPIJson, colors, method) {
         _withCount.fillOpacity = fillOpacity;
         _withCount.weight = weight;
     });
+
     layerdata = L.Proj.geoJson(grid, {
             onEachFeature: onEachFeature,
             style: style
@@ -223,8 +217,8 @@ function assignWeightandOpacity(pointcount, breaks) {
         var aBreak = breaks[m];
         var newWeight = m + 1;
         var newOpacity = m / 10;
-        if (pointcount > aBreak) {
-            weight = newWeight;
+        if (pointcount > 0) {
+            weight = 1;
             fillOpacity = newOpacity
         }
     }
@@ -292,10 +286,11 @@ function highlightFeature(e) {
     var layer = e.target;
     var color = layer.feature._withCount.fillColor;
     layer.setStyle({
-        weight: 5,
+        weight: 10,
         color: color,
         dashArray: '',
-        fillOpacity: 0.7
+        stroke: "red",
+        fillOpacity: 2
     });
     if (!L.Browser.ie && !L.Browser.opera) {
         layer.bringToFront();
@@ -499,3 +494,6 @@ $('.LegendShowHide').on('switchChange.bootstrapSwitch', function(event, state) {
         hasLegend = false;
     }
 });
+
+// DISPLAY PLANNING zone
+
