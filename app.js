@@ -110,9 +110,11 @@ app.post('/uploadlayer', function(req, res) {
         fs.writeFile(urlDestination, beautyJSON, function(err) {
             if (err) {
                 return console.log(err);
+            }else{
+                 res.send("success");
             }
         });
-        res.redirect("back");
+       
     })
 });
 
@@ -678,7 +680,7 @@ app.post('/findPostalCode', function(req, res) {
     }
 
 
-    res.redirect("/");
+    // res.redirect("/");
 
 
 })
@@ -954,8 +956,16 @@ app.post("/getHexbinVisualGeojson", function(req, res) {
     // var url = globalurl + "/FinalResult/" + kpiName;
     // url = url.replace("\\", "/");
     // console.log(req.body);
-    var dataJSON = req.body;
 
+    var dataJSON = req.body;
+    var cellWidth;
+    var hexbinWidth = dataJSON.hexbinWidth;
+    // console.log(hexbinWidth);
+    if( typeof hexbinWidth === "undefined"){
+        cellWidth = 2
+    }else{
+        cellWidth = hexbinWidth;
+    }
     // console.log(dataJSON);
     var successfulHDBs = dataJSON.reqFinal.success_HDB_JSONs;
     var HDBpoints = {
@@ -967,7 +977,7 @@ app.post("/getHexbinVisualGeojson", function(req, res) {
     }
     // console.log(HDBpoints);
     var bbox = [103.597500, 1.201023, 104.067218, 1.490837]
-    var cellWidth = 2;
+    
     var units = 'kilometers';
     var url = globalurl + "/PlanningArea/SGCoastLine.geojson";
     var SingaporeZone = JSON.parse(fs.readFileSync(url, "utf8"));
@@ -975,7 +985,7 @@ app.post("/getHexbinVisualGeojson", function(req, res) {
 
     var hexgrid = turf.hexGrid(bbox, cellWidth, units);
     // var intersection = turf.intersect(hexgrid, SingaporeZone);
-    console.log(JSON.stringify(SingaporeZone));
+    // console.log(JSON.stringify(SingaporeZone));
     var counted = turf.count(hexgrid, HDBpoints, 'pt_count');
 
     var resultFeatures = HDBpoints.features.concat(counted.features);
@@ -1172,10 +1182,10 @@ function calculateBufferHexbin(aHDB, layerRequest, ORrequirement) {
 
 }
 
-app.post('/getHexbinContainHDBs', function(req, res) {
-    var HDB = req.body;
-    //ken modify from here
-})
+// app.post('/getHexbinContainHDBs', function(req, res) {
+//     var HDB = req.body;
+//     //ken modify from here
+// })
 
 app.post('/getBulletChartJson', function(req, res) {
     var bulletChartJson = req.body;

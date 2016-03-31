@@ -1,3 +1,10 @@
+$body = $("body");
+$(document).on({
+    ajaxStart: function() { $body.addClass("loading"); },
+    ajaxStop: function() { $body.removeClass("loading"); }
+});
+
+
 $(document).ready(function() {
     var allKPIs = JSON.parse(getAllKPIs());
 
@@ -13,10 +20,17 @@ function visualizeBulletChart(allKPIs) {
     $('.visualize').click(function() {
         var bulletChartID = parseInt($(this).attr('id').split('_')[1]) - 1;
         var KPIJson = allKPIs[bulletChartID];
+        $('#items').prop("disabled", false);
+        $('#methods').prop("disabled", false);
+        $("[name='maplegend']").bootstrapSwitch("disabled", false);
+        $('#hexbinWidth').prop("disabled",false);
+        changeHexbinWidth(KPIJson);
+
 
         // GetHexbinVisualisation(requirements)
         // console.log(KPIJson);
         GetHexbinVisualisation(KPIJson, "OrRd", "equal_interval");
+
         changeHexBinAlgo(KPIJson);
     })
 }
@@ -26,8 +40,14 @@ function visualizeDetailBulletChart(allKPIs, parentID) {
         // console.log('a');
         var andTableID = parseInt($(this).attr('id').split('_')[1]) - 1;
         var KPIJson = { "reqFinal": allKPIs[parentID].andTable[andTableID] };
+        $('#items').prop("disabled", false);
+        $('#methods').prop("disabled", false);
+        $("[name='maplegend']").bootstrapSwitch("disabled", false);
+        $('#hexbinWidth').prop("disabled",false);
+        changeHexbinWidth(KPIJson);
         GetHexbinVisualisation(KPIJson, "OrRd", "equal_interval");
         changeHexBinAlgo(KPIJson);
+       
         // console.log(requirements);
     })
 }
@@ -38,7 +58,7 @@ function populateBulletChart(allKPIs) {
         if (index != allKPIs.length - 1) {
             addBulletChartRow(index);
         }
-        var targetKpiNumber = +(KPI.targetKPI/100 * KPI.reqFinal.countAllDwellings).toFixed(0);
+        var targetKpiNumber = +(KPI.targetKPI / 100 * KPI.reqFinal.countAllDwellings).toFixed(0);
         $('#totalPopulation_' + (index + 1)).html(KPI.reqFinal.countAllDwellings);
         $('#targetKpiNumber_' + (index + 1)).html(targetKpiNumber);
         $('#kpiName_' + (index + 1)).html(KPI.kpiName);
@@ -59,7 +79,7 @@ function populateDetailBulletChart(allKPIs) {
         $('.KPIRow').each(function() {
             $(this).hide();
         });
-        
+
         var kpiName = $('#kpiName_' + rowID).html();
 
         $.ajaxSetup({ async: false });
@@ -72,22 +92,22 @@ function populateDetailBulletChart(allKPIs) {
         $('#KPIRow_' + rowID).find('.showDetail').attr('disabled', 'disabled');
         var parentID = rowID - 1; //for sending visualization of detailed KPI;
         // allKPIs.forEach(function(KPI, i) {
-            // console.log(KPI);
-            // if (i == rowID - 1) {
-                KPI.andTable.forEach(function(andTableKPI, index) {
-                    if (index != KPI.andTable.length) {
-                        addDetailBulletChartRow(index);
-                    }
-                    var targetKpiNumber = +(andTableKPI.targetKPI/100 * andTableKPI.countAllDwellings).toFixed(0);
-                    $('#detailkpiName_' + (index + 1)).html(andTableKPI.reqString);
-                    $('#detailkpiNumber_' + (index + 1)).html(andTableKPI.countSuccessDwellings);
-                    $('#detailkpiPercent_' + (index + 1)).html(andTableKPI.percentPopulation);
-                    $('#detailtotalPopulation_' + (index + 1)).html(KPI.reqFinal.countAllDwellings);
-                    $('#detailtargetKpiNumber_' + (index + 1)).html(targetKpiNumber);
+        // console.log(KPI);
+        // if (i == rowID - 1) {
+        KPI.andTable.forEach(function(andTableKPI, index) {
+                if (index != KPI.andTable.length) {
+                    addDetailBulletChartRow(index);
+                }
+                var targetKpiNumber = +(andTableKPI.targetKPI / 100 * andTableKPI.countAllDwellings).toFixed(0);
+                $('#detailkpiName_' + (index + 1)).html(andTableKPI.reqString);
+                $('#detailkpiNumber_' + (index + 1)).html(andTableKPI.countSuccessDwellings);
+                $('#detailkpiPercent_' + (index + 1)).html(andTableKPI.percentPopulation);
+                $('#detailtotalPopulation_' + (index + 1)).html(KPI.reqFinal.countAllDwellings);
+                $('#detailtargetKpiNumber_' + (index + 1)).html(targetKpiNumber);
 
-                    var bulletChartID = '#detailkpibulletchart_' + (index + 1) + ' svg';
-                    addDetailBulletChart(bulletChartID, andTableKPI);
-                })
+                var bulletChartID = '#detailkpibulletchart_' + (index + 1) + ' svg';
+                addDetailBulletChart(bulletChartID, andTableKPI);
+            })
             // }
 
         // })
@@ -201,6 +221,6 @@ function detailBulletChartData(andTableKPI) {
         "subtitle": "%", //sub-label for bullet chart
         "ranges": [30, 50, 100], //Minimum, mean and maximum values.
         "measures": measures, //Value representing current measurement (the thick blue line in the example)
-        "markers": markers    // "markers": markers //Place a marker on the chart (the white triangle marker)
+        "markers": markers // "markers": markers //Place a marker on the chart (the white triangle marker)
     };
 }

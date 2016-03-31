@@ -1,35 +1,14 @@
-$('#modal-switch').click(function(){
+$('#modal-switch').click(function() {
     $('#modal-updateAndTable').show();
 })
 
 L.Icon.Default.imagePath = '/images';
 L.AwesomeMarkers.Icon.prototype.options.prefix = 'ion';
-/* create leaflet map */
-// var map = L.map('map', {
-//     center: [1.35, 103.8],
-//     zoom: 12
-// });
-// new L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-//     minZoom: 0,
-//     maxZoom: 50,
-//     attribution: 'Map data © <a href="http://www.openstreetmap.org">OpenStreetMap contributors</a>'
-// }).addTo(map);
-// // omnivore.geojson('/geojson/PLAYSG.json').addTo(map);
-// var redMarker = L.AwesomeMarkers.icon({
-//     icon: 'sitemap',
-//     markerColor: 'red',
-//     prefix: 'fa'
-// });
-// var blueMarker = L.AwesomeMarkers.icon({
-//     icon: 'sitemap',
-//     markerColor: 'blue',
-//     prefix: 'fa'
-// });
-$body = $("body");
 
+$body = $("body");
 $(document).on({
-    ajaxStart: function() { $body.addClass("loading");    },
-     ajaxStop: function() { $body.removeClass("loading"); }    
+    ajaxStart: function() { $body.addClass("loading"); },
+    ajaxStop: function() { $body.removeClass("loading"); }
 });
 
 // proj4.defs("EPSG:3414","+proj=tmerc +lat_0=1.366666666666667 +lon_0=103.8333333333333 +k=1 +x_0=28001.642 +y_0=38744.572 +ellps=WGS84 +units=m +no_defs");
@@ -40,11 +19,11 @@ $("[name='my-checkbox']").bootstrapSwitch();
 //   console.log(state); // true | false
 // });
 var postcodeContain;
-$('.postalCodeCheck').on('switchChange.bootstrapSwitch', function (event, state) {
-postcodeContain = state;
-console.log(postcodeContain);    
+$('.postalCodeCheck').on('switchChange.bootstrapSwitch', function(event, state) {
+    postcodeContain = state;
+    console.log(postcodeContain);
 });
-  // var postcodeContain;
+// var postcodeContain;
 // var postcodeContain = $("#polygonCheck").is(":checked") ? $("#polygonCheck").val() : null;
 // $("#polygonCheck").change(function(){
 //     console.log(postcodeContain);
@@ -52,9 +31,9 @@ console.log(postcodeContain);
 // console.log(postcodeContain);
 
 $('#convert').submit(function(e) {
-// postcodeContain = $("[name='my-checkbox']").val();
-var postcodeContain = $('.postalCodeCheck').is(":checked");
-console.log(postcodeContain);
+    // postcodeContain = $("[name='my-checkbox']").val();
+    var postcodeContain = $('.postalCodeCheck').is(":checked");
+    // console.log(postcodeContain);
     // var postcodeContain = true;
     // if(postcodeContain === "on"){
     // var postcodeContain = true;
@@ -76,12 +55,18 @@ console.log(postcodeContain);
 
                     aPoint = arrayofPoints[index];
                     var postcode = aPoint.properties.POSTALCODE;
-                    if (postcode.length < 6) {
-                        postcode = "0" + postcode;
+                    if (typeof postcode === "undefined") {
+                        $('#modal-NoContainPostalcode').modal('show');
+                    } else {
+                        if (postcode.length < 6) {
+                            postcode = "0" + postcode;
+                        }
+                        var breakPoint = arrayofPoints.length;
+                        getPostalCodeGeo(layerName, aPoint, postcode, breakPoint, aPoint)
+
                     }
-                    var breakPoint = arrayofPoints.length;
-                    getPostalCodeGeo(layerName, aPoint, postcode, breakPoint)
-                        // data.features[index].geometry = [1,1];
+
+                    // data.features[index].geometry = [1,1];
                 }
 
             } else {
@@ -105,37 +90,21 @@ console.log(postcodeContain);
                 });
 
             }
-            //     var layer = {
-            //             "name": layerName,
-            //             "datamain": data
-            //         }
-            //         // layer.data = data
-            //     var dataSend = JSON.stringify(layer);
-            //     // console.log(dataSend);
-            //     $.ajax({
-            //         url: '/upload',
-            //         type: 'POST',
-            //         data: dataSend,
-            //         contentType: 'application/json',
 
-            //         success: function(data) {
-            //             console.log('success');
-            //             location.reload();
-            //         }
-            //     });
         }
 
     })
 
 });
+var HDBdataSend = null;
 
-function getPostalCodeGeo(layerName, aPoint, postcode, breakPoint) {
+function getPostalCodeGeo(layerName, aPoint, postcode, breakPoint, aPoint) {
     breakPoint = parseInt(breakPoint);
     url = "/getPostalCode/" + postcode;
     InvalidPostalCode = []
     coordinateArray = [];
-   
-    
+
+
     $.getJSON(url, function(objectReturn) {
         // var breakPoint = parseInt(index) + 1;
         var objectLocation = { "type": "Point", "coordinates": objectReturn }
@@ -146,18 +115,20 @@ function getPostalCodeGeo(layerName, aPoint, postcode, breakPoint) {
             // console.log(coordinateArray.length);
 
         } else {
-            InvalidPostalCode.push(objectReturn);
+            // console.log(aPoint);
+            InvalidPostalCode.push(aPoint);
             console.log(objectReturn);
         }
         var loopendPoint = coordinateArray.length + InvalidPostalCode.length;
-        console.log(loopendPoint);
+        // console.log(loopendPoint);
         if (loopendPoint === breakPoint) {
-            console.log("dataSend");
+            // console.log("dataSend");
             var dataReturn = {
-                "type": "FeatureCollection",
-                "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::3414" } },
-                "features": []
-            }
+                    "type": "FeatureCollection",
+                    "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::3414" } },
+                    "features": []
+                }
+                // console.log(InvalidPostalCode);
             dataReturn.features = coordinateArray;
             var layer = {
                     "name": layerName,
@@ -165,76 +136,66 @@ function getPostalCodeGeo(layerName, aPoint, postcode, breakPoint) {
                 }
                 // layer.data = data
             var dataSend = JSON.stringify(layer);
-            // console.log(dataSend);
-            $.ajax({
-                url: '/uploadlayer',
-                type: 'POST',
-                data: dataSend,
-                contentType: 'application/json',
+            HDBdataSend = dataSend;
+            var printout = "<b>The Below Postal Code is(are) Invalid:</b></br>";
+            if (InvalidPostalCode.length > 0) {
+                
+                for (var m = 0; m < InvalidPostalCode.length; m++) {
+                    var outError = "<p>" + (m + 1) + ") ";
+                    var JsonObj = InvalidPostalCode[m].properties;
+                    for (var key in JsonObj) {
+                        outError += key + ": " + JsonObj[key] + "</p>";
+                        // console.log(key + JsonObj[key]);
 
-                success: function(data) {
-                    console.log('success');
-                    location.reload();
+                    }
+                    printout += outError + "</br>";
                 }
-            });
+                $('#PostlError').append(printout);
+                $('#modal-login').modal('show');
+                // $('#modal-join').modal('show');
+            } else {
+                writeHDB(HDBdataSend);
+                // $('#modal-hdbsuccessful').modal('show');
+            }
+
         }
-        
+
 
     })
 
 }
-// $.get("/getAllLayer", function(data) {
-//     var names = data;
-//     for (var i = 1; i < names.length; i++) {
-//         var name = names[i];
-//         var url = './geojson/' + name;
-//         $.getJSON(url, function(dataLoop) {
-//             // // console.log(dataLoop);
-//             // L.Proj.geoJson(dataLoop,function(){
-//             //     console.log(dataLoop)
-//             // });
-//             L.geoJson(dataLoop, {
-//                 pointToLayer: function(feature, latlng) {
-//                     // console.log(latlng);
-//                     // var name = feature.properties.Name;
-//                     // console.log(feature.properties.Name);
-//                     return L.marker(latlng, {
-//                         icon: redMarker
-//                     })
-//                 }
-//             }).addTo(map);
-//         });
-//     }
-// })
-// var urlforHDB = 'ORResults/ORresult.json';
-// $.getJSON(urlforHDB, function(dataLoop) {
-//     for (var i = 0; i < dataLoop.length; i++) {
-//         var points = dataLoop[i].points;
-//         var buffer = dataLoop[i].buffer;
-//         console.log(points);
-//         L.geoJson(buffer, {
-//             pointToLayer: function(feature, latlng) {
-//                 // console.log(latlng);
-//                 // var name = feature.properties.Name;
-//                 // console.log(feature.properties.Name);
-//                 return L.marker(latlng, {
-//                     icon: redMarker
-//                 })
-//             }
-//         }).addTo(map);
-//         L.geoJson(points, {
-//             pointToLayer: function(feature, latlng) {
-//                 // console.log(latlng);
-//                 // var name = feature.properties.Name;
-//                 // console.log(feature.properties.Name);
-//                 return L.marker(latlng, {
-//                     icon: blueMarker
-//                 })
-//             }
-//         }).addTo(map);
-//     }
-// });
 
+function writeHDB(dataSend) {
+    $.ajax({
+        url: '/uploadlayer',
+        type: 'POST',
+        data: dataSend,
+        contentType: 'application/json',
+
+        success: function() {
+            alert('success');
+        }
+    });
+    if ($('#modal-login').is(':visible')) {
+        $('#modal-login').modal('hide');
+
+    }
+    $('#modal-hdbsuccessful').modal('show');
+
+
+}
+
+$("#proceeedPostcode").click(function() {
+    // console.log(HDBdataSend);
+    writeHDB(HDBdataSend);
+
+})
+$("#OK").click(function() {
+        // console.log(HDBdataSend);
+        location.reload();
+
+    })
+    
 
 $(document).ready(function() {
     function onEachFeature(feature, layer) {
@@ -281,33 +242,35 @@ $(document).ready(function() {
                             }
                             field["length"] = lengthofHDBRequest;
                             objectsSend.push(field);
-                
+
 
                         };
-                           if (findpolygon) {
+                        if (findpolygon) {
 
-                                $.ajax({
-                                    url: '/findHDBPolygon',
-                                    type: 'POST',
-                                    data: JSON.stringify(objectsSend),
-                                    contentType: 'application/json',
-                                    success: function(data) {
-                                        // console.log(data);
-                                        location.reload();
-                                    }
-                                });
-                            } else {
-                                $.ajax({
-                                    url: '/findPostalCode',
-                                    type: 'POST',
-                                    data: JSON.stringify(objectsSend),
-                                    contentType: 'application/json',
-                                    success: function(data) {
-                                        // console.log(data);
-                                        location.reload();
-                                    }
-                                });
-                            }
+                            $.ajax({
+                                url: '/findHDBPolygon',
+                                type: 'POST',
+                                data: JSON.stringify(objectsSend),
+                                contentType: 'application/json',
+                                success: function(data) {
+                                    // console.log(data);
+                                    location.reload();
+                                }
+                            });
+                        } else {
+                            $.ajax({
+                                url: '/findPostalCode',
+                                type: 'POST',
+                                data: JSON.stringify(objectsSend),
+                                contentType: 'application/json',
+                                success: function(data) {
+                                     $('#HDBUpload').append(objectsSend.length);
+                                    $('#modal-HDBsuccessful').modal('show');
+                                    // console.log(data);
+                                    // location.reload();
+                                }
+                            });
+                        }
                     }
                 });
             }

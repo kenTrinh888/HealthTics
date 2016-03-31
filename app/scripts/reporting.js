@@ -5,6 +5,9 @@ $(document).on({
     ajaxStart: function() { $body.addClass("loading"); },
     ajaxStop: function() { $body.removeClass("loading"); }
 });
+
+// $('#map').attr('name');
+
 var colors = ["OrRd", "PuBu", "BuPu", "Oranges",
     "BuGn", "YlOrBr", "YlGn", "Reds",
     "RdPu", "Greens", "YlGnBu", "Purples",
@@ -36,8 +39,11 @@ for (var i = 0; i < method.length; i++) {
 $('#methods').append(methodOption);
 
 // ButtonLgendHideShow
-$("[name='maplegend']").bootstrapSwitch();
 
+$('#items').prop("disabled", true);
+$('#methods').prop("disabled", true);
+$('#hexbinWidth').prop("disabled", true);
+$("[name='maplegend']").bootstrapSwitch("disabled", true);
 
 /* create leaflet map */
 var OpenStreetMap_Mapnik = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -497,4 +503,9 @@ $('.LegendShowHide').on('switchChange.bootstrapSwitch', function(event, state) {
 });
 
 // DISPLAY PLANNING zone
-
+function changeHexbinWidth(KPIJson) {
+    $('#hexbinWidth').change(function() {
+        var hexbinWidth = $(this).val();
+        KPIJson['hexbinWidth'] = hexbinWidth;
+    })
+}
