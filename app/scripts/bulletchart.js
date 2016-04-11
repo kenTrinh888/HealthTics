@@ -10,9 +10,8 @@ $(document).ready(function() {
 
     populateBulletChart(allKPIs);
     visualizeBulletChart(allKPIs);
-    // console.log(KPIJson);
-
     populateDetailBulletChart(allKPIs);
+
 })
 
 function visualizeBulletChart(allKPIs) {
@@ -23,32 +22,42 @@ function visualizeBulletChart(allKPIs) {
         $('#items').prop("disabled", false);
         $('#methods').prop("disabled", false);
         $("[name='maplegend']").bootstrapSwitch("disabled", false);
-        $('#hexbinWidth').prop("disabled",false);
+        $('#hexbinWidth').prop("disabled", false);
+        $('#displayHDBs').prop("disabled", false);
+
+        changeHDBDisplay(KPIJson);
         changeHexbinWidth(KPIJson);
-
-
-        // GetHexbinVisualisation(requirements)
-        // console.log(KPIJson);
         GetHexbinVisualisation(KPIJson, "OrRd", "equal_interval");
-
         changeHexBinAlgo(KPIJson);
     })
 }
 
 function visualizeDetailBulletChart(allKPIs, parentID) {
     $('.detailkpiVisualize').click(function() {
-        // console.log('a');
+        var KPIJson = null;
+        // console.log(KPIJson.HDBchoice);
         var andTableID = parseInt($(this).attr('id').split('_')[1]) - 1;
-        var KPIJson = { "reqFinal": allKPIs[parentID].andTable[andTableID] };
+        // console.log(andTableID);
+        // var KPIJson = { "reqFinal": allKPIs[parentID].andTable[andTableID]};
+        console.log(parentID);
+        for (var i in allKPIs) {
+            if (i == parentID) {
+                console.log("match")
+                KPIJson = allKPIs[i];
+                KPIJson.reqFinal = allKPIs[i].andTable[andTableID];
+            }
+
+        }
         $('#items').prop("disabled", false);
         $('#methods').prop("disabled", false);
         $("[name='maplegend']").bootstrapSwitch("disabled", false);
-        $('#hexbinWidth').prop("disabled",false);
+        $('#hexbinWidth').prop("disabled", false);
+        $('#displayHDBs').prop("disabled", false);
+
+        changeHDBDisplay(KPIJson)
         changeHexbinWidth(KPIJson);
         GetHexbinVisualisation(KPIJson, "OrRd", "equal_interval");
         changeHexBinAlgo(KPIJson);
-       
-        // console.log(requirements);
     })
 }
 
@@ -58,15 +67,19 @@ function populateBulletChart(allKPIs) {
         if (index != allKPIs.length - 1) {
             addBulletChartRow(index);
         }
-        var targetKpiNumber = +(KPI.targetKPI / 100 * KPI.reqFinal.countAllDwellings).toFixed(0);
-        $('#totalPopulation_' + (index + 1)).html(KPI.reqFinal.countAllDwellings);
-        $('#targetKpiNumber_' + (index + 1)).html(targetKpiNumber);
-        $('#kpiName_' + (index + 1)).html(KPI.kpiName);
-        $('#kpiNumber_' + (index + 1)).html(KPI.reqFinal.countSuccessDwellings);
-        $('#kpiPercent_' + (index + 1)).html(KPI.reqFinal.percentPopulation);
+        // console.log(typeof KPI.reqFinal.countAllDwellings);
+        // if (typeof KPI.reqFinal.countAllDwellings != undefined) {
+            var targetKpiNumber = +(KPI.targetKPI / 100 * KPI.reqFinal.countAllDwellings).toFixed(0);
+            $('#totalPopulation_' + (index + 1)).html(KPI.reqFinal.countAllDwellings);
+            $('#targetKpiNumber_' + (index + 1)).html(targetKpiNumber);
+            $('#kpiName_' + (index + 1)).html(KPI.kpiName);
+            $('#kpiNumber_' + (index + 1)).html(KPI.reqFinal.countSuccessDwellings);
+            $('#kpiPercent_' + (index + 1)).html(KPI.reqFinal.percentPopulation);
 
-        var bulletChartID = '#kpibulletchart_' + (index + 1) + ' svg';
-        addBulletChart(bulletChartID, KPI);
+            var bulletChartID = '#kpibulletchart_' + (index + 1) + ' svg';
+            addBulletChart(bulletChartID, KPI);
+
+        // }
 
     })
 }

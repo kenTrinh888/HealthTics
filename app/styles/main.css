@@ -107,7 +107,7 @@ header .appName {
    speak for themselves. Background we set to 80% white with
    our animation centered, and no-repeating */
 
-.loadingModal {
+.modalWaiting {
     display: none;
     position: fixed;
     z-index: 1000;
@@ -130,7 +130,7 @@ body.loading {
 /* Anytime the body has the loading class, our
    modal element will be visible */
 
-body.loading .loadingModal {
+body.loading .modalWaiting {
     display: block;
 }
 
@@ -199,22 +199,10 @@ body.loading .loadingModal {
                 no-repeat;
 }
 
-/* When the body has the loading class, we turn
-   the scrollbar off with overflow:hidden */
-body.loading {
-    overflow: hidden;   
-}
-
-/* Anytime the body has the loading class, our
-   modal element will be visible */
-body.loading .modalWaiting {
-    display: block;
-}
-
 /* The CSS */
-.dropdown{
+.dropdown-reporting{
     position: relative;
-    width: 120px;
+    width: 130px;
     padding: 10px;
     margin: 0 auto;
     background: #337ab7;
@@ -223,7 +211,4 @@ body.loading .modalWaiting {
     cursor: pointer;
     font-weight: bold;
 }
-
-
-
 

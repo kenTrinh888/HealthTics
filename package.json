@@ -33,7 +33,9 @@
     "reproject": "^1.0.1",
     "request": "^2.67.0",
     "superagent": "^1.7.2",
-    "turf": "^2.0.2"
+    "sync-request": "^3.0.0",
+    "turf": "^2.0.2",
+    "urllib-sync": "^1.1.2"
   },
   "engines": {
     "node": "0.10.30"

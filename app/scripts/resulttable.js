@@ -1,5 +1,6 @@
 //main method
 $(document).ready(function() {
+    // UpdateloadResultTableDataWithIndexes()
     triggerSaveButtonInModal();
     loadResultTableData();
     sendFinalRequirements();
@@ -46,6 +47,7 @@ function sendFinalRequirements() {
 
 function loadResultTableDataWithIndexes() {
     var fileIndexes = getCheckedFileIndexes();
+    console.log(fileIndexes);
     var kpiName = $('.kpiName').prop('value');
     // var targetKPI = $('.targetKPI').prop('value');
     var targetKPI = 90;
@@ -63,7 +65,9 @@ function loadResultTableDataWithIndexes() {
     }
     var getDataAPI = '/getNumberofHDB2/' + fileIndexes;
 
+
     $.get(getDataAPI, function(HDBData, err) {
+          console.log(HDBData);
         if (HDBData.length == 0) {
             return;
         }
@@ -104,6 +108,26 @@ function loadResultTableDataWithIndexes() {
     })
 }
 
+function UpdateloadResultTableDataWithIndexes(){
+    $.get("/allFinalResult", function(KPIFilesArray){
+        for(var m in KPIFilesArray){
+            var aKPIFiles = KPIFilesArray[m];
+            var HDBData = aKPIFiles.bigORsArray;
+            var KPIContent = aKPIFiles.KPIContent;
+            var requirements = getResultRequirements(HDBData);
+            var finalRequirements = getFinalRequirements(requirements);
+            KPIContent.reqFinal = finalRequirements.reqFinal;
+            KPIContent.reqData = finalRequirements.reqData;
+            $.ajax({
+                type: 'POST',
+                data: JSON.stringify(KPIContent),
+                contentType: 'application/json',
+                url: 'http://localhost:3000/sendFinalRequirements'
+            });
+        } 
+    })
+}
+
 function addAndTableToFinalRequirements(requirements, fileIndexes) {
     var finalRequirements = requirements;
     finalRequirements.andTable = [];
@@ -116,7 +140,7 @@ function addAndTableToFinalRequirements(requirements, fileIndexes) {
         }
     })
     
-    console.log(finalRequirements.andTable);
+    // console.log(finalRequirements.andTable);
     return finalRequirements;
 }
 

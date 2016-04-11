@@ -67,39 +67,71 @@
             <!-- /.container -->
         </nav>
         <div class="container">
-            <h3><a href="#">List of KPI's</a></h3>
-            <div class="row">
-                <table class="table table-hover table-responsive kpiListTbl" id="kpiListTbl">
-                    <tr>
-                        <th class="col-md-1">Name</th>
-                        <th class="col-md-6">Bullet Chart</th>
-                        <th class="col-md-1">Number of residents with access</th>
-                        <th class="col-md-1">% of residents with access</th>
-                        <th class="col-md-1">Targeted no. of residents with access</th>
-                        <th class="col-md-1">Visualize</th>
-                        <th class="col-md-1">Analyze</th>
-                    </tr>
-                    <tr id='KPIRow_1' class='KPIRow'>
-                        <td class='col-md-1'><span class='kpiName' id='kpiName_1'></span></td>
-                        <td class='col-md-6 bulletRow'><span class='kpibulletchart' id='kpibulletchart_1'><svg></svg></span></td>
-                        <td class='col-md-1'><span class='kpiNumber' id='kpiNumber_1'></span></td>
-                        <td class='col-md-1'><span class='kpiPercent' id='kpiPercent_1'></span></td>
-                        <td class='col-md-1'>
-                            <span class='targetKpiNumber' id='targetKpiNumber_1'></span>
-                            <span class='totalPopulation' style='display:none' id='totalPopulation_1'></span>
-                        </td>
-                        <td class='col-md-1'>
-                            <button class='btn btn-primary visualize' id='visualize_1'>Visualize</button>
-                        </td>
-                        <td class='col-md-1'>
-                            <button class='btn btn-primary showDetail' id='showDetail_1'>Show detail</button>
-                        </td>
-                    </tr>
-                </table>
+            <div class="panel-group" id="accordion">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+          <a data-toggle="collapse" data-parent="#accordion" href="#KPIs">List of KPI's</a></h4>
+                    </div>
+                    <div id="KPIs" class="panel-collapse collapse in">
+                        <div class="panel-body">
+                            <div class="row">
+                                <table class="table table-hover table-responsive kpiListTbl" id="kpiListTbl">
+                                    <tr>
+                                        <th class="col-md-1">Name</th>
+                                        <th class="col-md-6">Bullet Chart</th>
+                                        <th class="col-md-1">Number of residents with access</th>
+                                        <th class="col-md-1">% of residents with access</th>
+                                        <th class="col-md-1">Targeted no. of residents with access</th>
+                                        <th class="col-md-1">Visualize</th>
+                                        <th class="col-md-1">Analyze</th>
+                                    </tr>
+                                    <tr id='KPIRow_1' class='KPIRow'>
+                                        <td class='col-md-1'><span class='kpiName' id='kpiName_1'></span></td>
+                                        <td class='col-md-6 bulletRow'><span class='kpibulletchart' id='kpibulletchart_1'><svg></svg></span></td>
+                                        <td class='col-md-1'><span class='kpiNumber' id='kpiNumber_1'></span></td>
+                                        <td class='col-md-1'><span class='kpiPercent' id='kpiPercent_1'></span></td>
+                                        <td class='col-md-1'>
+                                            <span class='targetKpiNumber' id='targetKpiNumber_1'></span>
+                                            <span class='totalPopulation' style='display:none' id='totalPopulation_1'></span>
+                                        </td>
+                                        <td class='col-md-1'>
+                                            <button class='btn btn-primary visualize' id='visualize_1'>Visualize</button>
+                                        </td>
+                                        <td class='col-md-1'>
+                                            <button class='btn btn-primary showDetail' id='showDetail_1'>Show detail</button>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Map Planning Panel -->
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                                  <a data-toggle="collapse" data-parent="#accordion" href="#MapPlanning">Map Planning</a>
+                                </h4>
+                    </div>
+                    <div id="MapPlanning" class="panel-collapse collapse">
+                        <div class="panel-body">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</div>
+                    </div>
+                </div>
+                <!-- End Map Planning Panning -->
             </div>
             <!-- Projects Row -->
             <h3><a href="#">Map</a></h3>
             <div class="col-xs-12 col-sm-12 dropdown-list">
+                <div class="col-xs-2 col-sm-3">
+                    <div>
+                        Distribution of HDBs
+                    </div>
+                    <select id="displayHDBs" class="hexbin dropdown-reporting">
+                        <option value="Successful">KPI Passed</option>
+                        <option value="Fail">KPI not Passed</option>
+                    </select>
+                </div>
                 <div class="col-xs-3 col-sm-3">
                     <div>
                         Legend
@@ -110,34 +142,80 @@
                     <div>
                         Hexbin Width(Km)
                     </div>
-                    <select id="hexbinWidth" class="hexbin dropdown">
+                    <!-- <div class="input-group input-group-sm">
+                        <input type="text" id="hexbinWidth" class="form-control" placeholder="Number" aria-describedby="sizing-addon4">
+                    </div> -->
+                    <select id="hexbinWidth" class="hexbin dropdown-reporting">
+                        <option value="0.5">0.5</option>
                         <option value="1">1</option>
+                        <option value="1.5">1.5</option>
                         <option value="2" selected="selected">2</option>
+                        <option value="2.5">2.5</option>
                         <option value="3">3</option>
+                        <option value="3.5">3.5</option>
+                        <option value="4">4</option>
                     </select>
                 </div>
                 <div class="col-xs-2 col-sm-2">
                     <div>
                         Color Brew
                     </div>
-                    <select id="items" class="hexbin dropdown"></select>
+                    <select id="items" class="hexbin dropdown-reporting"></select>
                 </div>
                 <div class="col-xs-3 col-sm-2">
                     <div>
                         Classification
                     </div>
-                    <select id="methods" class="hexbin dropdown"></select>
+                    <select id="methods" class="hexbin dropdown-reporting"></select>
                 </div>
             </div>
             <div class="col-xs-6 col-sm-6 map">
                 <div id="map"></div>
             </div>
             <div class="col-xs-6 col-sm-6">
-                <div id="ZoominMap"></div>
+                <div id="ZoominMap" data-mode=""></div>
+                <input type="hidden" data-map-markers="" value="" name="map-geojson-data" />
             </div>
-            <!-- </div> -->
-            <!-- </div> -->
         </div>
+        <!-- </div> -->
+        <!-- </div> -->
+        <!-- =================Map Planning Section===================== -->
+        <!-- Add One more Point to Layer -->
+        <div class="modal fade" id="modal-AddMarker" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title" id="myModalLabel">Add Marker to Layer</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group row">
+                            <label class="col-sm-2 form-control-label">Layer</label>
+                            <div class="col-sm-10">
+                                <div class="dropdown">
+                                    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                        Choose A Layer
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul id="AddMarker" class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <form id="markerForm">
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="Submit" class="btn btn-default" id="AddMarkerConfirm">Add Point</button>
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+        <!-- /.modal -->
+        <!-- =================End Map Planning Section===================== -->
         <footer id="footer-change">
             <p>Copyright &copy; Team HealthTics 2016</p>
             <!-- /.row -->
@@ -167,14 +245,17 @@
     <link rel="stylesheet" type="text/css" href="/bower_components/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.min.css">
     <script src="/bower_components/bootstrap-switch/dist/js/bootstrap-switch.min.js"></script>
     <!-- End Bootstrap Switch Lib-->
+    <script src="/bower_components/jquery-panelslider/jquery.panelslider.js"></script>
     <script src="/bower_components/d3/d3.min.js"></script>
     <script src="/lib/nvd3/build/nv.d3.js"></script>
     <script src="/lib/classybrew/src/classybrew.js"></script>
     <script src="http://api.tiles.mapbox.com/mapbox.js/plugins/turf/v2.0.0/turf.min.js
 "></script>
+    <script src="scripts/resulttable.js"></script>
     <script src="scripts/reporting.js"></script>
     <script src="scripts/bulletchart.js"></script>
-   <div class="modalWaiting">
-    <!-- <div class="modal"> -->
+
+    <div class="modalWaiting">
+        <!-- <div class="modal"> -->
 
 </html>

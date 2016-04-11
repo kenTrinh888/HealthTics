@@ -97,7 +97,6 @@ $('#convert').submit(function(e) {
 
 });
 var HDBdataSend = null;
-
 function getPostalCodeGeo(layerName, aPoint, postcode, breakPoint, aPoint) {
     breakPoint = parseInt(breakPoint);
     url = "/getPostalCode/" + postcode;
@@ -139,7 +138,7 @@ function getPostalCodeGeo(layerName, aPoint, postcode, breakPoint, aPoint) {
             HDBdataSend = dataSend;
             var printout = "<b>The Below Postal Code is(are) Invalid:</b></br>";
             if (InvalidPostalCode.length > 0) {
-                
+
                 for (var m = 0; m < InvalidPostalCode.length; m++) {
                     var outError = "<p>" + (m + 1) + ") ";
                     var JsonObj = InvalidPostalCode[m].properties;
@@ -184,19 +183,45 @@ function writeHDB(dataSend) {
 
 
 }
-
+var HDBupload = null;
 $("#proceeedPostcode").click(function() {
     // console.log(HDBdataSend);
     writeHDB(HDBdataSend);
-
+})
+$("#proceeedHDB").click(function() {
+    // console.log(HDBdataSend);
+    uploadHDBtoFile(HDBupload);
+    
 })
 $("#OK").click(function() {
-        // console.log(HDBdataSend);
-        location.reload();
+    // console.log(HDBdataSend);
+    location.reload();
 
-    })
-    
+})
+$("#HDBOK").click(function() {
+    // console.log(HDBdataSend);
+    location.reload();
 
+})
+
+function uploadHDBtoFile(dataSend){
+    $.ajax({
+        url: '/writeHDBs',
+        type: 'POST',
+        data: JSON.stringify(dataSend),
+        contentType: 'application/json',
+
+        success: function() {
+            alert('success');
+        }
+    });
+    $('#HDBUploadSuccessful').append(dataSend.length + " HDBs succcessful Uploaded");
+     if ($('#modal-HDBFail').is(':visible')) {
+        $('#modal-HDBFail').modal('hide');
+
+    }
+    $('#modal-HDBsuccessful').modal('show');
+}
 $(document).ready(function() {
     function onEachFeature(feature, layer) {
         // does this feature have a property named popupContent?
@@ -236,7 +261,6 @@ $(document).ready(function() {
                             // console.log(field);
                             // console.log(leafletFeature);
                             var postcode = field["POSTCODE"].toString();
-                            console.log(lengthofHDBRequest);
                             if (postcode.length < 6) {
                                 postcode = "0" + postcode;
                             }
@@ -258,16 +282,44 @@ $(document).ready(function() {
                                 }
                             });
                         } else {
+                            $body.addClass("loading");
                             $.ajax({
                                 url: '/findPostalCode',
                                 type: 'POST',
                                 data: JSON.stringify(objectsSend),
                                 contentType: 'application/json',
                                 success: function(data) {
-                                     $('#HDBUpload').append(objectsSend.length);
-                                    $('#modal-HDBsuccessful').modal('show');
-                                    // console.log(data);
-                                    // location.reload();
+                                    var InvalidPostalCode = data.InvalidHDBsArray;
+                                    var HDBs = data.HDB;
+                                    var lengthofHDBRequest = HDBs.length;
+                                    HDBupload = HDBs;
+                                    var printout = "<b>The Below HDB PostalCode is(are) Invalid:</b></br>";
+                                    if (InvalidPostalCode.length > 0) {
+                                        lengthofHDBRequest = lengthofHDBRequest - InvalidPostalCode.length;
+                                        for (var m = 0; m < InvalidPostalCode.length; m++) {
+                                            var outError = "<p>" + (m + 1) + ") ";
+                                            var JsonObj = InvalidPostalCode[m];
+                                            for (var key in JsonObj) {
+                                                if(key!= "length"){
+                                                    outError += key + ": " + JsonObj[key] + "</p>";
+                                                }
+                                            }
+                                            printout += outError + "</br>";
+                                        }
+                                        $body.removeClass("loading"); 
+                                        $('#HDBUpload').append(printout);
+                                        $('#modal-HDBFail').modal('show');
+                                    }else{
+                                        // HDBs["lengthofHDBRequest"] = lengthofHDBRequest;
+                                        console.log("start upload");
+                                        uploadHDBtoFile(HDBs);
+                                        // $('#HDBUploadSuccessful').append(objectsSend.length + " HDBs succcessful Uploaded");
+                                        $body.removeClass("loading"); 
+                                        $('#modal-HDBsuccessful').modal('show');
+                                    }
+                                    
+                                    
+
                                 }
                             });
                         }

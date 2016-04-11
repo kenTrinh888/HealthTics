@@ -5,8 +5,13 @@ $(document).on({
     ajaxStart: function() { $body.addClass("loading"); },
     ajaxStop: function() { $body.removeClass("loading"); }
 });
+var HDBoption;
+var HDBInsideHexbin;
+$('#displayHDBs').change(function() {
+        HDBoption = $(this).val();
 
-// $('#map').attr('name');
+    })
+    // $('#map').attr('name');
 
 var colors = ["OrRd", "PuBu", "BuPu", "Oranges",
     "BuGn", "YlOrBr", "YlGn", "Reds",
@@ -43,6 +48,7 @@ $('#methods').append(methodOption);
 $('#items').prop("disabled", true);
 $('#methods').prop("disabled", true);
 $('#hexbinWidth').prop("disabled", true);
+$('#displayHDBs').prop("disabled", true);
 $("[name='maplegend']").bootstrapSwitch("disabled", true);
 
 /* create leaflet map */
@@ -82,12 +88,7 @@ map.touchZoom.disable();
 map.doubleClickZoom.disable();
 map.scrollWheelZoom.disable();
 map.keyboard.disable();
-// map.setView([1.35, 103.8],12)
-// var boundsSW = L.latLng(1.201023, 103.597500),
-//     boundsNE = L.latLng(1.490837, 104.067218),
-//     bounds = L.latLngBounds(boundsSW, boundsNE);
-// map.setMaxBounds(bounds);
-// map.fitBounds(bounds);
+
 var baseMaps = {
     "OpenStreetMap_Mapnik": OpenStreetMap_Mapnik,
     "Stamen_Toner": Stamen_Toner,
@@ -105,7 +106,7 @@ var hasLegend = false;
 var count = 0;
 
 function GetHexbinVisualisation(KPIJson, colors, method) {
-
+    // console.log(KPIJson);
     if (layerGroup != false) {
         layerGroup.clearLayers();
         layerGroup = false;
@@ -126,7 +127,7 @@ function GetHexbinVisualisation(KPIJson, colors, method) {
     var brew = new classyBrew();
     // console.log(KPIJson);
     grid.features.forEach(function(cell) {
-        cell["kpiName"] = KPIJson.kpiName
+        cell.kpiName = KPIJson.kpiName
         var pt_count = cell.properties.pt_count;
         if (method === "quantile") {
             if (pt_count != 0) {
@@ -339,20 +340,23 @@ var zone, ZoominMap = L.map('ZoominMap', {
     layers: [OpenStreetMap_BlackAndWhiteZoomin, OpenStreetMap_MapnikZoomin, Hydda_FullZoomin]
 });
 L.control.layers(baseMapsZoomin).addTo(ZoominMap);
-ZoominMap.dragging.disable();
-ZoominMap.touchZoom.disable();
-ZoominMap.doubleClickZoom.disable();
-ZoominMap.scrollWheelZoom.disable();
-ZoominMap.keyboard.disable();
-if (ZoominMap.tap) ZoominMap.tap.disable();
+// ZoominMap.dragging.disable();
+// ZoominMap.touchZoom.disable();
+// ZoominMap.doubleClickZoom.disable();
+// ZoominMap.scrollWheelZoom.disable();
+// ZoominMap.keyboard.disable();
+// if (ZoominMap.tap) ZoominMap.tap.disable();
 
 function FocusHexbin(hexbinSend) {
     if (hexbinGroupLayer != false) {
         hexbinGroupLayer.clearLayers();
         hexbinGroupLayer = false;
     }
-    // console.log(KPIJson);
+    hexbinSend.HDBoption = HDBoption;
+
+    // console.log(hexbinSend);
     var dataSend = JSON.stringify(hexbinSend);
+    // console.log(dataSend);
     var data = $.ajax({
         url: '/getHexbinContainHDBs',
         type: 'POST',
@@ -361,9 +365,11 @@ function FocusHexbin(hexbinSend) {
         async: false
     });
     dataJSON = data.responseJSON;
-    // console.log(dataJSON);
+    // console.log(data);
 
     var HDBPoints = dataJSON.HDBPoints;
+    HDBInsideHexbin = HDBPoints;
+    // console.log(HDBPoints);
     var hexbinPoint = dataJSON.hexbin;
     var Hexbinstyle = {
         weight: 2,
@@ -410,9 +416,6 @@ function changeHexBinAlgo(KPIJson) {
 
 function displayHDBPropotion(dataLayer) {
     createPropSymbols(dataLayer);
-
-
-
 }
 
 function createPropSymbols(dataLayer) {
@@ -444,12 +447,16 @@ function updatePropSymbols() {
 
     zone.eachLayer(function(layer) {
 
-        // console.log(layer);
+
         var props = layer.feature.properties,
             radius = calcPropRadius(props.pt_count),
             popupContent = "<b>POSTAL CODE: </b>" + props.POSTCODE + "</br><b>Accessible Facilities: </b>" + String(props.pt_count) + "<br>";
         // console.log(radius)
         layer.setRadius(radius);
+
+        // console.log(layer.feature.properties);
+
+
         // layer.on('click', function(e) {
         //     alert(e.latlng); // e is an event object (MouseEvent in this case)
         // });
@@ -478,9 +485,14 @@ function updatePropSymbols() {
     });
 } // end updatePropSymbols
 function calcPropRadius(attributeValue) {
-
-    var scaleFactor = 16, // value dependent upon particular data set
+    // console.log(attributeValue);
+    var scaleFactor = 16; // value dependent upon particular data set
+    if (attributeValue < 1) {
+        area = 5;
+    } else {
         area = attributeValue * scaleFactor;
+    }
+
     return Math.sqrt(area / Math.PI) * 2;
 
 } // end calcPropRadius
@@ -508,4 +520,202 @@ function changeHexbinWidth(KPIJson) {
         var hexbinWidth = $(this).val();
         KPIJson['hexbinWidth'] = hexbinWidth;
     })
+}
+
+// DISPLAY PLANNING zone
+var successful = true;
+
+function changeHDBDisplay(KPIJson) {
+    $('#displayHDBs').change(function() {
+        successful = !successful
+        var HDBchoice = $(this).val();
+        KPIJson['HDBchoice'] = HDBchoice;
+    })
+}
+
+
+//=============== Map Planning Section
+// attaching function on map click
+ZoominMap.on('click', onMapClick);
+
+// Script for adding marker on map click
+
+function onMapClick(e) {
+    $.each(ZoominMap._layers, function(ml) {
+        //console.log(map._layers)
+        if (ZoominMap._layers[ml].feature) {
+            var name = this.feature.properties.title;
+            if(name=== "ResourceTempAllocation"){
+                 ZoominMap.removeLayer(this);
+            }
+        }
+    })
+
+    // var deleteButton = "<input type='button' value='Delete This Marker' class='marker-delete-button'/>";
+    var addToLayerButton = "<input type='button' value='Add To Layer' class='marker-add-button'/>"
+
+    var geojsonFeature = {
+        "type": "Feature",
+        "properties": {"title": "ResourceTempAllocation"},
+        "geometry": {
+            "type": "Point",
+            "coordinates": [e.latlng.lat, e.latlng.lng]
+        }
+    }
+
+
+
+        var marker;
+        L.geoJson(geojsonFeature, {
+
+            pointToLayer: function(feature, latlng) {
+
+                marker = L.marker(e.latlng, {
+
+                    title: "Resource Location",
+                    alt: "Resource Location",
+                    riseOnHover: true,
+                    draggable: true,
+
+                }).bindPopup(addToLayerButton);
+
+                marker.on("popupopen", onPopupOpen);
+
+                return marker;
+            }
+        }).addTo(ZoominMap);
+  
+}
+
+// Function to handle delete as well as other events on marker popup open
+
+function onPopupOpen() {
+
+
+
+    //var tempMarkerGeoJSON = this.toGeoJSON();
+
+    //var lID = tempMarker._leaflet_id; // Getting Leaflet ID of this marker
+
+    // To remove marker on click of delete
+    // $(".marker-delete-button:visible").click(function() {
+    //     ZoominMap.removeLayer(tempMarker);
+    // });
+    $(".marker-add-button").click(function() {
+        var url = "getAllLayerColumnName";
+        var layerNameArray = getLayerComponent(url);
+        CreateDropdown(layerNameArray);
+        $('#modal-AddMarker').modal('show');
+    });
+}
+
+function getLayerComponent(url) {
+
+    var layerNameArray = $.ajax({
+        type: "GET",
+        url: url,
+        async: false
+    }).responseJSON;
+    return layerNameArray;
+}
+
+// Populate DropdownList base on layer uploaded
+function CreateDropdown(ObjectArray) {
+    $("#AddMarker").empty();
+    for (var i in ObjectArray) {
+        var tempname = ObjectArray[i].name;
+        var name = hideExtentions(tempname)
+        var dropdownList = "<li><a href='#'  data-value='" + name + "'>" + name + "</a></li>"
+        $("#AddMarker").append(dropdownList);
+    }
+
+}
+
+function hideExtentions(nameOfLayer) {
+    var name = nameOfLayer.split(".")[0];
+    return name;
+}
+
+var dropdownvalueChosen = "";
+$("#AddMarker").on("click", "li", "a", function() {
+    var value = $(this).text();
+    dropdownvalueChosen = value;
+    // console.log(value);
+    $(this).parents(".dropdown").find('.btn').html($(this).text() + ' <span class="caret"></span>');
+    $(this).parents(".dropdown").find('.btn').val($(this).data('value'));
+    var url = "getAllLayerColumnName";
+    MarkerFormCreation(url, value);
+});
+
+// Populate Form based on Layer Chosen
+function MarkerFormCreation(url, value) {
+    var attachRow = "";
+    $('#markerForm').empty();
+    var ObjectArray = getLayerComponent(url);
+    for (var i in ObjectArray) {
+        var tempname = ObjectArray[i].name;
+        var name = hideExtentions(tempname)
+        if (value === name) {
+            var columns = ObjectArray[i].columns;
+            for (var m in columns) {
+                var columnName = columns[m];
+                var id = columnName;
+                attachRow = '<div class="form-group row"><label class="col-sm-2 form-control-label">' + columnName + '</label><div class="col-sm-10"><input type="text" class="form-control" name= \"' + id + '\" id=' + '\"' + id + '\"' + '></div></div>';
+                $('#markerForm').append(attachRow);
+
+            }
+        }
+    }
+}
+
+$('#AddMarkerConfirm').click(function() {
+    var object = {};
+    var prop = {};
+    var dataString = $('#markerForm').serialize()
+    var stringSplit = dataString.split("&");
+    for (var i in stringSplit){
+        var stringGet = stringSplit[i].split("=");
+        var name = stringGet[0];
+        var properties = stringGet[1];
+        prop[name] = properties;
+    }
+    // var value = $('#AddMarker li a').text();
+    object['layer'] = dropdownvalueChosen;
+        $.each(ZoominMap._layers, function(ml) {
+        if (ZoominMap._layers[ml].feature) {
+            var name = this.feature.properties.title;
+            if(name=== "ResourceTempAllocation"){
+                this.feature.properties = prop;
+                var tempCoordinates = this.feature.geometry.coordinates;
+                var tempChange =tempCoordinates[0];
+                this.feature.geometry.coordinates[0] = tempCoordinates[1];
+                this.feature.geometry.coordinates[1] = tempChange;
+                object['marker'] = this.feature;
+
+            }
+        }
+    })
+        $.ajax({
+        type: "POST",
+        contentType: "application/JSON",
+        data: JSON.stringify(object),
+        url: "/addFeatureAndUpdateKPI",
+        success: function(req) {
+            console.log("sucess");
+            $('#modal-AddMarker').modal('hide');
+            updateKPI();
+
+        }
+    });
+})
+
+function updateKPI(){
+    $.get("/updateKPI",function(data){
+        if(data=="success"){
+            UpdateloadResultTableDataWithIndexes()
+            $body.removeClass("loading");
+             location.reload();
+        }
+    })
+     
 }

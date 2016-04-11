@@ -2,6 +2,9 @@ var express = require("express");
 var http = require("http");
 var app = express();
 var request = require('request');
+// var requestSync = require('urllib-sync').request;
+var requestSync = require('sync-request');
+
 var ogr2ogr = require('ogr2ogr');
 var fs = require("fs");
 var bodyParser = require('body-parser');
@@ -12,6 +15,8 @@ var _ = require('lodash');
 var path = require('path');
 var mapshaper = require('mapshaper');
 var globalurl = __dirname + '/app';
+// var requestSync = require('sync-request');
+
 const readline = require('readline');
 const rl = readline.createInterface({
     input: process.stdin,
@@ -110,11 +115,11 @@ app.post('/uploadlayer', function(req, res) {
         fs.writeFile(urlDestination, beautyJSON, function(err) {
             if (err) {
                 return console.log(err);
-            }else{
-                 res.send("success");
+            } else {
+                res.send("success");
             }
         });
-       
+
     })
 });
 
@@ -251,10 +256,15 @@ app.get('/getAllKPIs', function(req, res) {
     // console.log(existingKPIFiles);
     var KPIJsons = [];
     existingKPIFiles.forEach(function(kpiFile, index) {
-        var KPIUrl = folderDestination + kpiFile;
-        var KPIData = fs.readFileSync(KPIUrl);
-        var KPIJson = JSON.parse(KPIData);
-        KPIJsons.push(KPIJson);
+        if (kpiFile !== ".DS_Store") {
+            var KPIUrl = folderDestination + kpiFile;
+            console.log(KPIUrl);
+            var KPIData = fs.readFileSync(KPIUrl);
+            var KPIJson = JSON.parse(KPIData);
+            KPIJsons.push(KPIJson);
+
+        }
+
     })
     res.send(KPIJsons);
 })
@@ -263,30 +273,36 @@ app.post('/submitFilter', function(req, res) {
     objectReceived = setFilterTableData(req.body); //transform data to the preferred geojson format
     var url = globalurl + "/HDB/HDB.json";
     var HDB = JSON.parse(fs.readFileSync(url, "utf8"));
-    CalculateFacilities(HDB, objectReceived);
+    CalculateFacilities(HDB, objectReceived, "None");
     res.redirect("/");
 
 
 });
 
-function CalculateFacilities(HDB, objectReceived) {
-    // console.log(JSON.stringify(HDB));
+function CalculateFacilities(HDB, objectReceived, nameOfFile) {
+    console.log(objectReceived);
     var HDBArray = [];
-
     var HDBObject = {};
     for (var i = 0; i < objectReceived.length; i++) {
-
         var ORrequirementSend = objectReceived[i];
-        // console.log(ORrequirement);
-        var urlLayerRetrieved = globalurl + "/geojson/" + ORrequirementSend.parentLayer + ".geojson";
-        var layerRequest = JSON.parse(fs.readFileSync(urlLayerRetrieved));
 
+        // var TempReq = objectReceived[i];
+        // if (TempReq.hasOwnProperty('requirement_description')) {
+        //     ORrequirementSend = TempReq.requirement_description;
+        // } else {
+        //     ORrequirementSend = TempReq;
+        // }
+        var urlLayerRetrieved = globalurl + "/geojson/" + ORrequirementSend.parentLayer + ".geojson";
+        var layerRequest = fs.readFileSync(urlLayerRetrieved, { encoding: 'utf8' });
+        // var layerRequest;
+        // fs.readFile(urlLayerRetrieved, 'utf8', function(layerRequest) {
+        // console.log(layerRequest)
         for (var m = 0; m < HDB.length; m++) {
 
             var aHDB = HDB[m];
-            var requirementReturns = calculateBuffer(aHDB, layerRequest, ORrequirementSend);
+
+            var requirementReturns = calculateBuffer(aHDB, JSON.parse(layerRequest), ORrequirementSend);
             HDBObject = { "ORREquirement": [], "HDB_JSON": aHDB }
-                // HDBObject
             if (HDBArray[m] == null) {
                 HDBObject.ORREquirement.push(requirementReturns);
                 HDBArray[m] = HDBObject;
@@ -294,13 +310,14 @@ function CalculateFacilities(HDB, objectReceived) {
                 HDBArray[m].ORREquirement.push(requirementReturns);
             }
         }
-        // HDBArray.push(HDBObject);
 
     }
 
 
     var path = globalurl + "/ORResults/";
     var name = fs.readdirSync(path);
+
+
     // console.log(name);
     var rowCount = name.length;
     // console.log("first" + rowCount);
@@ -311,7 +328,6 @@ function CalculateFacilities(HDB, objectReceived) {
 
     }
 
-    // console.log("before" + rowCount);
     if (rowCount > 0) {
         var lastName = name[name.length - 1];
         // console.log(lastName);
@@ -320,10 +336,27 @@ function CalculateFacilities(HDB, objectReceived) {
         // console.log(lastChar);
         rowCount = parseInt(lastChar) + 1;
     }
-    // console.log("after" + rowCount);
+    var ANDREquirementNameFile;
+    var urlDestination;
+    var nameExist = false;
+    for (var m in name) {
+        var fileName = name[m];
+        if (nameOfFile === fileName) {
+            nameExist = true;
+        }
+    }
+    if (nameExist) {
+        console.log("define" + typeof nameofFile);
+        ANDREquirementNameFile = nameOfFile;
+        urlDestination = globalurl + "/ORResults/" + ANDREquirementNameFile;
 
-    var ANDREquirementNameFile = "ORresult" + rowCount;
-    var urlDestination = globalurl + "/ORResults/" + ANDREquirementNameFile + ".json";
+    } else {
+        console.log("undefine" + typeof nameofFile);
+        ANDREquirementNameFile = "ORresult" + rowCount;
+        urlDestination = globalurl + "/ORResults/" + ANDREquirementNameFile + ".json";
+    }
+
+    console.log(urlDestination);
     for (var i = 0; i < HDBArray.length; i++) {
 
         var oneHDB = HDBArray[i];
@@ -429,154 +462,6 @@ function calculateBuffer(aHDB, layerRequest, ORrequirement) {
 
 }
 
-function calculateBufferBackup(aHDB, ORrequirement, lengthOfRequirements, lengthofHDBfile) {
-    // var url = globalurl + "/HDB/HDB.json";
-    // fs.readFile(url, "utf8", function(err, data) {
-    //     var HDB = JSON.parse(data);
-    requirementArray = [];
-    HDBArray = [];
-    result = [];
-    TempHDBArray = [];
-    // for (var m = 0; m < HDB.length; m++) {
-    //     var aHDB = HDB[m];
-    var typeofGEOJSOB = aHDB.type;
-    if (typeofGEOJSOB === "Feature") {
-        var currentPoint = aHDB;
-    } else {
-        var currentPoint = {
-            "type": "Feature",
-            "properties": {},
-            "geometry": {}
-        };
-        currentPoint["properties"] = aHDB.properties;
-        currentPoint["geometry"]["coordinates"] = aHDB.coordinates;
-        currentPoint["geometry"]["type"] = aHDB.type;
-    }
-    var unit = "kilometers";
-    var distance = parseInt(ORrequirement.within_range);
-    var distanceTranslated = distance / 1000;
-    var HDBbuffered = turf.buffer(currentPoint, distanceTranslated, unit);
-    HDBbuffered.features[0].properties = {
-        "fill": "#6BC65F",
-        "stroke": "#25561F",
-        "stroke-width": 2
-    };
-    HDBbuffered.csr = { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::3414" } },
-        urlLayerRetrieved = globalurl + "/geojson/" + ORrequirement.parentLayer + ".geojson";
-    // var file = fs.readFile(urlLayerRetrieved, "utf8", function(err, dataLayer) {
-    // })
-    // console.log(file);
-    fs.readFile(urlLayerRetrieved, "utf8", function(err, dataLayer) {
-        var objectSend = { "buffer": null, "points": null };
-        // retrieved Layer Object
-        var layerRequest = JSON.parse(dataLayer);
-        //Filter necssary Layer
-        var filtered = {}
-        var key = ORrequirement.sublayer_column;
-        if (key != 'N/A') {
-            var value = ORrequirement.subLayer;
-            filtered = turf.filter(layerRequest, key, value);
-            // console.log(value);
-            // Check Buffer Point Within
-        } else {
-            filtered = layerRequest;
-        }
-        var ptsWithin = turf.within(filtered, HDBbuffered);
-        ptsWithin.csr = { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::3414" } },
-            HDBbuffered.features.push(currentPoint)
-        objectSend.buffer = HDBbuffered;
-        objectSend.points = ptsWithin;
-        var requirement = {};
-        requirement["requirement_description"] = ORrequirement;
-        requirement["requirement_points"] = ptsWithin;
-        var numberofPoints = ptsWithin.features.length;
-        var operator = ORrequirement.operator;
-        var operator_amt = ORrequirement.operator_amt;
-
-        if (operator === "≥") {
-            if (numberofPoints >= operator_amt) {
-                requirement["requirement_result"] = true;
-            } else {
-                requirement["requirement_result"] = false;
-            }
-        } else if (operator === "≤") {
-            if (numberofPoints <= operator_amt) {
-                requirement["requirement_result"] = true;
-            } else {
-                requirement["requirement_result"] = false;
-            }
-        } else {
-            if (numberofPoints === operator_amt) {
-                requirement["requirement_result"] = true;
-            } else {
-                requirement["requirement_result"] = false;
-            }
-        }
-        var hdbOBject = TempHDBArray[TempHDBArray.length - 1];
-        // var currentPoint["geometry"]["coordinates"]
-        TempHDBArray.push(currentPoint);
-        if (_.isEqual(hdbOBject, currentPoint)) {
-            // console.log(true);
-            // console.log(HDBArray);
-            var hdbOBject = _.find(HDBArray, function(HDB) {
-                // console.log(currentPoint);
-                return HDB.HDB_details === JSON.stringify(currentPoint);
-            });
-            // console.log(object);
-            hdbOBject["ORREquirement"].push(requirement);
-        } else {
-            // console.log(false);
-            var HDB = { "ORREquirement": [] };
-            HDB["HDB_details"] = JSON.stringify(currentPoint);
-            HDB["HDB_JSON"] = currentPoint;
-            HDB.ORREquirement.push(requirement);
-            HDBArray.push(HDB)
-        }
-        var breakPoint = lengthOfRequirements * lengthofHDBfile;
-        if (TempHDBArray.length === breakPoint) {
-            var path = globalurl + "/ORResults/";
-            var name = fs.readdirSync(path);
-            var rowCount = name.length;
-            // console.log(HDBArray);
-
-            var ANDREquirementNameFile = "ORresult" + rowCount;
-            var urlDestination = globalurl + "/ORResults/" + ANDREquirementNameFile + ".json";
-
-            for (var i = 0; i < HDBArray.length; i++) {
-
-                var oneHDB = HDBArray[i];
-                // console.log(oneHDB);
-                var ORREquirementArray = oneHDB.ORREquirement;
-                var evaluationArray = [];
-                for (var m = 0; m < ORREquirementArray.length; m++) {
-                    var evaluation = ORREquirementArray[m].requirement_result;
-                    evaluationArray.push(evaluation);
-                }
-
-                var totalEvaluation = _.uniq(evaluationArray);
-                // console.log(evaluationArray);
-
-                if (totalEvaluation.length > 1) {
-                    HDBArray[i]["totalRequirement"] = true;
-                } else {
-                    if (totalEvaluation[0] === true) {
-                        HDBArray[i]["totalRequirement"] = true;
-                    } else {
-                        HDBArray[i]["totalRequirement"] = false;
-                    }
-                }
-
-            }
-            fs.writeFile(urlDestination, JSON.stringify(HDBArray), function(err) {
-                if (err) {
-                    return console.log(err);
-                }
-            });
-        }
-    });
-    // }
-    // })
-}
 // ===================================Recieve Filter and Process HDB=================================
 // var dir =  __dirname + '/app' + '/geojson' ;
 // var source = JSON.parse(require(dir + '/SingaporePools1.geojson'));
@@ -614,6 +499,9 @@ app.post('/findHDBPolygon', function(req, res) {
         }
         var urlString = "http://www.onemap.sg/APIV2/services.svc/basicSearchV2?token=qo/s2TnSUmfLz+32CvLC4RMVkzEFYjxqyti1KhByvEacEdMWBpCuSSQ+IFRT84QjGPBCuz/cBom8PfSm3GjEsGc8PkdEEOEr&searchVal=" + postcode + "&otptFlds=SEARCHVAL,CATEGORY&returnGeom=1&rset=1&projSys=WGS84";
         leafletFeatures = [];
+        var res = requestSync(urlString);
+        // console.log(res);
+
         request(urlString, function(error, response, geocodedData) {
             if (!error && response.statusCode == 200) {
                 var geocodedDataJson = JSON.parse(geocodedData);
@@ -664,32 +552,67 @@ app.post('/findHDBPolygon', function(req, res) {
                 }
             }
         });
-        res.redirect("/");
+
     })
     // ======================
 app.post('/findPostalCode', function(req, res) {
     var objectReceivedArray = req.body;
+    var searchResults = {};
+    var HDBreturn = {};
+    var InvalidHDBsArray = [];
+    var leafletFeatures = [];
+    var leafletFeature = new Object(); //single leaflet object
+    leafletFeature["type"] = "Feature";
 
-    // console.log(JSON.stringify(objectReceived));
-    // console.log(objectReceivedArray.length);
-    // console.log(objectReceivedArray.length);
 
+    var HDBValid = [];
     for (var m = 0; m < objectReceivedArray.length; m++) {
         var objectReceived = objectReceivedArray[m];
-        geoHDBPoint(objectReceived, objectReceivedArray.length);
+        var geoObj = {};
+        var postcode = String(objectReceived.POSTCODE);
+        if (postcode.length < 6) {
+            postcode = "0" + postcode;
+        }
+        var urlString = "http://www.onemap.sg/APIV2/services.svc/basicSearchV2?token=qo/s2TnSUmfLz+32CvLC4RMVkzEFYjxqyti1KhByvEacEdMWBpCuSSQ+IFRT84QjGPBCuz/cBom8PfSm3GjEsGc8PkdEEOEr&searchVal=" + postcode + "&otptFlds=SEARCHVAL,CATEGORY&returnGeom=1&rset=1&projSys=WGS84";
+        var response = requestSync('GET', urlString);
+        var geocodedData = response.getBody('utf8');
+        var geocodedDataJson = JSON.parse(geocodedData);
+        searchResults = geocodedDataJson["SearchResults"];
+        if (searchResults[0].hasOwnProperty("ErrorMessage")) {
+            InvalidHDBsArray.push(objectReceived);
+        } else {
+            HDBValid.push(objectReceived);
+        }
     }
 
 
-    // res.redirect("/");
+    HDBreturn["InvalidHDBsArray"] = InvalidHDBsArray;
+    HDBreturn["HDB"] = HDBValid;
+    res.send(HDBreturn);
+})
+
+app.post('/writeHDBs', function(req, res) {
+    var objectReceivedArray = req.body;
+    // console.log(objectReceivedArray);
+    var InvalidHDBsArray = [];
+    geoHDBPoint(objectReceivedArray)
 
 
 })
 
-function geoHDBPoint(objectReceived, lengthOfRequest) {
+function geoHDBPoint(objectReceivedArray) {
+    leafletFeatures = [];
+    for (var m = 0; m < objectReceivedArray.length; m++) {
+        var objectReceived = objectReceivedArray[m];
+        lengthOfRequest = objectReceivedArray.length;
+        HDBeachGeoCoding(objectReceived, objectReceivedArray.length)
+    }
 
-    // console.log(JSON.stringify(objectReceived));
-    // var lengthOfRequest = objectReceived.length;
+}
 
+function HDBeachGeoCoding(objectReceived, length) {
+
+    var lengthOfRequest = objectReceived;
     var postcode = String(objectReceived.POSTCODE);
 
     // console.log("id " + postcode);
@@ -697,7 +620,7 @@ function geoHDBPoint(objectReceived, lengthOfRequest) {
         postcode = "0" + postcode;
     }
     var urlString = "http://www.onemap.sg/APIV2/services.svc/basicSearchV2?token=qo/s2TnSUmfLz+32CvLC4RMVkzEFYjxqyti1KhByvEacEdMWBpCuSSQ+IFRT84QjGPBCuz/cBom8PfSm3GjEsGc8PkdEEOEr&searchVal=" + postcode + "&otptFlds=SEARCHVAL,CATEGORY&returnGeom=1&rset=1&projSys=WGS84";
-    leafletFeatures = [];
+
     request(urlString, function(error, response, geocodedData) {
         if (!error && response.statusCode == 200) {
             var geocodedDataJson = JSON.parse(geocodedData);
@@ -717,10 +640,14 @@ function geoHDBPoint(objectReceived, lengthOfRequest) {
                     geoObj["coordinates"].push(parseFloat(longitude)); //long
                     geoObj["coordinates"].push(parseFloat(latitude)); //lat
                     leafletFeature["geometry"] = geoObj;
+
                     leafletFeatures.push(leafletFeature);
                     var lengthOfHDB = leafletFeatures.length;
-
-                    if (lengthOfHDB === lengthOfRequest) {
+                    // console.log(JSON.stringify(leafletFeatures));
+                    // var breakPoint = m+1;
+                    // console.log(lengthOfHDB);
+                    if (length === lengthOfHDB) {
+                        // console.log(JSON.stringify(leafletFeatures));
                         var urlDestination = globalurl + "/HDB/HDB.json";
                         fs.writeFile(urlDestination, JSON.stringify(leafletFeatures), function(err) {
                             if (err) {
@@ -731,9 +658,16 @@ function geoHDBPoint(objectReceived, lengthOfRequest) {
                     }
                 }
             }
+
+
+
+
         }
     });
 }
+
+
+
 //     // convert shapefile to geojson
 // function convert(file, name) {
 //     var shapefile = ogr2ogr(file)
@@ -914,70 +848,42 @@ app.get("/getNumberofHDB", function(req, res) {
 });
 
 
-// var planingArea = fs.readFile(urlPlaningAreas, "utf8", function(err, PlaningArea) {
-// var testPark = {"type":"FeatureCollection","crs":{"type":"name","properties":{"name":"urn:ogc:def:crs:EPSG::3414"}},"features":[{"type":"Feature","properties":{"Feb-16":"Jurong West Park","x-coordinates":"12492.80991","y-coordinates":"36410.64494"},"geometry":{"type":"Point","coordinates":[103.69397709273666,1.3455554561200045]}},{"type":"Feature","properties":{"Feb-16":"Chinese Garden Park","x-coordinates":"16600.20708","y-coordinates":"35684.29778"},"geometry":{"type":"Point","coordinates":[103.73088476827687,1.3389884814852058]}},{"type":"Feature","properties":{"Feb-16":"Yunnan Park","x-coordinates":"12349.96762","y-coordinates":"35512.79393"},"geometry":{"type":"Point","coordinates":[103.69269403453349,1.3374355608317607]}},{"type":"Feature","properties":{"Feb-16":"Jalan Bahar Mini Park","x-coordinates":"13709.2759","y-coordinates":"36934.22045"},"geometry":{"type":"Point","coordinates":[103.70490750844554,1.3502910786217523]}},{"type":"Feature","properties":{"Feb-16":"Taman Jurong Greens","x-coordinates":"15230.37874","y-coordinates":"35463.38927"},"geometry":{"type":"Point","coordinates":[103.71857616752038,1.336990118610859]}},{"type":"Feature","properties":{"Feb-16":"Firefly Park @ Clementi","x-coordinates":"20390.13986","y-coordinates":"33604.19211"},"geometry":{"type":"Point","coordinates":[103.76494002958339,1.32017794999254]}},{"type":"Feature","properties":{"Feb-16":"Clementi Woods Park","x-coordinates":"20711.35687","y-coordinates":"31395.50302"},"geometry":{"type":"Point","coordinates":[103.76782684893212,1.3002034362358188]}},{"type":"Feature","properties":{"Feb-16":"West Coast Park","x-coordinates":"20135.3512","y-coordinates":"31100.7682"},"geometry":{"type":"Point","coordinates":[103.76265125603057,1.297537819801672]}},{"type":"Feature","properties":{"Feb-16":"Our Park @ 618 Ang Mo Kio","x-coordinates":"28469.4804","y-coordinates":"39998.12307"},"geometry":{"type":"Point","coordinates":[103.8375372048229,1.3780033308888866]}},{"type":"Feature","properties":{"Feb-16":"Bishan Ang Mo Kio Park","x-coordinates":"29338.79883","y-coordinates":"38343.43232"},"geometry":{"type":"Point","coordinates":[103.84534859447591,1.3630388723407072]}},{"type":"Feature","properties":{"Feb-16":"Leban Park","x-coordinates":"27570.99088","y-coordinates":"39374.08927"},"geometry":{"type":"Point","coordinates":[103.82946362594411,1.3723597928977918]}},{"type":"Feature","properties":{"Feb-16":"Ang Mo Kio Town Garden West","x-coordinates":"29249.40681","y-coordinates":"39644.01981"},"geometry":{"type":"Point","coordinates":[103.84454540118476,1.374800924884806]}},{"type":"Feature","properties":{"Feb-16":"Tavistock Avenue Park","x-coordinates":"31562.97794","y-coordinates":"39116.88644"},"geometry":{"type":"Point","coordinates":[103.86533444362597,1.3700335304858187]}},{"type":"Feature","properties":{"Feb-16":"Jalan Pintau Playground Park","x-coordinates":"28742.4759","y-coordinates":"37328.49211"},"geometry":{"type":"Point","coordinates":[103.83999020336404,1.3538601356390618]}},{"type":"Feature","properties":{"Feb-16":"Teck Ghee N4 Park","x-coordinates":"30921.19938","y-coordinates":"38915.87221"},"geometry":{"type":"Point","coordinates":[103.85956759219768,1.3682157002814592]}},{"type":"Feature","properties":{"Feb-16":"Yishun Neighbourhood Park","x-coordinates":"28269.94532","y-coordinates":"46572.34879"},"geometry":{"type":"Point","coordinates":[103.83574429670982,1.4374582637230267]}},{"type":"Feature","properties":{"Feb-16":"Lower Seletar Reservoir Park","x-coordinates":"27876.08157","y-coordinates":"43508.46762"},"geometry":{"type":"Point","coordinates":[103.83220506557852,1.4097496303561263]}},{"type":"Feature","properties":{"Feb-16":"Sembawang Park","x-coordinates":"28351.81","y-coordinates":"49195.37"},"geometry":{"type":"Point","coordinates":[103.83647996233445,1.4611799135987107]}},{"type":"Feature","properties":{"Feb-16":"Yishun Park","x-coordinates":"28965.87962","y-coordinates":"45064.86637"},"geometry":{"type":"Point","coordinates":[103.84199788454895,1.4238251230770615]}},{"type":"Feature","properties":{"Feb-16":"Bukit Purmei Hillock Park","x-coordinates":"26967.65323","y-coordinates":"28494.23521"},"geometry":{"type":"Point","coordinates":[103.82404257304594,1.2739662270030678]}},{"type":"Feature","properties":{"Feb-16":"Telok Blangah Hill Park","x-coordinates":"25674.64021","y-coordinates":"29046.56685"},"geometry":{"type":"Point","coordinates":[103.81242434691549,1.2789612520244928]}},{"type":"Feature","properties":{"Feb-16":"Tiong Bahru Park","x-coordinates":"27037.61275","y-coordinates":"30003.87671"},"geometry":{"type":"Point","coordinates":[103.82467113860378,1.287618897492641]}},{"type":"Feature","properties":{"Feb-16":"Green Oval Park @ Pasir Ris","x-coordinates":"39581.75104","y-coordinates":"40372.42548"},"geometry":{"type":"Point","coordinates":[103.93738920419504,1.381386099103072]}},{"type":"Feature","properties":{"Feb-16":"Pasir Ris Park","x-coordinates":"40694.13589","y-coordinates":"40489.16977"},"geometry":{"type":"Point","coordinates":[103.94738484498052,1.3824414289557245]}},{"type":"Feature","properties":{"Feb-16":"Aljunied Park","x-coordinates":"33269.75179","y-coordinates":"34611.78927"},"geometry":{"type":"Point","coordinates":[103.88067021738051,1.3292907922421822]}},{"type":"Feature","properties":{"Feb-16":"East Coast Park ","x-coordinates":"36032.98191","y-coordinates":"31254.53902"},"geometry":{"type":"Point","coordinates":[103.90549848801714,1.2989284257493996]}},{"type":"Feature","properties":{"Feb-16":"Telok Kurau Park","x-coordinates":"37011.95141","y-coordinates":"33053.63927"},"geometry":{"type":"Point","coordinates":[103.9142954790845,1.3151985697204247]}},{"type":"Feature","properties":{"Feb-16":"Compassvale Ancilla Park","x-coordinates":"34580.85564","y-coordinates":"40687.54211"},"geometry":{"type":"Point","coordinates":[103.8924525416005,1.38423745206866]}},{"type":"Feature","properties":{"Feb-16":"Sengkang Riverside Park","x-coordinates":"34065.61718","y-coordinates":"42377.87737"},"geometry":{"type":"Point","coordinates":[103.88782308687469,1.3995243422853743]}},{"type":"Feature","properties":{"Feb-16":"Serangoon Community Park","x-coordinates":"32314.8504","y-coordinates":"37594.01762"},"geometry":{"type":"Point","coordinates":[103.8720903257826,1.3562611507526174]}},{"type":"Feature","properties":{"Feb-16":"Surin Avenue Neighbourhood Park ","x-coordinates":"33652.20141","y-coordinates":"37489.67045"},"geometry":{"type":"Point","coordinates":[103.88410727496378,1.3553172488144036]}},{"type":"Feature","properties":{"Feb-16":"Tai Keng Gardens Playground Park","x-coordinates":"33764.63804","y-coordinates":"36509.58521"},"geometry":{"type":"Point","coordinates":[103.88511740309649,1.3464536886420813]}},{"type":"Feature","properties":{"Feb-16":"Kampong Park @ Serangoon","x-coordinates":"31858.82692","y-coordinates":"37162.58644"},"geometry":{"type":"Point","coordinates":[103.8679926023026,1.3523595039900236]}},{"type":"Feature","properties":{"Feb-16":"Serangoon Sunshine Park","x-coordinates":"32465.00708","y-coordinates":"36579.08644"},"geometry":{"type":"Point","coordinates":[103.8734394307473,1.3470824543776054]}},{"type":"Feature","properties":{"Feb-16":"Mandai Tekong Park","x-coordinates":"23606.12874","y-coordinates":"46293.58644"},"geometry":{"type":"Point","coordinates":[103.79383546563612,1.4349368961854605]}},{"type":"Feature","properties":{"Feb-16":"Circle Green Park","x-coordinates":"24052.08441","y-coordinates":"47213.23644"},"geometry":{"type":"Point","coordinates":[103.79784267242503,1.443253941889533]}},{"type":"Feature","properties":{"Feb-16":"Woodlands Crescent Park","x-coordinates":"24732.64264","y-coordinates":"47391.4859"},"geometry":{"type":"Point","coordinates":[103.8039581364304,1.4448660528548893]}},{"type":"Feature","properties":{"Feb-16":"Woodlands Waterfront Park","x-coordinates":"22131.37628","y-coordinates":"48272.27954"},"geometry":{"type":"Point","coordinates":[103.78058300279623,1.452831202035946]}},{"type":"Feature","properties":{"Feb-16":"Bukit Batok Nature Park","x-coordinates":"20320.29246","y-coordinates":"36881.02527"},"geometry":{"type":"Point","coordinates":[103.76431158830921,1.3498124282754906]}},{"type":"Feature","properties":{"Feb-16":"Beauty Garden Park","x-coordinates":"18579.20649","y-coordinates":"38233.18398"},"geometry":{"type":"Point","coordinates":[103.74866642403869,1.3620403592663366]}},{"type":"Feature","properties":{"Feb-16":"Punggol Park","x-coordinates":"35181.52336","y-coordinates":"39707.6287"},"geometry":{"type":"Point","coordinates":[103.89784975420181,1.3753753299581015]}},{"type":"Feature","properties":{"Feb-16":"Holland Village Park","x-coordinates":"23820.27311","y-coordinates":"32623.63817"},"geometry":{"type":"Point","coordinates":[103.79576168646363,1.3113108292240072]}},{"type":"Feature","properties":{"Feb-16":"Jalan Pari Burong Playground Park","x-coordinates":"40671.62387","y-coordinates":"35138.28237"},"geometry":{"type":"Point","coordinates":[103.94718029336944,1.334050015556146]}},{"type":"Feature","properties":{"Feb-16":"Tampines Tree Park","x-coordinates":"41946.30628","y-coordinates":"37066.93296"},"geometry":{"type":"Point","coordinates":[103.95863490703655,1.3514914445366264]}},{"type":"Feature","properties":{"Feb-16":"Tampines Central Park","x-coordinates":"39554.49858","y-coordinates":"37347.13521"},"geometry":{"type":"Point","coordinates":[103.93714314527725,1.354026509822595]}},{"type":"Feature","properties":{"Feb-16":"Bedok Resevoir Park","x-coordinates":"39176.53947","y-coordinates":"35697.54847"},"geometry":{"type":"Point","coordinates":[103.93374633382489,1.3391084005897191]}},{"type":"Feature","properties":{"Feb-16":"Sun Plaza Park (Tampines)","x-coordinates":"40291.96","y-coordinates":"37902.64"},"geometry":{"type":"Point","coordinates":[103.94376992797422,1.3590499932684552]}},{"type":"Feature","properties":{"Feb-16":"Bougainvillea Park","x-coordinates":"25134.28259","y-coordinates":"34310.73644"},"geometry":{"type":"Point","coordinates":[103.80756854714663,1.3265684986077761]}},{"type":"Feature","properties":{"Feb-16":"Choa Chu Kang Park","x-coordinates":"18415.16807","y-coordinates":"41074.62598"},"geometry":{"type":"Point","coordinates":[103.74719150875676,1.3877372630616642]}},{"type":"Feature","properties":{"Feb-16":"Toa Payoh Town Park","x-coordinates":"29643.00072","y-coordinates":"34731.64644"},"geometry":{"type":"Point","coordinates":[103.84808185840946,1.3303751502512366]}}]}
-// var PlaningAreaJSON = JSON.parse(PlaningArea);
-// var ptsWithin = turf.within(HDBpolygons, PlaningAreaJSON);
-// var resultFeatures = PlaningAreaJSON.features.concat(HDBpolygons.features);
-// var result = {
-//     "type": "FeatureCollection",
-//     "features": resultFeatures
-// };
-// // console.log(JSON.stringify(result));
-// urlDestination = globalurl + "/PlanningArea/Result.geojson"
-// fs.writeFile(urlDestination, JSON.stringify(result), function(err) {
-//     if (err) {
-//         return console.log(err);
-
-//     }
-// });
-
-// console.log(JSON.stringify(withins));
-// var aggregated = turf.sum(PlaningAreaJSON, HDBpolygons, 'DwellingUnits', 'sum');
-// var resultFeatures = HDBpolygons.features.concat(
-//     aggregated.features);
-// var result = {
-//     "type": "FeatureCollection",
-//     "features": resultFeatures
-// };
-// urlDestination = globalurl + "/PlanningArea/Result.geojson"
-
-// fs.writeFile(urlDestination, JSON.stringify(result), function(err) {
-//     if (err) {
-//         return console.log(err);
-
-//     }
-// });
-
-// })
-
 app.post("/getHexbinVisualGeojson", function(req, res) {
-    // var kpiName = req.params.name + ".geojson";
-    // var url = globalurl + "/FinalResult/" + kpiName;
-    // url = url.replace("\\", "/");
-    // console.log(req.body);
-
     var dataJSON = req.body;
     var cellWidth;
     var hexbinWidth = dataJSON.hexbinWidth;
-    // console.log(hexbinWidth);
-    if( typeof hexbinWidth === "undefined"){
+    console.log(hexbinWidth);
+    // console.log(JSON.stringify(dataJSON));
+    var HDBchoice = dataJSON.HDBchoice;
+    var successfulHDBs;
+
+    if (typeof hexbinWidth === "undefined") {
         cellWidth = 2
-    }else{
+    } else {
         cellWidth = hexbinWidth;
     }
+
+    if (typeof HDBchoice === "undefined" || HDBchoice === "Successful") {
+        // console.log(JSON.stringify("successful"));
+        successfulHDBs = dataJSON.reqFinal.success_HDB_JSONs;
+    } else {
+        // console.log(JSON.stringify("fail"));
+        successfulHDBs = dataJSON.andTable[0].failed_HDB_JSONs;
+
+    }
+
     // console.log(dataJSON);
-    var successfulHDBs = dataJSON.reqFinal.success_HDB_JSONs;
     var HDBpoints = {
         "type": "FeatureCollection",
         "features": []
     };
     for (var m = 0; m < successfulHDBs.length; m++) {
         HDBpoints.features.push(successfulHDBs[m]);
+        // console.log()
     }
     // console.log(HDBpoints);
     var bbox = [103.597500, 1.201023, 104.067218, 1.490837]
-    
+
     var units = 'kilometers';
     var url = globalurl + "/PlanningArea/SGCoastLine.geojson";
     var SingaporeZone = JSON.parse(fs.readFileSync(url, "utf8"));
@@ -999,142 +905,98 @@ app.post("/getHexbinVisualGeojson", function(req, res) {
 
 app.post("/getHexbinContainHDBs", function(req, res) {
     var HexbinReceivedJSON = req.body;
+    // console.log(JSON.stringify(HexbinReceivedJSON));
     var searchWithin = {
         "type": "FeatureCollection",
         "features": []
     };
     searchWithin.features.push(HexbinReceivedJSON);
-    // var HexbinReceivedJSON = JSON.parse(HexbinReceived);
+
     var nameHDB = HexbinReceivedJSON.kpiName;
-    // console.log(nameHDB)
     var url = globalurl + "/FinalResult/" + nameHDB + ".geojson";
-    fs.readFile(url, "utf8", function(err, data) {
-        // console.log(data)
-        var dataJSON = JSON.parse(data);
-        var requirementDirectory = dataJSON.reqData;
-        var requirements = [];
-        for (var i = 0; i < requirementDirectory.length; i++) {
-            var url = requirementDirectory[i].directory;
-            var afile = JSON.parse(fs.readFileSync(url, "utf8"));
-            // console.log(afile);
-            var requirementOR = afile[0].ORREquirement;
-            for (var n = 0; n < requirementOR.length; n++) {
-                requirements.push(requirementOR[n].requirement_description);
-            }
+    var data = fs.readFileSync(url, "utf8");
+    // console.log(data)
+    var dataJSON = JSON.parse(data);
+    var requirementDirectory = dataJSON.reqData;
+    var requirements = [];
+    for (var i = 0; i < requirementDirectory.length; i++) {
+        var url = requirementDirectory[i].directory;
+        var afile = JSON.parse(fs.readFileSync(url, "utf8"));
+        // console.log(afile);
+        var requirementOR = afile[0].ORREquirement;
+        for (var n = 0; n < requirementOR.length; n++) {
+            requirements.push(requirementOR[n].requirement_description);
         }
-        // console.log(requirements);
-        //         // console.log(dataJSON)
-        var successfulHDBs = dataJSON.reqFinal.success_HDB_JSONs;
-        // console.log(resultBuffer);
-        var HDBpoints = {
-            "type": "FeatureCollection",
-            "features": []
-        };
-        for (var m = 0; m < successfulHDBs.length; m++) {
-            HDBpoints.features.push(successfulHDBs[m]);
-        }
-        var ptsWithin = turf.within(HDBpoints, searchWithin);
-        var HDBFeatures = [];
-        for (var point in ptsWithin.features) {
-            HDBFeatures.push(ptsWithin.features[point]);
-        }
-        // console.log(HDBFeatures);
-        var resultBuffer = CalculateFacilitiesHexbin(HDBFeatures, requirements);
-        // console.log(resultBuffer);
-        // HDB = ptsWithin;
-        // CalculateFacilities()
-        // var resultHDB = searchWithin.features.concat(ptsWithin.features);
-        // console.log(JSON.stringify(resultBuffer))
-        var result = {
-            "hexbin": searchWithin,
-            "HDBPoints": resultBuffer
-        };
+    }
+    // console.log(requirements);
+    //         // console.log(dataJSON)
+    var HDBchoice = HexbinReceivedJSON.HDBoption;
+    if (typeof HDBchoice === "undefined" || HDBchoice === "Successful") {
+        // console.log(JSON.stringify("successful"));
+        successfulHDBs = dataJSON.reqFinal.success_HDB_JSONs;
+    } else {
+        // console.log(JSON.stringify("fail"));
+        successfulHDBs = dataJSON.andTable[0].failed_HDB_JSONs;
 
-        res.send(result);
+    }
+    // var successfulHDBs = dataJSON.reqFinal.success_HDB_JSONs;
+    // console.log(resultBuffer);
+    var HDBpoints = {
+        "type": "FeatureCollection",
+        "features": []
+    };
+    for (var m = 0; m < successfulHDBs.length; m++) {
+        HDBpoints.features.push(successfulHDBs[m]);
+    }
+    var ptsWithin = turf.within(HDBpoints, searchWithin);
+    var HDBFeatures = [];
+    for (var point in ptsWithin.features) {
+        HDBFeatures.push(ptsWithin.features[point]);
+    }
+    // console.log(HDBFeatures);
+    var resultBuffer = CalculateFacilitiesHexbin(HDBFeatures, requirements);
+    // console.log(resultBuffer);
+    // HDB = ptsWithin;
+    // CalculateFacilities()
+    // var resultHDB = searchWithin.features.concat(ptsWithin.features);
+    // console.log(JSON.stringify(resultBuffer))
+    var result = {
+        "hexbin": searchWithin,
+        "HDBPoints": resultBuffer
+    };
 
-    });
+    res.send(result);
+
+
 })
 
 function CalculateFacilitiesHexbin(HDB, objectReceived) {
-    // console.log(JSON.stringify(HDB));
-
     var HDBArray = [];
-     var HDBpoints = {
-            "type": "FeatureCollection",
-            "features": []
-        };
+    var HDBpoints = {
+        "type": "FeatureCollection",
+        "features": []
+    };
     var HDBObject = {};
     for (var m = 0; m < HDB.length; m++) {
-         var aHDB = HDB[m];
-         var count = 0;
+        var facilities = [];
+        var aHDB = HDB[m];
+        var count = 0;
         for (var i = 0; i < objectReceived.length; i++) {
-
             var ORrequirementSend = objectReceived[i];
             // console.log(ORrequirement);
             var urlLayerRetrieved = globalurl + "/geojson/" + ORrequirementSend.parentLayer + ".geojson";
             var layerRequest = JSON.parse(fs.readFileSync(urlLayerRetrieved));
-            var numbercount = calculateBufferHexbin(aHDB, layerRequest, ORrequirementSend);
-            // console.log("index: " + m + " :" + numbercount);
+            var ptsWithin = calculateBufferHexbin(aHDB, layerRequest, ORrequirementSend);
+            facilities.push(ptsWithin)
+            var numbercount = ptsWithin.features.length;
             count += numbercount;
         }
-        aHDB.properties["pt_count"] =count;
+        aHDB.properties["pt_count"] = count;
+        aHDB.properties["facilities"] = facilities;
+        aHDB.properties["requirements"] = objectReceived;
         HDBpoints.features.push(aHDB);
-        // HDBArray.push(HDBObject);
 
     }
-
-
-    // var path = globalurl + "/ORResults/";
-    // var name = fs.readdirSync(path);
-    // // console.log(name);
-    // var rowCount = name.length;
-    // // console.log("first" + rowCount);
-    // for (var i = 0; i < name.length; i++) {
-    //     if (name[i] === ".DS_Store") {
-    //         rowCount = rowCount - 1;
-    //     }
-
-    // }
-
-    // // console.log("before" + rowCount);
-    // if (rowCount > 0) {
-    //     var lastName = name[name.length - 1];
-    //     // console.log(lastName);
-    //     var LastNameExceptJSONextension = lastName.split(".")[0];
-    //     var lastChar = LastNameExceptJSONextension.substr(LastNameExceptJSONextension.length - 1);
-    //     // console.log(lastChar);
-    //     rowCount = parseInt(lastChar) + 1;
-    // }
-    // // console.log("after" + rowCount);
-
-    // var ANDREquirementNameFile = "ORresult" + rowCount;
-    // var urlDestination = globalurl + "/ORResults/" + ANDREquirementNameFile + ".json";
-    // for (var i = 0; i < HDBArray.length; i++) {
-
-    //     var oneHDB = HDBArray[i];
-    //     // console.log(oneHDB);
-    //     var ORREquirementArray = oneHDB.ORREquirement;
-    //     var evaluationArray = [];
-    //     for (var m = 0; m < ORREquirementArray.length; m++) {
-    //         var evaluation = ORREquirementArray[m].requirement_result;
-    //         evaluationArray.push(evaluation);
-    //     }
-
-    //     var totalEvaluation = _.uniq(evaluationArray);
-    //     // console.log(evaluationArray);
-
-    //     if (totalEvaluation.length > 1) {
-    //         HDBArray[i]["totalRequirement"] = true;
-    //     } else {
-    //         if (totalEvaluation[0] === true) {
-    //             HDBArray[i]["totalRequirement"] = true;
-    //         } else {
-    //             HDBArray[i]["totalRequirement"] = false;
-    //         }
-    //     }
-
-    // }
-
     return HDBpoints;
 
 }
@@ -1174,18 +1036,16 @@ function calculateBufferHexbin(aHDB, layerRequest, ORrequirement) {
     } else {
         filtered = layerRequest;
     }
-    // var ptsWithin = turf.within(filtered, HDBbuffered);
-    var counted = turf.count(HDBbuffered, filtered, 'pt_count');
-    // ptsWithin.csr = { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::3414" } },
-    var countNumber = counted.features[0].properties.pt_count;
-    return countNumber;
+    // var counted = turf.count(HDBbuffered, filtered, 'pt_count');
+    var ptsWithin = turf.within(filtered, HDBbuffered);
+    // var countNumber = counted.features[0].properties.pt_count;
+    // console.log(ptsWithin);
+    // var countNumber = ptsWithin.features.length
+    return ptsWithin;
 
 }
 
-// app.post('/getHexbinContainHDBs', function(req, res) {
-//     var HDB = req.body;
-//     //ken modify from here
-// })
+
 
 app.post('/getBulletChartJson', function(req, res) {
     var bulletChartJson = req.body;
@@ -1196,24 +1056,24 @@ app.post('/getBulletChartJson', function(req, res) {
     var urlDestination = folderDestination + nameOfFinalResult;
     var kpiJson = fs.readFileSync(urlDestination);
     kpiJson = (JSON.parse(kpiJson));
-    if(bulletChartJson.andTableIndex != -2){ //modifying andtable in the kpijson
+    if (bulletChartJson.andTableIndex != -2) { //modifying andtable in the kpijson
         kpiJson.andTable[bulletChartJson.andTableIndex].targetKPI = bulletChartJson.targetKpi;
-    }else{
+    } else {
         kpiJson.targetKPI = bulletChartJson.targetKpi;
     }
-    
-    fs.writeFile(urlDestination, JSON.stringify(kpiJson), function(err) {        
+
+    fs.writeFile(urlDestination, JSON.stringify(kpiJson), function(err) {
         if (err) {
             res.send('write targetKPI error: ' + err);
             // return console.log(err);
-        }else{
+        } else {
             res.send('write targetKPI successful');
         }
     });
-    
+
 });
 
-app.get('/getCurrentKPI/:kpiName',function(req,res){
+app.get('/getCurrentKPI/:kpiName', function(req, res) {
     var nameOfFinalResult = req.params.kpiName + ".geojson";
     var folderDestination = globalurl + "/FinalResult/";
     folderDestination = folderDestination.replace('\\', '/');
@@ -1221,6 +1081,79 @@ app.get('/getCurrentKPI/:kpiName',function(req,res){
     var kpiJson = fs.readFileSync(urlDestination);
     kpiJson = JSON.parse(kpiJson);
     res.send(kpiJson);
+})
+
+app.post('/addFeatureAndUpdateKPI', function(req, res) {
+    var markerDetails = req.body;
+    var layerName = markerDetails.layer;
+    var facility = markerDetails.marker;
+    var layerURL = globalurl + "/geojson/" + layerName + ".geojson";
+    var layerFile = JSON.parse(fs.readFileSync(layerURL));
+    layerFile.features.push(facility);
+    fs.writeFile(layerURL, JSON.stringify(layerFile), function(err) {
+        if (err) {
+            return console.log(err);
+        }
+    });
+    res.send("success")
+
+})
+app.get('/updateKPI', function(req, res) {
+    updateKPI();
+    res.send("success")
+})
+
+function updateKPI() {
+    var ORurlDir = globalurl + "/ORResults/";
+    var url = globalurl + "/HDB/HDB.json";
+    var HDB = JSON.parse(fs.readFileSync(url, "utf8"));
+    var ORfiles = fs.readdirSync(ORurlDir);
+    for (var m in ORfiles) {
+        var aORfile = ORfiles[m];
+        console.log(aORfile);
+        var ORfilePath = ORurlDir + aORfile;
+        var ORcontent = fs.readFileSync(ORfilePath);
+        JSONreturn = JSON.parse(ORcontent);
+        // console.log(JSON.stringify(aORfile));
+        var ORdescriptionArray = JSONreturn[0].ORREquirement;
+        var ORdescriptionArraySend = [];
+        for (var n in ORdescriptionArray) {
+            var requirementments = ORdescriptionArray[n].requirement_description;
+            ORdescriptionArraySend.push(requirementments);
+        }
+        CalculateFacilities(HDB, ORdescriptionArraySend, aORfile);
+    }
+
+}
+
+app.get('/allFinalResult', function(req, res) {
+    var folderDestination = globalurl + "/FinalResult/";
+    var existingFiles = fs.readdirSync(folderDestination);
+    var KPIArray = [];
+    for (var m in existingFiles) {
+        var objectReturn = {};
+        var bigORsArray = [];
+        
+        var aFinalKPIName = existingFiles[m];
+        var KPIPath = folderDestination + aFinalKPIName;
+        var KPIContent = JSON.parse(fs.readFileSync(KPIPath,{encoding:"utf8"}));
+        var andTable = KPIContent.andTable;
+
+
+        for (var n in andTable){
+            var bigORs = {};
+            var ORname = andTable[n].directory;
+
+            bigORs["directory"]= ORname;
+            var HDBreturn = JSON.parse(fs.readFileSync(ORname));
+            bigORs["bigORs"] = HDBreturn;
+            bigORsArray.push(bigORs);
+        }
+        objectReturn["KPIContent"] =  KPIContent;
+        objectReturn["bigORsArray"] = bigORsArray;
+        KPIArray.push(objectReturn);
+    }
+    res.send(KPIArray);
 })
 
 app.listen(3000);
