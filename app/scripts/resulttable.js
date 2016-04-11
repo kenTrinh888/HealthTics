@@ -133,10 +133,15 @@ function addAndTableToFinalRequirements(requirements, fileIndexes) {
     finalRequirements.andTable = [];
     var targetKPI = 90;
     var andTable = JSON.parse($('.modifiedRequirements').text());
+    console.log(andTable);
+    var fileIndex = 0;
     andTable.forEach(function(element, index) {
+        console.log(element);
+        console.log(index);
         if (fileIndexes.indexOf(String(index + 1)) != -1) {
             finalRequirements.andTable.push(element);
-            finalRequirements.andTable[index].targetKPI = targetKPI;
+            finalRequirements.andTable[fileIndex].targetKPI = targetKPI;
+            fileIndex++;
         }
     })
     

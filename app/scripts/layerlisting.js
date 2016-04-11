@@ -68,10 +68,15 @@ function setFilterTableDropdown() {
     layerDropdownObjects.forEach(function(element,index) {
         // console.log(index);
         // console.log(element);
-        if(index!=1){
+        console.log(element);
+        if(index==0){
             element.setData([]);
             element.setData(allLayers);
         }
+        // if(index!=1){
+        //     element.setData([]);
+        //     element.setData(allLayers);
+        // }
         
     });
 }

@@ -258,7 +258,7 @@ app.get('/getAllKPIs', function(req, res) {
     existingKPIFiles.forEach(function(kpiFile, index) {
         if (kpiFile !== ".DS_Store") {
             var KPIUrl = folderDestination + kpiFile;
-            console.log(KPIUrl);
+            // console.log(KPIUrl);
             var KPIData = fs.readFileSync(KPIUrl);
             var KPIJson = JSON.parse(KPIData);
             KPIJsons.push(KPIJson);
@@ -906,6 +906,7 @@ app.post("/getHexbinVisualGeojson", function(req, res) {
 app.post("/getHexbinContainHDBs", function(req, res) {
     var HexbinReceivedJSON = req.body;
     // console.log(JSON.stringify(HexbinReceivedJSON));
+    // console.log(HexbinReceivedJSON);
     var searchWithin = {
         "type": "FeatureCollection",
         "features": []

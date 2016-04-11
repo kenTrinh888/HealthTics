@@ -15,7 +15,6 @@ $(document).ready(function() {
 })
 
 function visualizeBulletChart(allKPIs) {
-
     $('.visualize').click(function() {
         var bulletChartID = parseInt($(this).attr('id').split('_')[1]) - 1;
         var KPIJson = allKPIs[bulletChartID];
@@ -34,27 +33,32 @@ function visualizeBulletChart(allKPIs) {
 
 function visualizeDetailBulletChart(allKPIs, parentID) {
     $('.detailkpiVisualize').click(function() {
-        var KPIJson = null;
+        // var KPIJson = null;
         // console.log(KPIJson.HDBchoice);
-        var andTableID = parseInt($(this).attr('id').split('_')[1]) - 1;
+        // var andTableID = parseInt($(this).attr('id').split('_')[1]) - 1;
         // console.log(andTableID);
         // var KPIJson = { "reqFinal": allKPIs[parentID].andTable[andTableID]};
-        console.log(parentID);
-        for (var i in allKPIs) {
-            if (i == parentID) {
-                console.log("match")
-                KPIJson = allKPIs[i];
-                KPIJson.reqFinal = allKPIs[i].andTable[andTableID];
-            }
-
-        }
+        // console.log(parentID);
+        // for (var i in allKPIs) {
+        //     if (i == parentID) {
+        //         console.log("match")
+        //         KPIJson = allKPIs[i];
+        //         KPIJson.reqFinal = allKPIs[i].andTable[andTableID];
+        //     }
+        // }
         $('#items').prop("disabled", false);
         $('#methods').prop("disabled", false);
         $("[name='maplegend']").bootstrapSwitch("disabled", false);
         $('#hexbinWidth').prop("disabled", false);
-        $('#displayHDBs').prop("disabled", false);
 
-        changeHDBDisplay(KPIJson)
+        var andTableID = parseInt($(this).attr('id').split('_')[1]) - 1;
+        var KPIJson = { "reqFinal": allKPIs[parentID].andTable[andTableID], "kpiName": allKPIs[parentID].kpiName};
+        $('#items').prop("disabled", false);
+        $('#methods').prop("disabled", false);
+        $("[name='maplegend']").bootstrapSwitch("disabled", false);
+        $('#hexbinWidth').prop("disabled",false);
+        $('#displayHDBs').prop("disabled", false);
+        changeHDBDisplay(KPIJson);
         changeHexbinWidth(KPIJson);
         GetHexbinVisualisation(KPIJson, "OrRd", "equal_interval");
         changeHexBinAlgo(KPIJson);
@@ -78,9 +82,7 @@ function populateBulletChart(allKPIs) {
 
             var bulletChartID = '#kpibulletchart_' + (index + 1) + ' svg';
             addBulletChart(bulletChartID, KPI);
-
         // }
-
     })
 }
 
