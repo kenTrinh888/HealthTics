@@ -202,14 +202,23 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 
-app.post('/deleteORResult', function(req, res) {
+app.post('/deleteORResult', function(req, res) {    
     fileToDelete = req.body;
     fs.unlinkSync(fileToDelete.directory);
-    // console.log("deleted:" + fileToDelete.directory);
     res.redirect('/');
+    
 });
 
-
+app.post('/deleteKPIFile', function(req, res) {
+    fileToDelete = req.body;
+    var folderDestination = globalurl + "/FinalResult/";
+    folderDestination = folderDestination.replace('\\', '/');
+    var kpiFileName = fileToDelete.kpiName + ".geojson";
+    var fullKPIFilePath = folderDestination+kpiFileName;
+    console.log(fullKPIFilePath);
+    fs.unlinkSync(fullKPIFilePath);
+    res.redirect('/');
+});
 
 //don't care about this one below
 app.post('/sendModifiedRequirements', function(req, res) {
@@ -262,7 +271,6 @@ app.get('/getAllKPIs', function(req, res) {
             var KPIData = fs.readFileSync(KPIUrl);
             var KPIJson = JSON.parse(KPIData);
             KPIJsons.push(KPIJson);
-
         }
 
     })

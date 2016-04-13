@@ -7,12 +7,55 @@ $(document).on({
 
 $(document).ready(function() {
     var allKPIs = JSON.parse(getAllKPIs());
-
+    console.log(allKPIs);
     populateBulletChart(allKPIs);
     visualizeBulletChart(allKPIs);
     populateDetailBulletChart(allKPIs);
 
+    var kpiTableSelector = $('#kpiListTbl');
+    var kpiTable = kpiTableSelector.DataTable({
+        "paging": false,
+        "ordering": false,
+        "info": false,
+        "searching": false
+    });
+    deleteKPIRow(kpiTable, kpiTableSelector, "#deleteKPIRow", allKPIs);
 })
+
+function deleteKPIRow(table, tableSelector, deleteType, allKPIs) {
+    tableSelector.children('tbody').on('click', 'tr', function(e) {
+        if ($(this).hasClass('selected')) {
+            $(this).removeClass('selected');
+        } else {
+            table.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        }
+    });
+    $(deleteType).on('click', function(e) {
+        var selectedRow = table.row('.selected');
+        var selectedRowIndex = selectedRow.index();
+        if (selectedRowIndex === undefined || selectedRowIndex === null) {
+            alert('ERROR: please click on a row before deleting it');
+            return;
+        }
+        deleteKPIFile(selectedRowIndex, allKPIs);
+        selectedRow.remove().draw(false);
+    });
+}
+
+function deleteKPIFile(selectedRowIndex, allKPIs) {
+    var fileToDelete = {};
+    selectedFile = {kpiName: allKPIs[selectedRowIndex].kpiName};
+    console.log(selectedFile);
+    $.ajax({
+        type: 'POST',
+        data: JSON.stringify(selectedFile),
+        contentType: 'application/json',
+        url: 'http://localhost:3000/deleteKPIFile',
+        success: function(data) {
+        }
+    });
+}
 
 function visualizeBulletChart(allKPIs) {
     $('.visualize').click(function() {
@@ -89,7 +132,7 @@ function populateBulletChart(allKPIs) {
 
 function populateDetailBulletChart(allKPIs) {
     $('.showDetail').click(function() {
-
+        $('#deleteKPIRow').attr('disabled','disabled');
         var rowID = $(this).attr('id').split('_')[1];
         $('.KPIRow').each(function() {
             $(this).hide();
@@ -134,6 +177,7 @@ function populateDetailBulletChart(allKPIs) {
 
 function repopulateBulletChart() {
     $('.backToKPIList').click(function() {
+        $('#deleteKPIRow').removeAttr('disabled');
         $('.selectedKPIRow').removeClass('selectedKPIRow');
         $('.detailKPIRow').remove();
         $('.KPIRow').show();
