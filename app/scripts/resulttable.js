@@ -1,6 +1,6 @@
 //main method
 $(document).ready(function() {
-    // UpdateloadResultTableDataWithIndexes()
+    UpdateloadResultTableDataWithIndexes()
     triggerSaveButtonInModal();
     loadResultTableData();
     sendFinalRequirements();
