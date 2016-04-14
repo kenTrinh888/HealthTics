@@ -71,37 +71,44 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h4 class="panel-title">
-          <a data-toggle="collapse" data-parent="#accordion" href="#KPIs">List of KPI's</a></h4>
+                            <a data-toggle="collapse" data-parent="#accordion" href="#KPIs">List of KPI's</a>
+                        </h4>
                     </div>
                     <div id="KPIs" class="panel-collapse collapse in">
+                        <button id="deleteKPIRow" class="btn btn-danger" onClick="return false">Delete selected row</button>
                         <div class="panel-body">
                             <div class="row">
                                 <table class="table table-hover table-responsive kpiListTbl" id="kpiListTbl">
-                                    <tr>
-                                        <th class="col-md-1">Name</th>
-                                        <th class="col-md-6">Bullet Chart</th>
-                                        <th class="col-md-1">Number of residents with access</th>
-                                        <th class="col-md-1">% of residents with access</th>
-                                        <th class="col-md-1">Targeted no. of residents with access</th>
-                                        <th class="col-md-1">Visualize</th>
-                                        <th class="col-md-1">Analyze</th>
-                                    </tr>
-                                    <tr id='KPIRow_1' class='KPIRow'>
-                                        <td class='col-md-1'><span class='kpiName' id='kpiName_1'></span></td>
-                                        <td class='col-md-6 bulletRow'><span class='kpibulletchart' id='kpibulletchart_1'><svg></svg></span></td>
-                                        <td class='col-md-1'><span class='kpiNumber' id='kpiNumber_1'></span></td>
-                                        <td class='col-md-1'><span class='kpiPercent' id='kpiPercent_1'></span></td>
-                                        <td class='col-md-1'>
-                                            <span class='targetKpiNumber' id='targetKpiNumber_1'></span>
-                                            <span class='totalPopulation' style='display:none' id='totalPopulation_1'></span>
-                                        </td>
-                                        <td class='col-md-1'>
-                                            <button class='btn btn-primary visualize' id='visualize_1'>Visualize</button>
-                                        </td>
-                                        <td class='col-md-1'>
-                                            <button class='btn btn-primary showDetail' id='showDetail_1'>Show detail</button>
-                                        </td>
-                                    </tr>
+                                    <thead>
+                                        <tr>
+                                            <th class="col-md-1">Name</th>
+                                            <th class="col-md-6">Bullet Chart</th>
+                                            <th class="col-md-1">No. access</th>
+                                            <th class="col-md-1">% access</th>
+                                            <th class="col-md-1">Target</th>
+                                            <th class="col-md-1">Visualize</th>
+                                            <th class="col-md-1">Analyze</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr id='KPIRow_1' class='KPIRow'>
+                                            <td class='col-md-1'><span class='kpiName' id='kpiName_1'></span></td>
+                                            <td class='col-md-6 bulletRow'><span class='kpibulletchart' id='kpibulletchart_1'><svg></svg></span></td>
+                                            <td class='col-md-1'><span class='kpiNumber' id='kpiNumber_1'></span></td>
+                                            <td class='col-md-1'><span class='kpiPercent' id='kpiPercent_1'></span></td>
+                                            <td class='col-md-1'>
+                                                <span class='targetKpiNumber' id='targetKpiNumber_1'></span>
+                                                <span class='totalPopulation' style='display:none' id='totalPopulation_1'></span>
+                                            </td>
+                                            <td class='col-md-1'>
+                                                <button class='btn btn-primary visualize' id='visualize_1'>Visualize</button>
+                                            </td>
+                                            <td class='col-md-1'>
+                                                <button class='btn btn-primary showDetail' id='showDetail_1'>Show detail</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>                      
+                                    
                                 </table>
                             </div>
                         </div>
@@ -111,10 +118,10 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h4 class="panel-title">
-                                  <a data-toggle="collapse" data-parent="#accordion" href="#MapPlanning">Map Planning</a>
-                                </h4>
+                            <a data-toggle="collapse" data-parent="#accordion" href="#MapPlanning">Map Planning</a>
+                        </h4>
                     </div>
-                    <div id="MapPlanning" class="panel-collapse collapse">
+                    <div id="MapPlanning" class="panel-collapse collapse in">
                         <div class="panel-body">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</div>
                     </div>
                 </div>

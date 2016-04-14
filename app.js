@@ -204,14 +204,23 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 
-app.post('/deleteORResult', function(req, res) {
+app.post('/deleteORResult', function(req, res) {    
     fileToDelete = req.body;
     fs.unlinkSync(fileToDelete.directory);
-    // console.log("deleted:" + fileToDelete.directory);
     res.redirect('/');
+    
 });
 
-
+app.post('/deleteKPIFile', function(req, res) {
+    fileToDelete = req.body;
+    var folderDestination = globalurl + "/FinalResult/";
+    folderDestination = folderDestination.replace('\\', '/');
+    var kpiFileName = fileToDelete.kpiName + ".geojson";
+    var fullKPIFilePath = folderDestination+kpiFileName;
+    console.log(fullKPIFilePath);
+    fs.unlinkSync(fullKPIFilePath);
+    res.redirect('/');
+});
 
 //don't care about this one below
 app.post('/sendModifiedRequirements', function(req, res) {
@@ -260,11 +269,10 @@ app.get('/getAllKPIs', function(req, res) {
     existingKPIFiles.forEach(function(kpiFile, index) {
         if (kpiFile !== ".DS_Store") {
             var KPIUrl = folderDestination + kpiFile;
-            console.log(KPIUrl);
+            // console.log(KPIUrl);
             var KPIData = fs.readFileSync(KPIUrl);
             var KPIJson = JSON.parse(KPIData);
             KPIJsons.push(KPIJson);
-
         }
 
     })
@@ -997,6 +1005,7 @@ app.post("/getHexbinVisualGeojson", function(req, res) {
 app.post("/getHexbinContainHDBs", function(req, res) {
     var HexbinReceivedJSON = req.body;
     // console.log(JSON.stringify(HexbinReceivedJSON));
+    // console.log(HexbinReceivedJSON);
     var searchWithin = {
         "type": "FeatureCollection",
         "features": []

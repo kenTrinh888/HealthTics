@@ -26,10 +26,10 @@ function deleteFilterRow(table, tableSelector, deleteType) {
     });
 
     $(deleteType).on('click', function(e) {
-        if (table.rows().count() == 1) {
-            alert("error: unable to delete row");
-            return;
-        }
+        // if (table.rows().count() == 1) {
+        //     alert("error: unable to delete row");
+        //     return;
+        // }
         table.row('.selected').remove().draw(false);
     });
 }

@@ -4,21 +4,20 @@ $(document).ready(function() {
     triggerSaveButtonInModal();
     loadResultTableData();
     sendFinalRequirements();
+    refreshResultTableDataWithIndexes();
 })
 
 function getCheckedFileIndexes() {
     var fileIndexes = "";
     $('.AND_checkbox').each(function() {
         var isChecked = $(this).prop('checked');
+
         if (isChecked) {
             var fileIndex = $(this).attr('id').split('_')[2];
-            if (parseInt(fileIndex) == $('.AND_checkbox').length) {
-                fileIndexes += fileIndex;
-            } else {
-                fileIndexes += fileIndex + ";";
-            }
+            fileIndexes += fileIndex + ";";
         }
     });
+    fileIndexes.slice(fileIndexes.length-1);
     return fileIndexes;
 }
 
@@ -39,12 +38,50 @@ function loadResultTableData() {
 }
 
 function sendFinalRequirements() {
-    $('.andTableSubmit').click(function(e) {
+    $('.andTableSubmit').change(function(e) {
         e.preventDefault();
         loadResultTableDataWithIndexes();
     });
 }
 
+function refreshResultTableDataWithIndexes(){
+    $('.updateKPI').click(function(){
+        var fileIndexes = getCheckedFileIndexes();
+        // console.log(fileIndexes);
+        var kpiName = "refresh";
+        // var targetKPI = $('.targetKPI').prop('value');
+        var targetKPI = 90;
+        if (fileIndexes.length == 0) {
+            alert('error: please tick at least one checkbox');
+            return;
+        }
+        if (kpiName.length == 0) {
+            alert('error: please input KPI name');
+            return;
+        }
+        if (targetKPI.length == 0) {
+            alert('error: please input target KPI');
+            return;
+        }
+        var getDataAPI = '/getNumberofHDB2/' + fileIndexes;
+        $.get(getDataAPI, function(HDBData, err) {
+            // console.log(HDBData);
+            if (HDBData.length == 0) {
+                return;
+            }
+            if (err) {
+                // console.log(err);
+            }
+            var reqStrings = [];
+            var requirements = getResultRequirements(HDBData);
+            var finalRequirements = getFinalRequirements(requirements);
+            finalRequirements = addAndTableToFinalRequirements(finalRequirements, fileIndexes);
+            finalRequirements.kpiName = kpiName;
+            finalRequirements.targetKPI = targetKPI;
+            populateResultTable(finalRequirements);
+        });
+    })
+}
 function loadResultTableDataWithIndexes() {
     var fileIndexes = getCheckedFileIndexes();
     console.log(fileIndexes);
@@ -133,10 +170,15 @@ function addAndTableToFinalRequirements(requirements, fileIndexes) {
     finalRequirements.andTable = [];
     var targetKPI = 90;
     var andTable = JSON.parse($('.modifiedRequirements').text());
+    // console.log(andTable);
+    var fileIndex = 0;
     andTable.forEach(function(element, index) {
+        // console.log(element);
+        // console.log(index);
         if (fileIndexes.indexOf(String(index + 1)) != -1) {
             finalRequirements.andTable.push(element);
-            finalRequirements.andTable[index].targetKPI = targetKPI;
+            finalRequirements.andTable[fileIndex].targetKPI = targetKPI;
+            fileIndex++;
         }
     })
     

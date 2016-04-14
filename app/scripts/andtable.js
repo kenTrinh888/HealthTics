@@ -193,7 +193,7 @@ function addAndTableRow(table, rowCount, addType) {
             "<span class='filterCondition' id='filterCondition_" + rowCount + "'></span>",
             "<span class='hdbCount' id='hdbCount_" + rowCount + "'</span>",
             "<span class='dwellingUnits' id='dwellingUnits_" + rowCount + "'></span>",
-            "<span class='percentPopulation' id='percentPopulation_" + rowCount + "'></span>"
+            "<span class='and_percentPopulation' id='percentPopulation_" + rowCount + "'></span>"
         ]).draw(false); //add the new row without redrawing the whole table
         var allLayers = getAllLayers();
         setLayerDropdownlist(rowCount, allLayers);

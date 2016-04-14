@@ -5,6 +5,7 @@ $(document).on({
     ajaxStart: function() { $body.addClass("loading"); },
     ajaxStop: function() { $body.removeClass("loading"); }
 });
+
 var HDBoption;
 var HDBInsideHexbin;
 $('#displayHDBs').change(function() {
@@ -125,7 +126,7 @@ function GetHexbinVisualisation(KPIJson, colors, method) {
     var grid = data.counted;
     var values = [];
     var brew = new classyBrew();
-    // console.log(KPIJson);
+    // console.log(data);
     grid.features.forEach(function(cell) {
         cell.kpiName = KPIJson.kpiName
         var pt_count = cell.properties.pt_count;
@@ -197,6 +198,7 @@ function GetHexbinVisualisation(KPIJson, colors, method) {
 }
 
 function getHexbinDataSync(KPIJson) {
+    // console.log(KPIJson);
     getDataHexbin = "getHexbinVisualGeojson/";
     var data = {};
     // console.log(KPIJson);
@@ -238,6 +240,7 @@ function style(feature) {
 }
 
 function onEachFeature(feature, layer) {
+    // console.log(feature);
     layer.on({
         // mouseover: highlightFeature,
         // mouseout: resetHighlight,
@@ -272,10 +275,12 @@ function resetHighlight(e) {
 var LayerClick = [];
 
 function zoomToFeature(e) {
+    // console.log(e);
     if (LayerClick.length === 0) {
         LayerClick.push(e);
         highlightFeature(e);
         var hexbinSend = e.target.feature;
+        // console.log(hexbinSend);
         FocusHexbin(hexbinSend);
 
     } else {
@@ -285,6 +290,7 @@ function zoomToFeature(e) {
         resetHighlight(previouslayer);
         highlightFeature(e);
         var hexbinSend = e.target.feature;
+        // console.log(hexbinSend);
         FocusHexbin(hexbinSend);
     }
 
@@ -403,6 +409,7 @@ function styleZoomin(feature) {
 }
 
 function changeHexBinAlgo(KPIJson) {
+    // console.log(KPIJson);
     $('.hexbin').change(function() {
         var colors = $('#items').val();
         var methods = $('#methods').val();
