@@ -38,7 +38,7 @@ function loadResultTableData() {
 }
 
 function sendFinalRequirements() {
-    $('.andTableSubmit').change(function(e) {
+    $('.andTableSubmit').click(function(e) {
         e.preventDefault();
         loadResultTableDataWithIndexes();
     });
