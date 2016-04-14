@@ -7,7 +7,7 @@ $(document).on({
 
 $(document).ready(function() {
     var allKPIs = JSON.parse(getAllKPIs());
-    console.log(allKPIs);
+    // console.log(allKPIs);
     populateBulletChart(allKPIs);
     visualizeBulletChart(allKPIs);
     populateDetailBulletChart(allKPIs);
