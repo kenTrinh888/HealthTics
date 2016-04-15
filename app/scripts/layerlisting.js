@@ -20,8 +20,19 @@ function setLayersHTML() {
                 $('.tree').append(listHTML); //set layers to html
                 //set columns
                 layer.columns.forEach(function(column) {
-                    var columnHTML = "<option>" + column + "</option>"
-                    $('#' + layerName + '_col   ').append(columnHTML);
+                    getColumnValuesAPI = "/getAllLayerColumnValues/" + layerName + "/" + column;
+                    // console.log(getColumnValuesAPI);
+                    var columnValues = [];
+                    $.ajax(getColumnValuesAPI, {
+                        success: function(subLayers) {
+                            if(subLayers.length <= 9){
+                                var columnHTML = "<option>" + column + "</option>"
+                                $('#' + layerName + '_col   ').append(columnHTML);            
+                            }
+                        },
+                        async: false
+                    })
+                    
                 });
             });
             // setLayerDropdownlist(layersTrimmed); //fix here
@@ -30,6 +41,7 @@ function setLayersHTML() {
 
         var allLayers = getAllLayers();
         setLayerDropdownlist(1, allLayers); //set the first row of dropdownlist
+        showNoValueInColumn();
     });
     $('.tree').treed();
 };
@@ -68,7 +80,7 @@ function setFilterTableDropdown() {
     layerDropdownObjects.forEach(function(element,index) {
         // console.log(index);
         // console.log(element);
-        console.log(element);
+        // console.log(element);
         if(index==0){
             element.setData([]);
             element.setData(allLayers);
@@ -88,10 +100,20 @@ function callApiSetSubLayers(parentNode, selectedColumn) {
     $.ajax(getColumnValuesAPI, {
         // success: setColumnValuesHidden
         success: function(subLayers) {
-            // console.log(data);
-            console.log(parentNode);
-            setSubLayersHTML(subLayers, parentNode);
-            setFilterTableDropdown();
+            if(subLayers.length > 6){
+                var confirmed = confirm("There are more than 6 categories in this variable. Proceed?");
+                if (confirmed) {
+                    setSubLayersHTML(subLayers, parentNode);
+                    setFilterTableDropdown();
+                } else{
+                    var selectedColID = '#'+ parentNode + "_col";
+                    $(selectedColID).val('');
+                }
+            }else{
+                setSubLayersHTML(subLayers, parentNode);
+                setFilterTableDropdown();
+            }             
+            
         },
         async: false
     })
@@ -112,9 +134,9 @@ function getAllLayers() {
 }
 
 function hideSubLayers(startHidingFromRow, parentNode) {
-    console.log('.layerList_' + parentNode);
+    // console.log('.layerList_' + parentNode);
     var layerListParentNode = '.layerList_' + parentNode;
-    console.log(layerListParentNode)
+    // console.log(layerListParentNode)
     $(layerListParentNode + " li").slice(startHidingFromRow).hide();
     $(layerListParentNode).append("<li>\
                                 <a class='showMore_'"+parentNode+" onClick='showMore("+parentNode+")'>Show more</a> ||\
@@ -125,26 +147,65 @@ function hideSubLayers(startHidingFromRow, parentNode) {
 function showMore(parentNodeHTML) {
     var parentNode = $(parentNodeHTML).attr('id');
     var countLayers = 0;
+    var subCategoryLength = $('.layerList_'+parentNode).children('li').length;
+    var hiddenSubCategoryLength = 0;
+    $('.layerList_'+parentNode).children('li').each(function(){
+        if($(this).is(":visible") == false){
+            hiddenSubCategoryLength++;
+        }
+    })
+    if(hiddenSubCategoryLength == 0){
+        alert('no more subcategory to show');
+        return false;
+    }
     $('.layerList_'+parentNode).children('li').each(function() {        
         countLayers++;
-        console.log($(this).attr('id'));
+        // console.log($(this).attr('id'));
         if($(this).is(":visible") == false){
+            // alert('no more subcategory to show');
             return false;
         }
     });
     $('.layerList_'+ parentNode +' li').slice(countLayers-1, countLayers+2).show(); //show 3 more
+    
 }
 
 function showLess(parentNodeHTML) {
     var parentNode = $(parentNodeHTML).attr('id');
     var countLayers = 0;
+    var revealedSubCategoryLength = 0;
+    $('.layerList_'+parentNode).children('li').each(function() {
+        if($(this).is(":visible") == true){
+            revealedSubCategoryLength++;
+        } 
+    });
+    // console.log(revealedSubCategoryLength);
+    if(revealedSubCategoryLength == 1){
+        alert('no more subcategory to hide');
+        return false;
+    }
     $('.layerList_'+parentNode).children('li').each(function() {        
         countLayers++;
-        console.log($(this).attr('id'));
+        // console.log($(this).attr('id'));
         if($(this).is(":visible") == false){
             return false;
         }
     });
-    console.log(countLayers);
-    $('.layerList_'+ parentNode +' li').slice(countLayers-4, countLayers-1 ).hide(); //hide 3 from the last row
+    // console.log(countLayers);
+    if(revealedSubCategoryLength <= 4){
+        $('.layerList_'+ parentNode +' li').slice(countLayers-2, countLayers-1 ).hide();
+    }else{
+        $('.layerList_'+ parentNode +' li').slice(countLayers-4, countLayers-1 ).hide(); //hide 3 from the last row
+    }
+    
+}
+
+function showNoValueInColumn(){
+    $('.columns').click(function(){
+        var numOfCol = $(this).children('option').length;
+        var layerName = $(this).attr('id').split("_")[0];
+        if(numOfCol <= 1){
+            alert('No suitable variable for subcategorization');
+        }
+    })
 }
