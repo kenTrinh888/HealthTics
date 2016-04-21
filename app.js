@@ -295,18 +295,8 @@ function CalculateFacilities(HDB, objectReceived, nameOfFile) {
     var HDBObject = {};
     for (var i = 0; i < objectReceived.length; i++) {
         var ORrequirementSend = objectReceived[i];
-
-        // var TempReq = objectReceived[i];
-        // if (TempReq.hasOwnProperty('requirement_description')) {
-        //     ORrequirementSend = TempReq.requirement_description;
-        // } else {
-        //     ORrequirementSend = TempReq;
-        // }
         var urlLayerRetrieved = globalurl + "/geojson/" + ORrequirementSend.parentLayer + ".geojson";
         var layerRequest = fs.readFileSync(urlLayerRetrieved, { encoding: 'utf8' });
-        // var layerRequest;
-        // fs.readFile(urlLayerRetrieved, 'utf8', function(layerRequest) {
-        // console.log(layerRequest)
         for (var m = 0; m < HDB.length; m++) {
 
             var aHDB = HDB[m];
@@ -322,22 +312,14 @@ function CalculateFacilities(HDB, objectReceived, nameOfFile) {
         }
 
     }
-
-
     var path = globalurl + "/ORResults/";
     var name = fs.readdirSync(path);
-
-
-    // console.log(name);
     var rowCount = name.length;
-    // console.log("first" + rowCount);
     for (var i = 0; i < name.length; i++) {
         if (name[i] === ".DS_Store") {
             rowCount = rowCount - 1;
         }
-
     }
-
     if (rowCount > 0) {
         var lastName = name[name.length - 1];
         // console.log(lastName);
@@ -584,53 +566,15 @@ function rmDirInvalid(dirPath, name) {
         }
 };
 
-// console.log(files);
 app.post('/findPostalCode', function(req, res) {
     var objectReceivedArray = req.body;
-    // console.log(JSON.stringify(objectReceived));
-    // console.log(objectReceivedArray.length);
     var postalcodeArray = []
     var postalCodeGeo = []
     var lengthOfRequest = objectReceivedArray.length;
     for (var m = 0; m < objectReceivedArray.length; m++) {
         var objectReceived = objectReceivedArray[m];
         geoCode(objectReceived, lengthOfRequest);
-        // var postcode = String(objectReceived.POSTCODE);
-        // if (postcode.length < 6) {
-        //     postcode = "0" + postcode;
-        //     // geoCode(objectReceived, objectReceivedArray.length)
-        // }
-        // postalcodeArray.push(postcode);
-
     }
-    // var lengthOfRequest = postalcodeArray.length;
-    // for (var n = 0; n < postalcodeArray.length; n++) {
-    //     var postcode = postalcodeArray[n]
-    //     var urlString = "http://www.onemap.sg/APIV2/services.svc/basicSearchV2?token=qo/s2TnSUmfLz+32CvLC4RMVkzEFYjxqyti1KhByvEacEdMWBpCuSSQ+IFRT84QjGPBCuz/cBom8PfSm3GjEsGc8PkdEEOEr&searchVal=" + postcode + "&otptFlds=SEARCHVAL,CATEGORY&returnGeom=1&rset=1&projSys=WGS84";
-    //     request(urlString, function(error, response, geocodedData) {
-    //         if (!error && response.statusCode == 200 && geocodedData!= null) {
-    //             postalCodeGeo.push(JSON.parse(geocodedData));
-
-    //             var lengthOfGeoCode = postalCodeGeo.length;
-    //             console.log("Content" + JSON.stringify(postalCodeGeo));
-    //              console.log("Log here" + lengthOfGeoCode);
-    //             var urlDestination = globalurl + "/HDB/TempGeo.json";
-    //             if (lengthOfRequest === lengthOfGeoCode) {
-    //                 fs.writeFile(urlDestination, JSON.stringify(postalCodeGeo), function(err) {
-    //                     if (err) {
-    //                         console.error('There was an error writing the file!', err);
-    //                         return;
-    //                     }
-    //                 });
-    //                 postalCodeGeo = [];
-    //             }
-    //         }
-
-
-    //     })
-
-    // }
-    // res.redirect("/");
 })
 
 function geoCode(objectReceived, lengthOfRequest) {
@@ -690,62 +634,6 @@ function geoCode(objectReceived, lengthOfRequest) {
         console.log(error);
     }
     })
-
-    // request(urlString, function(error, response, geocodedData) {
-    //     if (typeof geocodedData != "undefined") {
-    //         var geocodedDataJson = JSON.parse(geocodedData);
-    //         // try {
-    //         //     var geocodedDataJson = JSON.parse(geocodedData);
-    //         // } catch (err) {
-    //         //     console.log(objectReceived + "can't parse")
-    //         // }
-    //         searchResults = geocodedDataJson["SearchResults"]; //array containing response of geocoding API
-
-    //         var leafletFeature = new Object(); //single leaflet object
-    //         leafletFeature["type"] = "Feature";
-    //         leafletFeature["properties"] = objectReceived;
-    //         if (searchResults[0].hasOwnProperty("ErrorMessage") === false) {
-    //             if (searchResults.length > 1) {
-    //                 var longitude = searchResults[1]["X"];
-    //                 var latitude = searchResults[1]["Y"];
-
-    //                 var geoObj = {};
-    //                 geoObj["type"] = "Point";
-    //                 geoObj["coordinates"] = [];
-    //                 geoObj["coordinates"].push(parseFloat(longitude)); //long
-    //                 geoObj["coordinates"].push(parseFloat(latitude)); //lat
-    //                 leafletFeature["geometry"] = geoObj;
-    //                 // console.log(objectReceived);
-    //                 leafletFeatures.push(leafletFeature);
-    //                 var lengthOfHDB = leafletFeatures.length + InvalidHDBsArray.length;
-
-    //                 console.log("length of uploading: " + lengthOfHDB + " " + lengthOfRequest);
-    //                 if (lengthOfRequest === lengthOfHDB) {
-    //                     // console.log(JSON.stringify(leafletFeatures));
-    //                     var urlDestination = globalurl + "/HDB/HDB.json";
-    //                     fs.writeFile(urlDestination, JSON.stringify(leafletFeatures), function(err) {
-    //                         if (err) {
-    //                             console.error('There was an error writing the file!', err);
-    //                             return;
-    //                         }
-    //                     });
-    //                     leafletFeatures = [];
-
-    //                 }
-    //             }
-
-    //         } else {
-    //             console.log(objectReceived);
-    //             InvalidHDBsArray.push(objectReceived);
-    //         }
-    //     } else {
-    //         console.log("undefined" + error);
-    //     }
-
-    //     // }
-    // }).on('error', function(e) {
-    //     console.log(e)
-    // }).end();
 
 }
 

@@ -48,13 +48,13 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="/">HealthTics</a>
+                    <a class="navbar-brand" href="/">DigiVis</a>
                 </div>
                 <!-- Collect the nav links, forms, and other content for toggling -->
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <ul class="nav navbar-nav">
                         <li>
-                            <a href="/reporting">Reporting</a>
+                            <a href="/reporting">Reporting and Planning</a>
                         </li>
                         <li>
                             <a href="#">About</a>
@@ -121,18 +121,18 @@
                     </div>
                 </div>
                 <div class="col-md-9 portfolio-item">
-                    <h3><a href="#">OR Query Table</a></h3>
+                    <h3><a href="#">KPI Components Computations</a></h3>
                     <form method="post" action="/submitFilter">
-                        <button id="addFilterRow" class="btn btn-primary" onClick="return false">Add new row</button>
-                        <button id="deleteFilterRow" class="btn btn-danger" onClick="return false">Delete selected row</button>
+                        <button id="addFilterRow" class="btn btn-primary" onClick="return false">Add new Query</button>
+                        <button id="deleteFilterRow" class="btn btn-danger" onClick="return false">Delete selected Query</button>
                         <table class="filterTbl" id="filterTbl">
                             <thead>
                                 <tr>
-                                    <th class="col-md-2">Logical Operator</th>
+                                    <th class="col-md-2">Operator(s)</th>
                                     <th class="col-md-2">Value</th>
-                                    <th class="col-md-4">Layer</th>
-                                    <th class="col-md-2">Within Distance (meter)</th>
-                                    <th class="col-md-2">AND/OR</th>
+                                    <th class="col-md-4">Facilities</th>
+                                    <th class="col-md-2">Within(meters)</th>
+                                    <th class="col-md-2">OR</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -163,18 +163,18 @@
                         </table>
                     </form>
                     <div class="andTblSection">
-                        <h3><a href="#">AND Query Table</a></h3>
+                        <h3><a href="#">Final KPIs Computations</a></h3>
                         <form method="post" action="/sendModifiedRequirements">
                             <button id="addResultRow" class="btn btn-primary" onClick="return false" style="display:none">Add new row</button>
                             <button id="deleteResultRow" class="btn btn-danger" onClick="return false">Delete selected row</button>
                             <table class="andTbl" id="andTbl">
                                 <thead>
                                     <tr>
-                                        <th class="col-md-1">Include Layer</th>
-                                        <th class="col-md-3">Filter Condition</th>
-                                        <th class="col-md-2">Number of HDB</th>
-                                        <th class="col-md-2">Number of Households With Access</th>
-                                        <th class="col-md-2">% household with access</th>
+                                        <th class="col-md-1">Include</th>
+                                        <th class="col-md-3">Condition(s)</th>
+                                        <th class="col-md-2">No. HDB(s)</th>
+                                        <th class="col-md-2">No. Households</th>
+                                        <th class="col-md-2">% Households</th>
                                     </tr>
                                 </thead>
                                 <tbody>
