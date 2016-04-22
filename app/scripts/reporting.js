@@ -107,7 +107,7 @@ var hasLegend = false;
 var count = 0;
 
 function GetHexbinVisualisation(KPIJson, colors, method) {
-    console.log(KPIJson);
+    // console.log(KPIJson);
     if (layerGroup != false) {
         layerGroup.clearLayers();
         layerGroup = false;
@@ -122,7 +122,7 @@ function GetHexbinVisualisation(KPIJson, colors, method) {
         method = "equal_interval";
     }
     var data = getHexbinDataSync(KPIJson);
-    // console.log(data);
+    console.log(data);
     var grid = data.counted;
     var values = [];
     var brew = new classyBrew();
@@ -148,6 +148,7 @@ function GetHexbinVisualisation(KPIJson, colors, method) {
     brew.classify(method);
     // var colors = brew.getColors();
     grid.features.forEach(function(cell) {
+         // console.log(cell);
         var pt_count = cell.properties.pt_count;
         var _withCount = cell._withCount = {};
         _withCount.fillColor = brew.getColorInRange(pt_count)
@@ -198,7 +199,7 @@ function GetHexbinVisualisation(KPIJson, colors, method) {
 }
 
 function getHexbinDataSync(KPIJson) {
-    console.log(KPIJson);
+    // console.log(KPIJson);
     getDataHexbin = "getHexbinVisualGeojson/";
     var data = {};
     // console.log(KPIJson);
@@ -391,7 +392,7 @@ function FocusHexbin(hexbinSend) {
             .addLayer(hexbinMap)
             .addTo(ZoominMap);
     }
-
+    // console.log(HDBPoints);
     displayHDBPropotion(HDBPoints);
     ZoominMap.fitBounds(hexbinMap.getBounds());
 
@@ -453,10 +454,9 @@ function createPropSymbols(dataLayer) {
 function updatePropSymbols() {
 
     zone.eachLayer(function(layer) {
-        console.log(layer);
+        // console.log(layer); // Display layer is match with the zoomin map
         var analysisDisplay = "<b>Recommendation: </b></br>";
         var analysis = layer.feature.properties.analysis;
-        console.log(analysis)
         for (var m in analysis){
             var analysisComment = analysis[m] + "</br>" ;
             analysisDisplay += analysisComment;
@@ -464,7 +464,7 @@ function updatePropSymbols() {
         var props = layer.feature.properties,
             radius = calcPropRadius(props.pt_count),
             analysis =
-            popupContent = "<b>POSTAL CODE: </b>" + props.POSTCODE + "</br>"+analysisDisplay+"<b>Accessible Facilities: </b>" + String(props.pt_count) + "<br>";
+            popupContent = "<b>POSTAL CODE: </b>" + props.POSTCODE + "</br>"+ "<b>ZONE: </b>" + props.POSTCODE + "</br>"+analysisDisplay+"<b>Accessible Facilities: </b>" + String(props.pt_count) + "<br>";
         // console.log(radius)
         layer.setRadius(radius);
 
@@ -541,15 +541,9 @@ var successful = true;
 
 function changeHDBDisplay(KPIJson) {
     $('#displayHDBs').change(function() {
-        if($('.detailkpiVisualize').length > 0){
-            KPIJson.detailedKPI = true;
-        }else{
-            KPIJson.detailedKPI = false;
-        }
         successful = !successful
         var HDBchoice = $(this).val();
         KPIJson['HDBchoice'] = HDBchoice;
-        
     })
 }
 

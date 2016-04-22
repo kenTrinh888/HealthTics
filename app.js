@@ -216,7 +216,7 @@ app.post('/deleteKPIFile', function(req, res) {
     folderDestination = folderDestination.replace('\\', '/');
     var kpiFileName = fileToDelete.kpiName + ".geojson";
     var fullKPIFilePath = folderDestination + kpiFileName;
-    console.log(fullKPIFilePath);
+    // console.log(fullKPIFilePath);
     fs.unlinkSync(fullKPIFilePath);
     res.redirect('/');
 });
@@ -297,7 +297,7 @@ app.post('/submitFilter', function(req, res) {
 });
 
 function CalculateFacilities(HDB, objectReceived, nameOfFile) {
-    console.log(objectReceived);
+    // console.log(objectReceived);
     var HDBArray = [];
     var HDBObject = {};
     for (var i = 0; i < objectReceived.length; i++) {
@@ -345,17 +345,17 @@ function CalculateFacilities(HDB, objectReceived, nameOfFile) {
         }
     }
     if (nameExist) {
-        console.log("define" + typeof nameofFile);
+        // console.log("define" + typeof nameofFile);
         ANDREquirementNameFile = nameOfFile;
         urlDestination = globalurl + "/ORResults/" + ANDREquirementNameFile;
 
     } else {
-        console.log("undefine" + typeof nameofFile);
+        // console.log("undefine" + typeof nameofFile);
         ANDREquirementNameFile = "ORresult" + rowCount;
         urlDestination = globalurl + "/ORResults/" + ANDREquirementNameFile + ".json";
     }
 
-    console.log(urlDestination);
+    // console.log(urlDestination);
     for (var i = 0; i < HDBArray.length; i++) {
 
         var oneHDB = HDBArray[i];
@@ -941,7 +941,7 @@ app.post("/getHexbinContainHDBs", function(req, res) {
         successfulHDBs = dataJSON.reqFinal.success_HDB_JSONs;
     } else {
         // console.log(JSON.stringify("fail"));
-        successfulHDBs = dataJSON.andTable[0].failed_HDB_JSONs;
+        successfulHDBs = dataJSON.reqFinal.failed_HDB_JSONs;
 
     }
     // var successfulHDBs = dataJSON.reqFinal.success_HDB_JSONs;
@@ -1154,7 +1154,7 @@ function updateKPI() {
     var ORfiles = fs.readdirSync(ORurlDir);
     for (var m in ORfiles) {
         var aORfile = ORfiles[m];
-        console.log(aORfile);
+        // console.log(aORfile);
         var ORfilePath = ORurlDir + aORfile;
         var ORcontent = fs.readFileSync(ORfilePath);
         JSONreturn = JSON.parse(ORcontent);
