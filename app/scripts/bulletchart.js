@@ -76,19 +76,6 @@ function visualizeBulletChart(allKPIs) {
 
 function visualizeDetailBulletChart(allKPIs, parentID) {
     $('.detailkpiVisualize').click(function() {
-        // var KPIJson = null;
-        // console.log(KPIJson.HDBchoice);
-        // var andTableID = parseInt($(this).attr('id').split('_')[1]) - 1;
-        // console.log(andTableID);
-        // var KPIJson = { "reqFinal": allKPIs[parentID].andTable[andTableID]};
-        // console.log(parentID);
-        // for (var i in allKPIs) {
-        //     if (i == parentID) {
-        //         console.log("match")
-        //         KPIJson = allKPIs[i];
-        //         KPIJson.reqFinal = allKPIs[i].andTable[andTableID];
-        //     }
-        // }
         $('#items').prop("disabled", false);
         $('#methods').prop("disabled", false);
         $("[name='maplegend']").bootstrapSwitch("disabled", false);

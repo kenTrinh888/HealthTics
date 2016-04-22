@@ -270,6 +270,7 @@ function addAndTableToFinalRequirements(requirements, fileIndexes) {
 function getResultRequirements(HDBData) {
     var requirements = {};
     var success_HDB_JSONs = [];
+    var failed_HDB_JSONs = [];
     var failedArr = [];
     requirements.reqFinal = {};
     requirements.reqData = [];
@@ -288,6 +289,7 @@ function getResultRequirements(HDBData) {
             if (HDB.totalRequirement == false) {
                 if (failedArr.indexOf(HDBindex) == -1) {
                     failedArr.push(HDBindex);
+                    failed_HDB_JSONs.push(HDB.HDB_JSON);
                 }
             }
             if (HDBsIndex == HDBData.length - 1) {
@@ -299,7 +301,7 @@ function getResultRequirements(HDBData) {
         requirements.reqData.push(reqObject);
     });
     requirements.reqFinal.success_HDB_JSONs = success_HDB_JSONs;
-    requirements.reqFinal.failed_HDB_JSONs = failedArr;
+    requirements.reqFinal.failed_HDB_JSONs = failed_HDB_JSONs;
     return requirements;
 }
 

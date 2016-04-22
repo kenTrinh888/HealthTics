@@ -853,6 +853,7 @@ app.post("/getHexbinVisualGeojson", function(req, res) {
     console.log(hexbinWidth);
     // console.log(JSON.stringify(dataJSON));
     var HDBchoice = dataJSON.HDBchoice;
+    var detailedKPI = dataJSON.detailedKPI;
     var successfulHDBs;
 
     if (typeof hexbinWidth === "undefined") {
@@ -863,11 +864,16 @@ app.post("/getHexbinVisualGeojson", function(req, res) {
 
     if (typeof HDBchoice === "undefined" || HDBchoice === "Successful") {
         // console.log(JSON.stringify("successful"));
+
+        // successfulHDBs = (detailedKPI==true) ? dataJSON.andTable[0].success_HDB_JSONs : dataJSON.reqFinal.success_HDB_JSONs;
+        // console.log(JSON.stringify(successfulHDBs));
         successfulHDBs = dataJSON.reqFinal.success_HDB_JSONs;
     } else {
         // console.log(JSON.stringify("fail"));
-        successfulHDBs = dataJSON.andTable[0].failed_HDB_JSONs;
-
+        // console.log(detailedKPI);
+        // successfulHDBs = (detailedKPI==true) ? dataJSON.andTable[0].failed_HDB_JSONs : dataJSON.reqFinal.failed_HDB_JSONs;
+        // console.log(JSON.stringify(successfulHDBs));
+        successfulHDBs = dataJSON.reqFinal.failed_HDB_JSONs;
     }
 
     // console.log(dataJSON);

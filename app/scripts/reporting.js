@@ -107,7 +107,7 @@ var hasLegend = false;
 var count = 0;
 
 function GetHexbinVisualisation(KPIJson, colors, method) {
-    // console.log(KPIJson);
+    console.log(KPIJson);
     if (layerGroup != false) {
         layerGroup.clearLayers();
         layerGroup = false;
@@ -198,7 +198,7 @@ function GetHexbinVisualisation(KPIJson, colors, method) {
 }
 
 function getHexbinDataSync(KPIJson) {
-    // console.log(KPIJson);
+    console.log(KPIJson);
     getDataHexbin = "getHexbinVisualGeojson/";
     var data = {};
     // console.log(KPIJson);
@@ -541,9 +541,15 @@ var successful = true;
 
 function changeHDBDisplay(KPIJson) {
     $('#displayHDBs').change(function() {
+        if($('.detailkpiVisualize').length > 0){
+            KPIJson.detailedKPI = true;
+        }else{
+            KPIJson.detailedKPI = false;
+        }
         successful = !successful
         var HDBchoice = $(this).val();
         KPIJson['HDBchoice'] = HDBchoice;
+        
     })
 }
 
@@ -728,8 +734,7 @@ function updateKPI() {
             setAndTable();
             loadAndTableData();
             UpdateloadResultTableDataWithIndexes();
-            // $body.removeClass("loading");
-            // location.reload();
+
         }
     })
 
