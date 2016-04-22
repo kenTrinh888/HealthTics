@@ -121,18 +121,18 @@
                     </div>
                 </div>
                 <div class="col-md-9 portfolio-item">
-                    <h3><a href="#">KPI Components Computations</a></h3>
+                    <h3><a href="#">KPI Component Computation</a></h3>
                     <form method="post" action="/submitFilter">
                         <button id="addFilterRow" class="btn btn-primary" onClick="return false">Add new Query</button>
                         <button id="deleteFilterRow" class="btn btn-danger" onClick="return false">Delete selected Query</button>
                         <table class="filterTbl" id="filterTbl">
                             <thead>
                                 <tr>
-                                    <th class="col-md-2">Operator(s)</th>
+                                    <th class="col-md-2">Comparison Operator</th>
                                     <th class="col-md-2">Value</th>
-                                    <th class="col-md-4">Facilities</th>
-                                    <th class="col-md-2">Within(meters)</th>
-                                    <th class="col-md-2">OR</th>
+                                    <th class="col-md-4">Facility</th>
+                                    <th class="col-md-2">Within(metre)</th>
+                                    <th class="col-md-2">Logical Operator</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -163,18 +163,18 @@
                         </table>
                     </form>
                     <div class="andTblSection">
-                        <h3><a href="#">Final KPIs Computations</a></h3>
+                        <h3><a href="#">Final KPI Computation</a></h3>
                         <form method="post" action="/sendModifiedRequirements">
                             <button id="addResultRow" class="btn btn-primary" onClick="return false" style="display:none">Add new row</button>
-                            <button id="deleteResultRow" class="btn btn-danger" onClick="return false">Delete selected row</button>
+                            <button id="deleteResultRow" class="btn btn-danger " onClick="return false">Delete selected query</button>
                             <table class="andTbl" id="andTbl">
                                 <thead>
                                     <tr>
                                         <th class="col-md-1">Include</th>
-                                        <th class="col-md-3">Condition(s)</th>
-                                        <th class="col-md-2">No. HDB(s)</th>
-                                        <th class="col-md-2">No. Households</th>
-                                        <th class="col-md-2">% Households</th>
+                                        <th class="col-md-3">Condition</th>
+                                        <th class="col-md-2">No. of HDB</th>
+                                        <th class="col-md-2">No. of Household</th>
+                                        <th class="col-md-2">% of Household</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -194,15 +194,29 @@
                                         <td class="col-lg-2">
                                             <span class='and_percentPopulation' id='percentPopulation_1'></span>
                                         </td>
-                                        <button class="btn btn-primary pull-right updateKPI" style="display:inline;" onClick="return false">Update result</button>
-                                        <button class="btn btn-primary pull-right" style="display:inline;" data-toggle="modal" data-target="#modal-updateAndTable" onClick="return false">Save KPI</button>
+<!-- 
+                                            <div class="col-lg-6">
+                                                
+                                            </div> -->
+                                            <button class="btn btn-primary pull-right" style="display:inline; margin-left:0.25em" data-toggle="modal" data-target="#modal-updateAndTable" onClick="return false">Save KPI</button>
+
+                                             <button class="btn btn-primary updateKPI pull-right" style="display:inline;" onClick="return false">Update result</button>
+                                             
+<!--                                             <div class="col-lg-2 pull-right">
+                                               
+                                            </div>
+                                            <div class="col-lg-2 pull-right">
+                                                
+                                            </div> -->
+
+                                        
                                     </tr>
                                 </tbody>
                             </table>
                         </form>
                     </div>
                     <div class="resultTblSection">
-                        <h3><a href="#">Result Table</a></h3>
+                        <h3><a href="#">Final KPI Result</a></h3>
                         <table class="table table-hover table-responsive resultTbl" id="resultTbl">
                             <tr>
                                 <th class="col-md-5">Number of Households With Access</th>

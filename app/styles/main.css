@@ -137,6 +137,27 @@ body.loading .modalWaiting {
 
 /*legend Creating*/
 
+/*.bootstrap-switch.bootstrap-switch-normal .bootstrap-switch-handle-on, 
+.bootstrap-switch.bootstrap-switch-normal .bootstrap-switch-handle-off, 
+.bootstrap-switch.bootstrap-switch-normal .bootstrap-switch-label{
+    height:40px;
+    padding-top:10px;
+    width:100px;
+}*/
+
+/*.bootstrap-switch .bootstrap-switch-handle-on.bootstrap-switch-retroorange,
+.bootstrap-switch .bootstrap-switch-handle-off.bootstrap-switch-retroorange {
+    height:40px;
+    padding-top:10px;
+    width:100px;
+}*/
+
+
+.bootstrap-switch-customShowLegend{
+    height:40px;
+    padding-top:10px;
+}
+
 .info {
     padding: 6px 8px;
     font: 14px/16px Arial, Helvetica, sans-serif;
