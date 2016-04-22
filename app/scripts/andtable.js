@@ -14,23 +14,23 @@ $(document).ready(function() {
     loadAndTableData();
 })
 
-function sendModifiedRequirements(modifiedRequirements) {
-    $('.andTableSubmit').click(function(e) {
-
-        e.preventDefault();
-        $.ajax({
-            type: 'POST',
-            data: JSON.stringify(modifiedRequirements),
-            contentType: 'application/json',
-            url: 'http://localhost:3000/sendModifiedRequirements',
-            success: function(data) {
-                // console.log('success');
-                // console.log(data);
-            }
-        });
-        // location.reload();
-    });
-}
+// function sendModifiedRequirements(modifiedRequirements) {
+//     $('.andTableSubmit').click(function(e) {
+//         console.log(modifiedRequirements);
+//         e.preventDefault();
+//         $.ajax({
+//             type: 'POST',
+//             data: JSON.stringify(modifiedRequirements),
+//             contentType: 'application/json',
+//             url: 'http://localhost:3000/sendModifiedRequirements',
+//             success: function(data) {
+//                 console.log('success');
+//                 // console.log(data);
+//             }
+//         });
+//         // location.reload();
+//     });
+// }
 
 function setAndTable() {
     andTableSelector = $('#andTbl');
@@ -127,7 +127,19 @@ function getReqString(ORRequirements) {
 }
 
 function populateAndTable(modifiedRequirements) {
+    // console.log(modifiedRequirements);
+    $.ajax({
+        type: 'POST',
+        data: JSON.stringify(modifiedRequirements),
+        contentType: 'application/json',
+        url: '/sendModifiedRequirements',
+        success: function(data) {
+            $body.removeClass("loading");
+            console.log('success');
 
+            // console.log(data);
+        }
+    });
     $('.modifiedRequirements').text(JSON.stringify(modifiedRequirements));
     modifiedRequirements.forEach(function(reqObject, index) {
         var lastRow = $('.andTbl tbody tr').length;

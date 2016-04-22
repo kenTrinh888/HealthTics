@@ -453,11 +453,18 @@ function createPropSymbols(dataLayer) {
 function updatePropSymbols() {
 
     zone.eachLayer(function(layer) {
-
-
+        console.log(layer);
+        var analysisDisplay = "<b>Recommendation: </b></br>";
+        var analysis = layer.feature.properties.analysis;
+        console.log(analysis)
+        for (var m in analysis){
+            var analysisComment = analysis[m] + "</br>" ;
+            analysisDisplay += analysisComment;
+        }
         var props = layer.feature.properties,
             radius = calcPropRadius(props.pt_count),
-            popupContent = "<b>POSTAL CODE: </b>" + props.POSTCODE + "</br><b>Accessible Facilities: </b>" + String(props.pt_count) + "<br>";
+            analysis =
+            popupContent = "<b>POSTAL CODE: </b>" + props.POSTCODE + "</br>"+analysisDisplay+"<b>Accessible Facilities: </b>" + String(props.pt_count) + "<br>";
         // console.log(radius)
         layer.setRadius(radius);
 
@@ -493,9 +500,9 @@ function updatePropSymbols() {
 } // end updatePropSymbols
 function calcPropRadius(attributeValue) {
     // console.log(attributeValue);
-    var scaleFactor = 16; // value dependent upon particular data set
+    var scaleFactor = 30; // value dependent upon particular data set
     if (attributeValue < 1) {
-        area = 5;
+        area = 20;
     } else {
         area = attributeValue * scaleFactor;
     }
@@ -548,22 +555,22 @@ ZoominMap.on('click', onMapClick);
 // Script for adding marker on map click
 
 function onMapClick(e) {
-    $.each(ZoominMap._layers, function(ml) {
-        //console.log(map._layers)
-        if (ZoominMap._layers[ml].feature) {
-            var name = this.feature.properties.title;
-            if(name=== "ResourceTempAllocation"){
-                 ZoominMap.removeLayer(this);
-            }
-        }
-    })
+    // $.each(ZoominMap._layers, function(ml) {
+    //     //console.log(map._layers)
+    //     if (ZoominMap._layers[ml].feature) {
+    //         var name = this.feature.properties.title;
+    //         if (name === "ResourceTempAllocation") {
+    //             ZoominMap.removeLayer(this);
+    //         }
+    //     }
+    // })
 
     // var deleteButton = "<input type='button' value='Delete This Marker' class='marker-delete-button'/>";
-    var addToLayerButton = "<input type='button' value='Add To Layer' class='marker-add-button'/>"
+    var addToLayerButton = "<input type='button' value='Add a Facility' class='marker-add-button'/>"
 
     var geojsonFeature = {
         "type": "Feature",
-        "properties": {"title": "ResourceTempAllocation"},
+        "properties": { "title": "ResourceTempAllocation" },
         "geometry": {
             "type": "Point",
             "coordinates": [e.latlng.lat, e.latlng.lng]
@@ -572,26 +579,26 @@ function onMapClick(e) {
 
 
 
-        var marker;
-        L.geoJson(geojsonFeature, {
+    var marker;
+    L.geoJson(geojsonFeature, {
 
-            pointToLayer: function(feature, latlng) {
+        pointToLayer: function(feature, latlng) {
 
-                marker = L.marker(e.latlng, {
+            marker = L.marker(e.latlng, {
 
-                    title: "Resource Location",
-                    alt: "Resource Location",
-                    riseOnHover: true,
-                    draggable: true,
+                title: "Resource Location",
+                alt: "Resource Location",
+                riseOnHover: true,
+                draggable: true,
 
-                }).bindPopup(addToLayerButton);
+            }).bindPopup(addToLayerButton);
 
-                marker.on("popupopen", onPopupOpen);
+            marker.on("popupopen", onPopupOpen);
 
-                return marker;
-            }
-        }).addTo(ZoominMap);
-  
+            return marker;
+        }
+    }).addTo(ZoominMap);
+
 }
 
 // Function to handle delete as well as other events on marker popup open
@@ -617,7 +624,6 @@ function onPopupOpen() {
 }
 
 function getLayerComponent(url) {
-
     var layerNameArray = $.ajax({
         type: "GET",
         url: url,
@@ -680,7 +686,7 @@ $('#AddMarkerConfirm').click(function() {
     var prop = {};
     var dataString = $('#markerForm').serialize()
     var stringSplit = dataString.split("&");
-    for (var i in stringSplit){
+    for (var i in stringSplit) {
         var stringGet = stringSplit[i].split("=");
         var name = stringGet[0];
         var properties = stringGet[1];
@@ -688,13 +694,13 @@ $('#AddMarkerConfirm').click(function() {
     }
     // var value = $('#AddMarker li a').text();
     object['layer'] = dropdownvalueChosen;
-        $.each(ZoominMap._layers, function(ml) {
+    $.each(ZoominMap._layers, function(ml) {
         if (ZoominMap._layers[ml].feature) {
             var name = this.feature.properties.title;
-            if(name=== "ResourceTempAllocation"){
+            if (name === "ResourceTempAllocation") {
                 this.feature.properties = prop;
                 var tempCoordinates = this.feature.geometry.coordinates;
-                var tempChange =tempCoordinates[0];
+                var tempChange = tempCoordinates[0];
                 this.feature.geometry.coordinates[0] = tempCoordinates[1];
                 this.feature.geometry.coordinates[1] = tempChange;
                 object['marker'] = this.feature;
@@ -702,7 +708,7 @@ $('#AddMarkerConfirm').click(function() {
             }
         }
     })
-        $.ajax({
+    $.ajax({
         type: "POST",
         contentType: "application/JSON",
         data: JSON.stringify(object),
@@ -716,13 +722,15 @@ $('#AddMarkerConfirm').click(function() {
     });
 })
 
-function updateKPI(){
-    $.get("/updateKPI",function(data){
-        if(data=="success"){
-            UpdateloadResultTableDataWithIndexes()
-            $body.removeClass("loading");
-             location.reload();
+function updateKPI() {
+    $.get("/updateKPI", function(data) {
+        if (data == "success") {
+            setAndTable();
+            loadAndTableData();
+            UpdateloadResultTableDataWithIndexes();
+            // $body.removeClass("loading");
+            // location.reload();
         }
     })
-     
+
 }

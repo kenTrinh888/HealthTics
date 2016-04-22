@@ -1,7 +1,7 @@
 $('#modal-switch').click(function() {
     $('#modal-updateAndTable').show();
 })
-
+watchHDBchange();
 L.Icon.Default.imagePath = '/images';
 L.AwesomeMarkers.Icon.prototype.options.prefix = 'ion';
 
@@ -250,8 +250,10 @@ $(document).ready(function() {
                     dynamicTyping: true,
                     skipEmptyLines: true,
                     complete: function(results) {
+                        HDBupload = results;
                         var leafletFeatures = []; //array of leaflet feature objects
                         fields = results["data"];
+                        HDBupload = results["data"]
                         var objectsSend = [];
                         var lengthofHDBRequest = fields.length;
                         for (var i = 0; i < fields.length; i++) {
@@ -284,6 +286,7 @@ $(document).ready(function() {
                             });
                         } else {
                             var test = false;
+
                             if (test) {
                                 var minrequest = 1000;
                                 var loopNumber = parseInt(objectsSend.length / minrequest);
@@ -314,8 +317,9 @@ $(document).ready(function() {
                                         data: JSON.stringify(objectsSend),
                                         contentType: 'application/json',
                                         success: function(data) {
+
                                             $body.removeClass("loading");
-                                            console.log(data)
+                                            location.reload();
                                         }
                                     }) 
                             }
@@ -362,3 +366,11 @@ $(document).ready(function() {
         }
     });
 })
+console.log(HDBdataSend);
+function watchHDBchange(){
+    $.get("/watchHDBFile", function(data){
+       
+        $('#HDBUploadSuccessful').append(HDBupload.length + " HDBs succcessful Uploaded");
+        
+    })
+}

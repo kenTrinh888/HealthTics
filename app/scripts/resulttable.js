@@ -1,10 +1,17 @@
 //main method
+$body = $("body");
+$(document).on({
+    ajaxStart: function() { $body.addClass("loading"); },
+    ajaxStop: function() { $body.removeClass("loading"); }
+});
+
 $(document).ready(function() {
-    UpdateloadResultTableDataWithIndexes()
+    // UpdateloadResultTableDataWithIndexes()
     triggerSaveButtonInModal();
     loadResultTableData();
     sendFinalRequirements();
     refreshResultTableDataWithIndexes();
+
 })
 
 function getCheckedFileIndexes() {
@@ -17,7 +24,7 @@ function getCheckedFileIndexes() {
             fileIndexes += fileIndex + ";";
         }
     });
-    fileIndexes.slice(fileIndexes.length-1);
+    fileIndexes.slice(fileIndexes.length - 1);
     return fileIndexes;
 }
 
@@ -44,8 +51,8 @@ function sendFinalRequirements() {
     });
 }
 
-function refreshResultTableDataWithIndexes(){
-    $('.updateKPI').click(function(){
+function refreshResultTableDataWithIndexes() {
+    $('.updateKPI').click(function() {
         var fileIndexes = getCheckedFileIndexes();
         // console.log(fileIndexes);
         var kpiName = "refresh";
@@ -82,6 +89,7 @@ function refreshResultTableDataWithIndexes(){
         });
     })
 }
+
 function loadResultTableDataWithIndexes() {
     var fileIndexes = getCheckedFileIndexes();
     console.log(fileIndexes);
@@ -104,7 +112,7 @@ function loadResultTableDataWithIndexes() {
 
 
     $.get(getDataAPI, function(HDBData, err) {
-          console.log(HDBData);
+        console.log(HDBData);
         if (HDBData.length == 0) {
             return;
         }
@@ -145,32 +153,77 @@ function loadResultTableDataWithIndexes() {
     })
 }
 
-function UpdateloadResultTableDataWithIndexes(){
-    $.get("/allFinalResult", function(KPIFilesArray){
-        for(var m in KPIFilesArray){
+function UpdateloadResultTableDataWithIndexes() {
+    $.get("/allFinalResult", function(KPIFilesArray) {
+        for (var m in KPIFilesArray) {
             var aKPIFiles = KPIFilesArray[m];
             var HDBData = aKPIFiles.bigORsArray;
             var KPIContent = aKPIFiles.KPIContent;
+            var oldAndTable = KPIContent.andTable;
+            var ANDtable = GetANDtableSync();
+            for(var x in oldAndTable){
+                var aANDtable = oldAndTable[x];
+                var oldDir = getLastString(aANDtable.directory);
+                for(var y in ANDtable){
+                    console.log(ANDtable);
+                    var updatedAND = ANDtable[y];
+                     var newDir = getLastString(updatedAND.directory);
+                    if(oldDir=== newDir){
+                        console.log("match")
+                        KPIContent.andTable[x] = updatedAND;
+                    }
+                }
+            }
             var requirements = getResultRequirements(HDBData);
+
             var finalRequirements = getFinalRequirements(requirements);
             KPIContent.reqFinal = finalRequirements.reqFinal;
             KPIContent.reqData = finalRequirements.reqData;
+            console.log(KPIContent);
             $.ajax({
                 type: 'POST',
                 data: JSON.stringify(KPIContent),
                 contentType: 'application/json',
-                url: 'http://localhost:3000/sendFinalRequirements'
+                url: 'http://localhost:3000/sendFinalRequirements',
+                success: function(data){
+                     location.reload();
+
+                }
             });
-        } 
+        }
     })
 }
+function getLastString(directory){
+    var returnString = directory.split("/");
+    var lastElement = returnString[returnString.length-1];
+    return lastElement;
+}
+function GetANDtableSync() {
+    url = "/getANDResults/";
+    var data = {};
+    // console.log(KPIJson);
+    $.ajax({
+        type: "GET",
+        contentType: "application/JSON",
+        url: url,
+        success: function(req) {
+            data = req;
+        },
+        async: false
+    });
+    return data;
 
+}
+// function 
 function addAndTableToFinalRequirements(requirements, fileIndexes) {
+    console.log(fileIndexes);
     var finalRequirements = requirements;
     finalRequirements.andTable = [];
     var targetKPI = 90;
     var andTable = JSON.parse($('.modifiedRequirements').text());
-    // console.log(andTable);
+    console.log(andTable);
+    // 
+    // console.log("andTable" + JSON.andTable);
     var fileIndex = 0;
     andTable.forEach(function(element, index) {
         // console.log(element);
@@ -181,10 +234,38 @@ function addAndTableToFinalRequirements(requirements, fileIndexes) {
             fileIndex++;
         }
     })
-    
+
     // console.log(finalRequirements.andTable);
     return finalRequirements;
 }
+// var andTableText = $('.modifiedRequirements').text();
+// console.log("here" + andTableText);
+// Update the andTable to display in final KPI visulisation
+// function UpdateaddAndTableToFinalRequirements(requirements, oldAndTable) {
+//     var finalRequirements = requirements;
+//     finalRequirements.andTable = [];
+//     var targetKPI = 90;
+//     $.getJSON("/getANDResults", function(andTableText) {
+//          console.log(andTableText);
+//         for (var m = 0; m < andTableText.length; m++) {
+//             var anAndReq = andTableText[m];
+//             var directory = anAndReq.directory;
+//             for (var n = 0; n < oldAndTable.length; n++) {
+//                 var andAndTable = oldAndTable[n];
+//                 var nameOfFile = andAndTable.directory;
+//                 if (directory == nameOfFile) {
+//                     // console.log(finalRequirements);
+//                     finalRequirements.andTable.push(anAndReq);
+//                     finalRequirements.andTable[n].targetKPI = targetKPI;
+//                 }
+//             }
+//         }
+
+//         return finalRequirements;
+
+//     })
+
+// }
 
 function getResultRequirements(HDBData) {
     var requirements = {};

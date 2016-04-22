@@ -1,8 +1,8 @@
 var express = require("express");
 var http = require("http");
 var app = express();
-// var request = require('request');
-var hyperquest = require('hyperquest');
+var request = require('request');
+// var hyperquest = require('hyperquest');
 var re = require('request-enhanced');
 // var requestSync = require('urllib-sync').request;
 var requestSync = require('sync-request');
@@ -204,11 +204,11 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 
-app.post('/deleteORResult', function(req, res) {    
+app.post('/deleteORResult', function(req, res) {
     fileToDelete = req.body;
     fs.unlinkSync(fileToDelete.directory);
     res.redirect('/');
-    
+
 });
 
 app.post('/deleteKPIFile', function(req, res) {
@@ -216,7 +216,7 @@ app.post('/deleteKPIFile', function(req, res) {
     var folderDestination = globalurl + "/FinalResult/";
     folderDestination = folderDestination.replace('\\', '/');
     var kpiFileName = fileToDelete.kpiName + ".geojson";
-    var fullKPIFilePath = folderDestination+kpiFileName;
+    var fullKPIFilePath = folderDestination + kpiFileName;
     console.log(fullKPIFilePath);
     fs.unlinkSync(fullKPIFilePath);
     res.redirect('/');
@@ -225,9 +225,17 @@ app.post('/deleteKPIFile', function(req, res) {
 //don't care about this one below
 app.post('/sendModifiedRequirements', function(req, res) {
     //ken modify from here
-    // var requirements = req.body;
+    var requirements = req.body;
     // console.log(requirements);
-    // console.log("sendModifiedRequirements");
+    var AndTableCombineURL = globalurl + "/ANDResult/ANDResult.json";
+    fs.writeFile(AndTableCombineURL, JSON.stringify(requirements), function(err) {
+        if (err) {
+            return console.log(err);
+        }
+    });
+    res.send("success")
+        // console.log(requirements);
+        // console.log("sendModifiedRequirements");
 })
 
 app.get('/checkFileExists/:kpiName', function(req, res) {
@@ -256,7 +264,7 @@ app.post('/sendFinalRequirements', function(req, res) {
         }
     });
 
-    res.redirect('/');
+    res.send("KPI improve successful");
 })
 
 app.get('/getAllKPIs', function(req, res) {
@@ -575,6 +583,9 @@ app.post('/findPostalCode', function(req, res) {
         var objectReceived = objectReceivedArray[m];
         geoCode(objectReceived, lengthOfRequest);
     }
+
+    // res.send("/")
+
 })
 
 function geoCode(objectReceived, lengthOfRequest) {
@@ -592,47 +603,48 @@ function geoCode(objectReceived, lengthOfRequest) {
 
     re.get(urlString, function(error, data) {
         // console.log('Fetched:', data);
-    if (typeof data != "undefined") {
-        var geocodedDataJson = JSON.parse(data);
-        searchResults = geocodedDataJson["SearchResults"]; //array containing response of geocoding API
-        var leafletFeature = new Object(); //single leaflet object
-        leafletFeature["type"] = "Feature";
-        leafletFeature["properties"] = objectReceived;
-        if (searchResults[0].hasOwnProperty("ErrorMessage") === false) {
-            if (searchResults.length > 1) {
-                var longitude = searchResults[1]["X"];
-                var latitude = searchResults[1]["Y"];
+        if (typeof data != "undefined") {
+            var geocodedDataJson = JSON.parse(data);
+            searchResults = geocodedDataJson["SearchResults"]; //array containing response of geocoding API
+            var leafletFeature = new Object(); //single leaflet object
+            leafletFeature["type"] = "Feature";
+            leafletFeature["properties"] = objectReceived;
+            if (searchResults[0].hasOwnProperty("ErrorMessage") === false) {
+                if (searchResults.length > 1) {
+                    var longitude = searchResults[1]["X"];
+                    var latitude = searchResults[1]["Y"];
 
-                var geoObj = {};
-                geoObj["type"] = "Point";
-                geoObj["coordinates"] = [];
-                geoObj["coordinates"].push(parseFloat(longitude)); //long
-                geoObj["coordinates"].push(parseFloat(latitude)); //lat
-                leafletFeature["geometry"] = geoObj;
-                // console.log(objectReceived);
-                leafletFeatures.push(leafletFeature);
-                var lengthOfHDB = leafletFeatures.length + InvalidHDBsArray.length;
+                    var geoObj = {};
+                    geoObj["type"] = "Point";
+                    geoObj["coordinates"] = [];
+                    geoObj["coordinates"].push(parseFloat(longitude)); //long
+                    geoObj["coordinates"].push(parseFloat(latitude)); //lat
+                    leafletFeature["geometry"] = geoObj;
+                    // console.log(objectReceived);
+                    leafletFeatures.push(leafletFeature);
+                    var lengthOfHDB = leafletFeatures.length + InvalidHDBsArray.length;
 
-                console.log("length of uploading: " + lengthOfHDB + " " + lengthOfRequest);
-                if (lengthOfRequest === lengthOfHDB) {
-                    // console.log(JSON.stringify(leafletFeatures));
-                    var urlDestination = globalurl + "/HDB/HDB.json";
-                    fs.writeFile(urlDestination, JSON.stringify(leafletFeatures), function(err) {
-                        if (err) {
-                            console.error('There was an error writing the file!', err);
-                            return;
-                        }
-                    });
+                    console.log("length of uploading: " + lengthOfHDB + " " + lengthOfRequest);
+                    if (lengthOfRequest === lengthOfHDB) {
+                        // console.log(JSON.stringify(leafletFeatures));
+                        var urlDestination = globalurl + "/HDB/HDB.json";
+                        fs.writeFile(urlDestination, JSON.stringify(leafletFeatures), function(err) {
+                            if (err) {
+                                console.error('There was an error writing the file!', err);
+                                return;
+                            }
+                        });
+
+                    }
                 }
-            }
 
+            } else {
+                console.log(objectReceived);
+                InvalidHDBsArray.push(objectReceived);
+            }
         } else {
-            console.log(objectReceived);
-            InvalidHDBsArray.push(objectReceived);
+            console.log(error);
         }
-    }else{
-        console.log(error);
-    }
     })
 
 }
@@ -967,6 +979,7 @@ function CalculateFacilitiesHexbin(HDB, objectReceived) {
     var HDBObject = {};
     for (var m = 0; m < HDB.length; m++) {
         var facilities = [];
+        var analysisArray = [];
         var aHDB = HDB[m];
         var count = 0;
         for (var i = 0; i < objectReceived.length; i++) {
@@ -974,7 +987,10 @@ function CalculateFacilitiesHexbin(HDB, objectReceived) {
             // console.log(ORrequirement);
             var urlLayerRetrieved = globalurl + "/geojson/" + ORrequirementSend.parentLayer + ".geojson";
             var layerRequest = JSON.parse(fs.readFileSync(urlLayerRetrieved));
-            var ptsWithin = calculateBufferHexbin(aHDB, layerRequest, ORrequirementSend);
+            var objectReturn = calculateBufferHexbin(aHDB, layerRequest, ORrequirementSend);
+            var ptsWithin = objectReturn.ptsWithin;
+            var analysis = objectReturn.analysis;
+            analysisArray.push(analysis);
             facilities.push(ptsWithin)
             var numbercount = ptsWithin.features.length;
             count += numbercount;
@@ -982,6 +998,7 @@ function CalculateFacilitiesHexbin(HDB, objectReceived) {
         aHDB.properties["pt_count"] = count;
         aHDB.properties["facilities"] = facilities;
         aHDB.properties["requirements"] = objectReceived;
+        aHDB.properties["analysis"] = analysisArray;
         HDBpoints.features.push(aHDB);
 
     }
@@ -990,6 +1007,9 @@ function CalculateFacilitiesHexbin(HDB, objectReceived) {
 }
 
 function calculateBufferHexbin(aHDB, layerRequest, ORrequirement) {
+    var analysis = "Facility: " + "<b>" + ORrequirement.parentLayer + "</b>";
+    var objectReturn = {};
+    var difference;
     var typeofGEOJSOB = aHDB.type;
     if (typeofGEOJSOB === "Feature") {
         var currentPoint = aHDB;
@@ -1018,6 +1038,7 @@ function calculateBufferHexbin(aHDB, layerRequest, ORrequirement) {
     var key = ORrequirement.sublayer_column;
     if (key != 'N/A') {
         var value = ORrequirement.subLayer;
+        analysis += " and Category : " + "<b>" + value + "</b>";
         filtered = turf.filter(layerRequest, key, value);
         // console.log(value);
         // Check Buffer Point Within
@@ -1026,10 +1047,40 @@ function calculateBufferHexbin(aHDB, layerRequest, ORrequirement) {
     }
     // var counted = turf.count(HDBbuffered, filtered, 'pt_count');
     var ptsWithin = turf.within(filtered, HDBbuffered);
-    // var countNumber = counted.features[0].properties.pt_count;
-    // console.log(ptsWithin);
-    // var countNumber = ptsWithin.features.length
-    return ptsWithin;
+
+    //Running Analysis
+    var numberofPoints = ptsWithin.features.length;
+    var operator = ORrequirement.operator;
+    var operator_amt = ORrequirement.operator_amt;
+
+
+    objectReturn.ptsWithin = ptsWithin;
+    if (operator === "≥") {
+        if (numberofPoints >= operator_amt) {
+            analysis += " : Fullfiled";
+        } else {
+            difference = operator_amt - numberofPoints;
+            analysis += " need <b>" + difference + "</b> more facilities within " + distance + " meter";
+        }
+    } else if (operator === "≤") {
+        if (numberofPoints <= operator_amt) {
+            analysis += " : Fullfiled";
+        } else {
+            difference = numberofPoints - operator_amt;
+            analysis += " need <b>" + difference + "</b>less facilities within " + distance + " meter";
+
+        }
+    } else {
+        if (numberofPoints === operator_amt) {
+            analysis += ": Fullfiled";
+        } else {
+
+            analysis += " the difference is <b>" + difference + " </b>facilities within " + distance + " meter";
+        }
+    }
+
+    objectReturn.analysis = analysis;
+    return objectReturn;
 
 }
 
@@ -1143,6 +1194,28 @@ app.get('/allFinalResult', function(req, res) {
     }
     res.send(KPIArray);
 })
+app.get('/getANDResults', function(req, res) {
+    var AndTableCombineURL = globalurl + "/ANDResult/ANDResult.json";
+    fs.readFile(AndTableCombineURL, "utf8", function(err, data) {
+        data = JSON.parse(data);
+        res.send(data);
+        if (err) {
+            return console.error(err);
+        }
+        // console.log(data);
+    });
+})
 
+app.get('/watchHDBFile', function(req, res) {
+
+    var url = globalurl + "/HDB/HDB.json";
+    fs.watchFile(url, function(curr, prev) {
+        console.log("current mtime: " + curr.mtime);
+        console.log("previous mtime: " + prev.mtime);
+        if (curr.mtime - prev.mtime) {
+            res.send("filechange")
+        }
+    });
+})
 app.listen(3000);
 console.log("Running at Port 3000");
