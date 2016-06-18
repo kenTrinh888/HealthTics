@@ -73,7 +73,7 @@ function setLayerDropdownlist(dropdownID, layers) {
 
 function setSublayerColumnHiddenInput(layerDropdownObject,dropdownID) {
     $(layerDropdownObject).on('selectionchange', function(e,m){
-        console.log('a');
+        // console.log('a');
         var layerSelected = this.getValue()[0];
         var sublayer_column = "";
         if(layerSelected){

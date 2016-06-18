@@ -226,12 +226,12 @@ app.post('/sendModifiedRequirements', function(req, res) {
     //ken modify from here
     var requirements = req.body;
     // console.log(requirements);
-    var AndTableCombineURL = globalurl + "/ANDResult/ANDResult.json";
-    fs.writeFile(AndTableCombineURL, JSON.stringify(requirements), function(err) {
-        if (err) {
-            return console.log(err);
-        }
-    });
+    // var AndTableCombineURL = globalurl + "/ANDResult/ANDResult.json";
+    // fs.writeFile(AndTableCombineURL, JSON.stringify(requirements), function(err) {
+    //     if (err) {
+    //         return console.log(err);
+    //     }
+    // });
     res.send("success")
         // console.log(requirements);
         // console.log("sendModifiedRequirements");

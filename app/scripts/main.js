@@ -366,7 +366,7 @@ $(document).ready(function() {
         }
     });
 })
-console.log(HDBdataSend);
+// console.log(HDBdataSend);
 function watchHDBchange(){
     $.get("/watchHDBFile", function(data){
        

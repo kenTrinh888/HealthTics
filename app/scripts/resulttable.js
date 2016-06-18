@@ -92,7 +92,7 @@ function refreshResultTableDataWithIndexes() {
 
 function loadResultTableDataWithIndexes() {
     var fileIndexes = getCheckedFileIndexes();
-    console.log(fileIndexes);
+    // console.log(fileIndexes);
     var kpiName = $('.kpiName').prop('value');
     // var targetKPI = $('.targetKPI').prop('value');
     var targetKPI = 90;
@@ -112,7 +112,7 @@ function loadResultTableDataWithIndexes() {
 
 
     $.get(getDataAPI, function(HDBData, err) {
-        console.log(HDBData);
+        // console.log(HDBData);
         if (HDBData.length == 0) {
             return;
         }
@@ -216,12 +216,12 @@ function GetANDtableSync() {
 }
 // function 
 function addAndTableToFinalRequirements(requirements, fileIndexes) {
-    console.log(fileIndexes);
+    // console.log(fileIndexes);
     var finalRequirements = requirements;
     finalRequirements.andTable = [];
     var targetKPI = 90;
     var andTable = JSON.parse($('.modifiedRequirements').text());
-    console.log(andTable);
+    // console.log(andTable);
     // 
     // console.log("andTable" + JSON.andTable);
     var fileIndex = 0;

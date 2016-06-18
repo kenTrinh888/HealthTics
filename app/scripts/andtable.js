@@ -135,7 +135,7 @@ function populateAndTable(modifiedRequirements) {
         url: '/sendModifiedRequirements',
         success: function(data) {
             $body.removeClass("loading");
-            console.log('success');
+            // console.log('success');
 
             // console.log(data);
         }
